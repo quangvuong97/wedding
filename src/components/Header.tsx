@@ -24,22 +24,12 @@ const slides = [
 const Header: React.FC = () => {
   const [index, setIndex] = useState(0);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setIndex((prevIndex) => (prevIndex + 1) % slides.length);
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-  // <div className="relative z-10 text-center text-white max-w-2xl mx-auto text-shadow">
-  //   <h2 className="text-[40px] md:text-[60px] font-bold font-futura opacity-0 translate-y-8 animate-fade-up">
-  //     {slide.title}
-  //   </h2>
-  //   <p className="text-lg md:text-2xl mt-4 font-light opacity-0 translate-y-6 animate-fade-up delay-200">
-  //     {slide.subtitle}
-  //   </p>
-  // </div>
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]">
