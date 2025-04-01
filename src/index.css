@@ -1,9 +1,35 @@
-@import url("https://fonts.cdnfonts.com/css/futura-pt");
-@import url("https://fonts.googleapis.com/css?family=Muli:400,400i,600,700,800&display=swap");
-@import url('https://fonts.cdnfonts.com/css/dancing-script');
+@import url("https://fonts.cdnfonts.com/css/dancing-script");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Futura PT";
+  src: url("../public/fonts/Futura/FuturaPT-Medium.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Futura PT";
+  src: url("../public/fonts/Futura/FuturaPT-Demi.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Muli";
+  src: url("../public/fonts/Muli/Muli-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Muli";
+  src: url("../public/fonts/Muli/Muli-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+}
 
 body {
   margin: 0;
