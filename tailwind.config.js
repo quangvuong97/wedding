@@ -5,7 +5,7 @@ module.exports = {
   ],
   theme: {
     backgroundImage: {
-      'clock': "url('../public/images/clock-bg.png')",
+      'clock': "url('https://i.ibb.co/wNz7BqJH/clock-bg.png')",
     },
     extend: {
       fontFamily: {
@@ -24,16 +24,16 @@ module.exports = {
       "xxs": "400px",
       "xs": "450px",
       "ssm": "576px",
-      "sm": "767px",
+      "sm": "768px",
       "md": "992px",
       "lg": "1200px",
       "xl": "1400px",
       "xxl": "1440px",
 
-      // "xs": { max: "1399px" },  // max-width: 575px
-      "maxSm": { max: "1200px" },  // max-width: 767px
+      "maxXs": { max: "1399px" },  // max-width: 575px
+      "maxSm": { max: "1199px" },  // max-width: 767px
       "maxMd": { max: "991px" },  // max-width: 991px
-      // "lg": { max: "767px" }, // max-width: 1199px
+      "maxLg": { max: "767px" }, // max-width: 1199px
       // "xl": { max: "575px" }, // max-width: 1399px
       "maxSsm": { max: "576px" },
     },
