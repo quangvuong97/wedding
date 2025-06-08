@@ -78,6 +78,7 @@ const CountDown: React.FC = () => {
         { title: "Second", value: second },
       ].map((e, i) => (
         <div
+          key={i}
           className="bg-clock bg-cover bg-center sm:min-w-[120px]
           maxMd:w-[120px] maxSm:w-[144px] w-[180px]
           maxMd:h-[108.6666666px] maxSm:h-[130.4px] h-[163px] 
