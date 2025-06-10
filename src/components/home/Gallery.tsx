@@ -66,7 +66,7 @@ const Gallery: React.FC = () => {
 
   return (
     <section className="py-[120px] maxMd:py-[90px] maxLg:py-[80px]">
-      <div className="w-full px-3 mx-auto">
+      <div className="container mx-auto px-3 w-full ssm:max-w-[540px] sm:max-w-[720px] md:max-w-[960px] lg:max-w-[1140px] xl:max-w-[1320px] xxl:max-w-[1170px]">
         <div className="flex flex-wrap -mx-3 -mt-0">
           <div className="mb-[60px] text-center maxLg:mb-[40px] flex-shrink-0 w-full max-w-full px-3 mt-0">
             <img

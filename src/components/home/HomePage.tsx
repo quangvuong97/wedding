@@ -5,26 +5,28 @@ import Couple from "./Couple";
 import Story from "./Story";
 import Gallery from "./Gallery";
 import { getSubdomain } from "../../services/api";
+import Invitation from "./Invitation";
 
 const HomePage: React.FC = () => {
-  const [subdomain, setSubdomain] = useState<string>('');
+  const [subdomain, setSubdomain] = useState<string>("");
 
   useEffect(() => {
     const currentSubdomain = getSubdomain();
     setSubdomain(currentSubdomain);
-    
+
     // Here you can use the subdomain to fetch specific data for this domain
-    console.log('Current subdomain:', currentSubdomain);
+    console.log("Current subdomain:", currentSubdomain);
     // TODO: Implement API calls using the subdomain data
   }, []);
 
   return (
-    <div className="App">
+    <div className="App" data-subdomain={subdomain}>
       <Header />
       <CountDown />
       <Couple />
       <Story />
       <Gallery />
+      <Invitation />
     </div>
   );
 };
