@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { HomePage, AdminDashboard, ProtectedRoute } from "./components";
 import "./App.css";
+import "./styles/theme.css";
 
 function App() {
   return (

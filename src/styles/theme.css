@@ -1,0 +1,81 @@
+/* Custom Antd Theme với màu chủ đạo #1e8267 */
+
+/* Menu item selected state */
+.ant-menu-item-selected {
+  background-color: rgba(30, 130, 103, 0.1) !important;
+  border-radius: 8px !important;
+  color: #1e8267 !important;
+}
+
+.ant-menu-item-selected .ant-menu-item-icon {
+  color: #1e8267 !important;
+}
+
+/* Menu item hover state */
+.ant-menu-item:hover {
+  background-color: rgba(30, 130, 103, 0.05) !important;
+  border-radius: 8px !important;
+  color: #1e8267 !important;
+}
+
+.ant-menu-item:hover .ant-menu-item-icon {
+  color: #1e8267 !important;
+}
+
+/* Input focus state */
+.ant-input:focus,
+.ant-input-focused {
+  border-color: #1e8267 !important;
+  box-shadow: 0 0 0 2px rgba(30, 130, 103, 0.2) !important;
+}
+
+.ant-input-password:focus,
+.ant-input-password-focused {
+  border-color: #1e8267 !important;
+  box-shadow: 0 0 0 2px rgba(30, 130, 103, 0.2) !important;
+}
+
+/* Button hover states */
+.ant-btn-primary:hover {
+  background-color: #2ea886 !important;
+  border-color: #2ea886 !important;
+}
+
+.ant-btn-primary:focus {
+  background-color: #2ea886 !important;
+  border-color: #2ea886 !important;
+}
+
+/* Loading spinner */
+.ant-spin-dot-item {
+  background-color: #1e8267 !important;
+}
+
+/* Alert close button */
+.ant-alert-close-icon:hover {
+  color: #1e8267 !important;
+}
+
+/* Form validation */
+.ant-form-item-has-error .ant-input:focus {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+
+/* Menu items spacing */
+.ant-menu-item {
+  margin: 4px 12px !important;
+  width: calc(100% - 24px) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Card hover effect */
+.ant-card {
+  transition: all 0.3s ease !important;
+}
+
+.ant-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 40px rgba(30, 130, 103, 0.12) !important;
+}

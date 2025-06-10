@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,35 +23,84 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [state, setState] = useState({
+    accessToken: null as string | null,
+    isAuthenticated: false,
+    isLoading: true,
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      setAccessToken(token);
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false);
+    const initializeAuth = () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        
+        const isValidToken = token && 
+                           token.trim() && 
+                           token !== 'undefined' && 
+                           token !== 'null';
+        
+        if (isValidToken) {
+          setState({
+            accessToken: token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } else {
+          localStorage.removeItem('accessToken');
+          setState({
+            accessToken: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        }
+      } catch (error) {
+        localStorage.removeItem('accessToken');
+        setState({
+          accessToken: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+      }
+    };
+
+    const timeoutId = setTimeout(initializeAuth, 0);
+    return () => clearTimeout(timeoutId);
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem('accessToken', token);
-    setAccessToken(token);
-    setIsAuthenticated(true);
-  };
+  const login = useCallback((token: string) => {
+    if (!token || token.trim() === '' || token === 'undefined' || token === 'null') {
+      throw new Error('Token không hợp lệ');
+    }
+    
+    try {
+      localStorage.setItem('accessToken', token);
+      setState({
+        accessToken: token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (error) {
+      throw new Error('Không thể lưu thông tin đăng nhập');
+    }
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    setAccessToken(null);
-    setIsAuthenticated(false);
-  };
+  const logout = useCallback(() => {
+    try {
+      localStorage.removeItem('accessToken');
+    } catch (error) {
+      console.error('Error removing token:', error);
+    }
+    setState({
+      accessToken: null,
+      isAuthenticated: false,
+      isLoading: false,
+    });
+  }, []);
 
   const value = {
-    isAuthenticated,
-    accessToken,
-    isLoading,
+    isAuthenticated: state.isAuthenticated,
+    accessToken: state.accessToken,
+    isLoading: state.isLoading,
     login,
     logout,
   };

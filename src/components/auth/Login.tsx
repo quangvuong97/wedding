@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, LoginRequest } from '../../services/api';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -17,6 +17,11 @@ const Login: React.FC = () => {
     
     try {
       const response = await authAPI.login(values);
+      
+      if (!response.accessToken) {
+        throw new Error('No access token in response');
+      }
+      
       login(response.accessToken);
       message.success('Đăng nhập thành công! Đang chuyển hướng...');
     } catch (error: any) {
@@ -52,11 +57,21 @@ const Login: React.FC = () => {
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh',
-      background: '#f0f2f5'
+      background: 'linear-gradient(135deg, #f8fffe 0%, #f0faf8 100%)'
     }}>
-      <Card style={{ width: 400, boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={2}>Đăng nhập Admin</Title>
+      <Card style={{ 
+        width: 420, 
+        boxShadow: '0 8px 32px rgba(30, 130, 103, 0.15)',
+        borderRadius: '20px',
+        border: '1px solid rgba(30, 130, 103, 0.1)'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Title level={2} style={{ color: '#1e8267', marginBottom: '8px' }}>
+            Đăng nhập Admin
+          </Title>
+          <Text style={{ color: '#666', fontSize: '16px' }}>
+            Vui lòng đăng nhập để tiếp tục
+          </Text>
         </div>
         
         {error && (
@@ -105,7 +120,15 @@ const Login: React.FC = () => {
               type="primary" 
               htmlType="submit" 
               loading={loading}
-              style={{ width: '100%' }}
+              style={{ 
+                width: '100%',
+                height: '48px',
+                background: '#1e8267',
+                borderColor: '#1e8267',
+                borderRadius: '12px',
+                fontSize: '16px',
+                fontWeight: '500'
+              }}
             >
               Đăng nhập
             </Button>

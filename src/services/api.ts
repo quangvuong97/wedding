@@ -5,8 +5,28 @@ export interface LoginRequest {
   password: string;
 }
 
+// API Response wrapper
+interface ApiResponse<T> {
+  code: number;
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
 export interface LoginResponse {
   accessToken: string;
+}
+
+export interface UserProfile {
+  userId: string;
+  username: string;
+  config: {
+    groomName: string;
+    QRCodeGroomUrl: string;
+    brideName: string;
+    QRCodeBrideUrl: string;
+    weddingDate: Date;
+  };
 }
 
 export const authAPI = {
@@ -30,13 +50,78 @@ export const authAPI = {
         }
       }
 
-      const data = await response.json();
-      return data;
+      const apiResponse: ApiResponse<LoginResponse> = await response.json();
+      
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error('Login failed');
+      }
+      
+      return apiResponse.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Network error');
       }
       throw error;
+    }
+  },
+
+  getProfile: async (token: string): Promise<UserProfile> => {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status >= 500) {
+          throw new Error('Server error');
+        } else {
+          throw new Error('Failed to fetch profile');
+        }
+      }
+
+      const apiResponse: ApiResponse<UserProfile> = await response.json();
+      
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error('Failed to fetch profile');
+      }
+      
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      throw error;
+    }
+  },
+
+  validateToken: async (token: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`${API_URL}/v1/users/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        return false;
+      }
+      
+      const apiResponse: ApiResponse<UserProfile> = await response.json();
+      return apiResponse.code === 200 && !!apiResponse.data;
+    } catch (error) {
+      return false;
     }
   },
 };
