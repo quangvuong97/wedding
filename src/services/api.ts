@@ -29,6 +29,68 @@ export interface UserProfile {
   };
 }
 
+export enum EGuestOfType {
+  GROOM = "groom",
+  BRIDE = "bride",
+}
+
+export interface GetGuestResponse {
+  id: string;
+  name: string;
+  slug: string;
+  phoneNumber: string;
+  relation: string;
+  facebook: string;
+  isInvite: boolean;
+  isAttended: boolean;
+  giftAmount: string;
+  note: string;
+}
+
+export interface GetGuestsRequest {
+  size?: number;
+  page?: number;
+  keyword?: string;
+  guestOf: EGuestOfType;
+}
+
+export interface CreateGuestRequest {
+  guestOf: EGuestOfType;
+  name: string;
+  slug: string;
+  phoneNumber?: string;
+  relation?: string;
+  facebook?: string;
+  note?: string;
+  isInvite?: boolean;
+  isAttended?: boolean;
+  giftAmount?: string;
+}
+
+export interface UpdateGuestRequest {
+  name?: string;
+  slug?: string;
+  phoneNumber?: string;
+  relation?: string;
+  facebook?: string;
+  note?: string;
+  isInvite?: boolean;
+  isAttended?: boolean;
+  giftAmount?: string;
+}
+
+export interface DeleteGuestRequest {
+  guestIds: string[];
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  size: number;
+  totalPages: number;
+}
+
 export const authAPI = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
@@ -122,6 +184,176 @@ export const authAPI = {
       return apiResponse.code === 200 && !!apiResponse.data;
     } catch (error) {
       return false;
+    }
+  },
+};
+
+export const guestAPI = {
+  getGuests: async (token: string, params: GetGuestsRequest): Promise<PaginatedResponse<GetGuestResponse>> => {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.size) queryParams.append('size', params.size.toString());
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.keyword) queryParams.append('keyword', params.keyword);
+      queryParams.append('guestOf', params.guestOf);
+
+      const response = await fetch(`${API_URL}/v1/users/guests?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status >= 500) {
+          throw new Error('Server error');
+        } else {
+          throw new Error('Failed to fetch guests');
+        }
+      }
+
+      const apiResponse: ApiResponse<PaginatedResponse<GetGuestResponse>> = await response.json();
+      
+      console.log('API: getGuests raw response:', apiResponse);
+      
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error('Failed to fetch guests');
+      }
+      
+      console.log('API: getGuests returning data:', apiResponse.data);
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      throw error;
+    }
+  },
+
+  createGuest: async (token: string, guestData: CreateGuestRequest): Promise<GetGuestResponse> => {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/guests`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(guestData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status >= 500) {
+          throw new Error('Server error');
+        } else {
+          throw new Error('Failed to create guest');
+        }
+      }
+
+      const apiResponse: ApiResponse<GetGuestResponse> = await response.json();
+      
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error('Failed to create guest');
+      }
+      
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      throw error;
+    }
+  },
+
+  updateGuest: async (token: string, guestId: string, guestData: UpdateGuestRequest): Promise<GetGuestResponse> => {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/guests/${guestId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(guestData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status >= 500) {
+          throw new Error('Server error');
+        } else {
+          throw new Error('Failed to update guest');
+        }
+      }
+
+      const apiResponse: ApiResponse<GetGuestResponse> = await response.json();
+      
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error('Failed to update guest');
+      }
+      
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      throw error;
+    }
+  },
+
+  deleteGuests: async (token: string, guestIds: string[]): Promise<boolean> => {
+    if (!token) {
+      throw new Error('No token provided');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/guests/delete-bulk`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ guestIds }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status >= 500) {
+          throw new Error('Server error');
+        } else {
+          throw new Error('Failed to delete guests');
+        }
+      }
+
+      const apiResponse: ApiResponse<boolean> = await response.json();
+      
+      if (apiResponse.code !== 200) {
+        throw new Error('Failed to delete guests');
+      }
+      
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      throw error;
     }
   },
 };

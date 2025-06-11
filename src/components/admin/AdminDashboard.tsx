@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, UserProfile } from '../../services/api';
+import GuestManagement from './GuestManagement';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -77,7 +78,7 @@ const AdminDashboard: React.FC = () => {
 
   const renderContent = () => {
     const cardStyle = {
-      borderRadius: '16px',
+      borderRadius: '0.25rem',
       boxShadow: '0 4px 24px rgba(30, 130, 103, 0.08)',
       border: '1px solid rgba(30, 130, 103, 0.1)',
       background: '#fff'
@@ -108,21 +109,11 @@ const AdminDashboard: React.FC = () => {
           </Card>
         );
       case 'guests':
-        return (
-          <Card style={cardStyle}>
-            <Title level={3} style={titleStyle}>Khách Mời</Title>
-            <Text style={{ color: '#666', fontSize: '16px' }}>
-              Chào mừng đến với trang quản lý khách mời. Tính năng sẽ được phát triển thêm.
-            </Text>
-          </Card>
-        );
+        return <GuestManagement />;
       default:
         return null;
     }
   };
-
-  const groomName = profile?.config?.groomName || 'Chồng';
-  const brideName = profile?.config?.brideName || 'Vợ';
 
   if (loading || authLoading) {
     return (
@@ -149,14 +140,14 @@ const AdminDashboard: React.FC = () => {
           }}
         >
           {/* Wedding Info Header */}
-          <div style={{ 
+          {/* <div style={{ 
             padding: '24px 16px',
             borderBottom: '1px solid #f0f0f0',
             textAlign: 'center'
           }}>
             <div style={{ 
               background: 'linear-gradient(135deg, #1e8267, #2ea886)',
-              borderRadius: '16px',
+              borderRadius: '0.25rem',
               padding: '24px',
               color: 'white',
               marginBottom: '20px',
@@ -174,9 +165,9 @@ const AdminDashboard: React.FC = () => {
                 fontSize: '16px',
                 fontWeight: 'bold'
               }}>
-                <span>{groomName}</span>
+                <span>{profile?.config?.groomName || 'Chồng'}</span>
                 <HeartOutlined style={{ fontSize: '14px' }} />
-                <span>{brideName}</span>
+                <span>{profile?.config?.brideName || 'Vợ'}</span>
               </div>
               {profile?.config?.weddingDate && (
                 <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
@@ -184,7 +175,7 @@ const AdminDashboard: React.FC = () => {
                 </Text>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Menu */}
           <Menu
@@ -215,7 +206,7 @@ const AdminDashboard: React.FC = () => {
                 width: '100%',
                 background: '#1e8267',
                 borderColor: '#1e8267',
-                borderRadius: '8px',
+                borderRadius: '0.25rem',
                 height: '44px',
                 fontWeight: '500'
               }}

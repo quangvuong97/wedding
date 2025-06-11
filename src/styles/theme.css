@@ -1,9 +1,7 @@
-/* Custom Antd Theme với màu chủ đạo #1e8267 */
-
 /* Menu item selected state */
 .ant-menu-item-selected {
   background-color: rgba(30, 130, 103, 0.1) !important;
-  border-radius: 8px !important;
+  border-radius: 0.25rem !important;
   color: #1e8267 !important;
 }
 
@@ -14,7 +12,7 @@
 /* Menu item hover state */
 .ant-menu-item:hover {
   background-color: rgba(30, 130, 103, 0.05) !important;
-  border-radius: 8px !important;
+  border-radius: 0.25rem !important;
   color: #1e8267 !important;
 }
 
@@ -66,16 +64,115 @@
 .ant-menu-item {
   margin: 4px 12px !important;
   width: calc(100% - 24px) !important;
-  border-radius: 8px !important;
+  border-radius: 0.25rem !important;
   transition: all 0.2s ease !important;
 }
 
 /* Card hover effect */
 .ant-card {
-  transition: all 0.3s ease !important;
+  transition: box-shadow 0.3s ease !important;
 }
 
 .ant-card:hover {
-  transform: translateY(-2px) !important;
   box-shadow: 0 8px 40px rgba(30, 130, 103, 0.12) !important;
+}
+
+/* Table styling */
+.table-row-light {
+  background-color: #fafafa !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.table-row-dark {
+  background-color: #ffffff !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.table-row-light:hover,
+.table-row-dark:hover {
+  background-color: rgba(30, 130, 103, 0.05) !important;
+}
+
+/* Editable cell styling */
+.editable-cell {
+  transition: all 0.2s ease !important;
+  border: 1px solid transparent !important;
+}
+
+.editable-cell:hover {
+  background-color: rgba(30, 130, 103, 0.05) !important;
+  border: 1px dashed #1e8267 !important;
+}
+
+/* Tabs styling */
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1e8267 !important;
+}
+
+.ant-tabs-ink-bar {
+  background: #1e8267 !important;
+}
+
+.ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: #1e8267 !important;
+}
+
+/* Table header */
+.ant-table-thead > tr > th {
+  background-color: rgba(30, 130, 103, 0.05) !important;
+  border-bottom: 2px solid rgba(30, 130, 103, 0.1) !important;
+  font-weight: 600 !important;
+  color: #1e8267 !important;
+}
+
+/* Pagination */
+.ant-pagination-item-active {
+  border-color: #1e8267 !important;
+  background-color: #1e8267 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #fff !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: #1e8267 !important;
+}
+
+.ant-pagination-item:hover a {
+  color: #1e8267 !important;
+}
+
+/* Checkbox */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #1e8267 !important;
+  border-color: #1e8267 !important;
+}
+
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #1e8267 !important;
+}
+
+/* Modal */
+.ant-modal-header {
+  border-bottom: 1px solid rgba(30, 130, 103, 0.1) !important;
+}
+
+.ant-modal-title {
+  color: #1e8267 !important;
+}
+
+/* Prevent table row jumping */
+.ant-table-tbody > tr {
+  transition: background-color 0.2s ease !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: rgba(30, 130, 103, 0.05) !important;
+}
+
+/* Prevent cell border jumping */
+.ant-table-tbody > tr > td {
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease !important;
 }

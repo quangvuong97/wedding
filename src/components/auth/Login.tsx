@@ -62,7 +62,7 @@ const Login: React.FC = () => {
       <Card style={{ 
         width: 420, 
         boxShadow: '0 8px 32px rgba(30, 130, 103, 0.15)',
-        borderRadius: '20px',
+        borderRadius: '0.25rem',
         border: '1px solid rgba(30, 130, 103, 0.1)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -125,7 +125,7 @@ const Login: React.FC = () => {
                 height: '48px',
                 background: '#1e8267',
                 borderColor: '#1e8267',
-                borderRadius: '12px',
+                borderRadius: '0.25rem',
                 fontSize: '16px',
                 fontWeight: '500'
               }}
