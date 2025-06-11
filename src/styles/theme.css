@@ -68,15 +68,6 @@
   transition: all 0.2s ease !important;
 }
 
-/* Card hover effect */
-.ant-card {
-  transition: box-shadow 0.3s ease !important;
-}
-
-.ant-card:hover {
-  box-shadow: 0 8px 40px rgba(30, 130, 103, 0.12) !important;
-}
-
 /* Table styling */
 .table-row-light {
   background-color: #fafafa !important;

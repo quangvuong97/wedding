@@ -79,8 +79,6 @@ const AdminDashboard: React.FC = () => {
   const renderContent = () => {
     const cardStyle = {
       borderRadius: '0.25rem',
-      boxShadow: '0 4px 24px rgba(30, 130, 103, 0.08)',
-      border: '1px solid rgba(30, 130, 103, 0.1)',
       background: '#fff'
     };
 
@@ -135,8 +133,7 @@ const AdminDashboard: React.FC = () => {
           width={280} 
           style={{ 
             background: '#fff',
-            boxShadow: '2px 0 24px rgba(30, 130, 103, 0.08)',
-            borderRight: '1px solid rgba(30, 130, 103, 0.1)'
+            borderRight: '1px solid #e6ebf1'
           }}
         >
           {/* Wedding Info Header */}
@@ -217,7 +214,7 @@ const AdminDashboard: React.FC = () => {
         </Sider>
 
         <Content style={{ 
-          padding: '32px',
+          padding: '24px',
           background: 'linear-gradient(135deg, #f8fffe 0%, #f0faf8 100%)',
           minHeight: '100vh'
         }}>

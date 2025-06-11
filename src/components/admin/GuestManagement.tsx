@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Tabs,
   Table,
@@ -14,22 +14,22 @@ import {
   Card,
   Row,
   Col,
-} from 'antd';
+} from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
   DeleteOutlined,
   SaveOutlined,
   CloseOutlined,
-} from '@ant-design/icons';
-import { useAuth } from '../../contexts/AuthContext';
+} from "@ant-design/icons";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   guestAPI,
   EGuestOfType,
   GetGuestResponse,
   CreateGuestRequest,
   UpdateGuestRequest,
-} from '../../services/api';
+} from "../../services/api";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -50,7 +50,7 @@ const GuestManagement: React.FC = () => {
     pageSize: 20,
     total: 0,
   });
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
@@ -73,22 +73,29 @@ const GuestManagement: React.FC = () => {
         keyword: keyword || undefined,
       });
 
-      console.log('GuestManagement: API response:', response);
-      console.log('GuestManagement: Response type:', typeof response, 'isArray:', Array.isArray(response));
-      
+      console.log("GuestManagement: API response:", response);
+      console.log(
+        "GuestManagement: Response type:",
+        typeof response,
+        "isArray:",
+        Array.isArray(response)
+      );
+
       // API always returns array directly (not wrapped in pagination object)
-      const guestsData = Array.isArray(response) ? response : (response.data || []);
-      console.log('GuestManagement: Final guests data:', guestsData);
-      
+      const guestsData = Array.isArray(response)
+        ? response
+        : response.data || [];
+      console.log("GuestManagement: Final guests data:", guestsData);
+
       setGuests(Array.isArray(guestsData) ? guestsData : []);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         current: page,
         total: guestsData.length,
       }));
     } catch (error: any) {
-      console.error('GuestManagement: Error fetching guests:', error);
-      message.error('Không thể tải danh sách khách mời');
+      console.error("GuestManagement: Error fetching guests:", error);
+      message.error("Không thể tải danh sách khách mời");
     } finally {
       setLoading(false);
     }
@@ -102,19 +109,19 @@ const GuestManagement: React.FC = () => {
   const handleTabChange = (key: string) => {
     setActiveTab(key as EGuestOfType);
     setSelectedRowKeys([]);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   // Handle search
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
     fetchGuests(activeTab, 1, value);
   };
 
   // Handle pagination change
   const handleTableChange = (pagination: any) => {
-    setPagination(prev => ({ ...prev, current: pagination.current }));
+    setPagination((prev) => ({ ...prev, current: pagination.current }));
     fetchGuests(activeTab, pagination.current);
   };
 
@@ -129,12 +136,12 @@ const GuestManagement: React.FC = () => {
       };
 
       await guestAPI.createGuest(accessToken, guestData);
-      message.success('Thêm khách mời thành công');
+      message.success("Thêm khách mời thành công");
       setIsModalVisible(false);
       form.resetFields();
       fetchGuests();
     } catch (error: any) {
-      message.error('Không thể thêm khách mời');
+      message.error("Không thể thêm khách mời");
     }
   };
 
@@ -156,11 +163,11 @@ const GuestManagement: React.FC = () => {
       };
 
       await guestAPI.updateGuest(accessToken, editingGuest.id, updateData);
-      message.success('Cập nhật thành công');
+      message.success("Cập nhật thành công");
       setEditingGuest(null);
       fetchGuests();
     } catch (error: any) {
-      message.error('Không thể cập nhật thông tin');
+      message.error("Không thể cập nhật thông tin");
     }
   };
 
@@ -174,11 +181,11 @@ const GuestManagement: React.FC = () => {
 
     try {
       await guestAPI.deleteGuests(accessToken, guestIds);
-      message.success('Xóa khách mời thành công');
+      message.success("Xóa khách mời thành công");
       setSelectedRowKeys([]);
       fetchGuests();
     } catch (error: any) {
-      message.error('Không thể xóa khách mời');
+      message.error("Không thể xóa khách mời");
     }
   };
 
@@ -187,18 +194,21 @@ const GuestManagement: React.FC = () => {
     text: any,
     record: GetGuestResponse,
     field: string,
-    type: 'text' | 'checkbox' = 'text'
+    type: "text" | "checkbox" = "text"
   ) => {
-    const isEditing = editingGuest?.id === record.id && editingGuest?.field === field;
+    const isEditing =
+      editingGuest?.id === record.id && editingGuest?.field === field;
 
     if (isEditing) {
-      if (type === 'checkbox') {
+      if (type === "checkbox") {
         return (
           <Space>
             <Checkbox
               checked={editingGuest.value}
               onChange={(e) =>
-                setEditingGuest(prev => prev ? { ...prev, value: e.target.checked } : null)
+                setEditingGuest((prev) =>
+                  prev ? { ...prev, value: e.target.checked } : null
+                )
               }
             />
             <Button
@@ -223,7 +233,9 @@ const GuestManagement: React.FC = () => {
             size="small"
             value={editingGuest.value}
             onChange={(e) =>
-              setEditingGuest(prev => prev ? { ...prev, value: e.target.value } : null)
+              setEditingGuest((prev) =>
+                prev ? { ...prev, value: e.target.value } : null
+              )
             }
             onPressEnter={handleSaveEdit}
             style={{ width: 120 }}
@@ -244,12 +256,9 @@ const GuestManagement: React.FC = () => {
       );
     }
 
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       return (
-        <Checkbox
-          checked={text}
-          onClick={() => handleEdit(record, field)}
-        />
+        <Checkbox checked={text} onClick={() => handleEdit(record, field)} />
       );
     }
 
@@ -257,16 +266,16 @@ const GuestManagement: React.FC = () => {
       <div
         onClick={() => handleEdit(record, field)}
         style={{
-          cursor: 'pointer',
-          padding: '4px',
-          borderRadius: '4px',
-          minHeight: '22px',
-          wordWrap: 'break-word',
-          whiteSpace: 'pre-wrap',
+          cursor: "pointer",
+          padding: "4px",
+          borderRadius: "4px",
+          minHeight: "22px",
+          wordWrap: "break-word",
+          whiteSpace: "pre-wrap",
         }}
         className="editable-cell"
       >
-        {text || '-'}
+        {text || "-"}
       </div>
     );
   };
@@ -274,84 +283,84 @@ const GuestManagement: React.FC = () => {
   // Table columns
   const columns = [
     {
-      title: 'Tên',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Tên",
+      dataIndex: "name",
+      key: "name",
       width: 150,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'name'),
+        renderEditableCell(text, record, "name"),
     },
     {
-      title: 'Slug',
-      dataIndex: 'slug',
-      key: 'slug',
+      title: "Slug",
+      dataIndex: "slug",
+      key: "slug",
       width: 120,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'slug'),
+        renderEditableCell(text, record, "slug"),
     },
     {
-      title: 'SĐT',
-      dataIndex: 'phoneNumber',
-      key: 'phoneNumber',
+      title: "SĐT",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
       width: 120,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'phoneNumber'),
+        renderEditableCell(text, record, "phoneNumber"),
     },
     {
-      title: 'Facebook',
-      dataIndex: 'facebook',
-      key: 'facebook',
+      title: "Facebook",
+      dataIndex: "facebook",
+      key: "facebook",
       width: 150,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'facebook'),
+        renderEditableCell(text, record, "facebook"),
     },
     {
-      title: 'Mối quan hệ',
-      dataIndex: 'relation',
-      key: 'relation',
+      title: "Mối quan hệ",
+      dataIndex: "relation",
+      key: "relation",
       width: 120,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'relation'),
+        renderEditableCell(text, record, "relation"),
     },
     {
-      title: 'Đã mời',
-      dataIndex: 'isInvite',
-      key: 'isInvite',
+      title: "Đã mời",
+      dataIndex: "isInvite",
+      key: "isInvite",
       width: 80,
-      align: 'center' as const,
+      align: "center" as const,
       render: (text: boolean, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'isInvite', 'checkbox'),
+        renderEditableCell(text, record, "isInvite", "checkbox"),
     },
     {
-      title: 'Có tham dự',
-      dataIndex: 'isAttended',
-      key: 'isAttended',
+      title: "Có tham dự",
+      dataIndex: "isAttended",
+      key: "isAttended",
       width: 100,
-      align: 'center' as const,
+      align: "center" as const,
       render: (text: boolean, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'isAttended', 'checkbox'),
+        renderEditableCell(text, record, "isAttended", "checkbox"),
     },
     {
-      title: 'Mừng cưới',
-      dataIndex: 'giftAmount',
-      key: 'giftAmount',
+      title: "Mừng cưới",
+      dataIndex: "giftAmount",
+      key: "giftAmount",
       width: 120,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'giftAmount'),
+        renderEditableCell(text, record, "giftAmount"),
     },
     {
-      title: 'Ghi chú',
-      dataIndex: 'note',
-      key: 'note',
+      title: "Ghi chú",
+      dataIndex: "note",
+      key: "note",
       width: 200,
       render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, 'note'),
+        renderEditableCell(text, record, "note"),
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Thao tác",
+      key: "action",
       width: 80,
-      align: 'center' as const,
+      align: "center" as const,
       render: (_: any, record: GetGuestResponse) => (
         <Popconfirm
           title="Bạn có chắc muốn xóa khách mời này?"
@@ -359,12 +368,7 @@ const GuestManagement: React.FC = () => {
           okText="Xóa"
           cancelText="Hủy"
         >
-          <Button
-            type="link"
-            danger
-            size="small"
-            icon={<DeleteOutlined />}
-          />
+          <Button type="link" danger size="small" icon={<DeleteOutlined />} />
         </Popconfirm>
       ),
     },
@@ -378,13 +382,13 @@ const GuestManagement: React.FC = () => {
     },
   };
 
-  console.log('GuestManagement: Current guests state:', guests);
-  console.log('GuestManagement: Current activeTab:', activeTab);
-  console.log('GuestManagement: Current loading:', loading);
+  console.log("GuestManagement: Current guests state:", guests);
+  console.log("GuestManagement: Current activeTab:", activeTab);
+  console.log("GuestManagement: Current loading:", loading);
 
   // Render tab content
   const renderTabContent = () => (
-    <Space direction="vertical" style={{ width: '100%' }} size="large">
+    <Space direction="vertical" style={{ width: "100%" }} size="large">
       {/* Search and Actions */}
       <Row gutter={16} align="middle">
         <Col flex="auto">
@@ -405,8 +409,8 @@ const GuestManagement: React.FC = () => {
               size="large"
               onClick={() => setIsModalVisible(true)}
               style={{
-                background: '#1e8267',
-                borderColor: '#1e8267',
+                background: "#1e8267",
+                borderColor: "#1e8267",
               }}
             >
               Thêm mới
@@ -418,11 +422,7 @@ const GuestManagement: React.FC = () => {
                 okText="Xóa"
                 cancelText="Hủy"
               >
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-                  size="large"
-                >
+                <Button danger icon={<DeleteOutlined />} size="large">
                   Xóa đã chọn ({selectedRowKeys.length})
                 </Button>
               </Popconfirm>
@@ -451,10 +451,13 @@ const GuestManagement: React.FC = () => {
         scroll={{ x: 1200 }}
         size="middle"
         rowClassName={(_, index) =>
-          index % 2 === 0 ? 'table-row-light' : 'table-row-dark'
+          index % 2 === 0 ? "table-row-light" : "table-row-dark"
         }
         locale={{
-          emptyText: guests && guests.length === 0 && !loading ? 'Chưa có khách mời nào' : undefined
+          emptyText:
+            guests && guests.length === 0 && !loading
+              ? "Chưa có khách mời nào"
+              : undefined,
         }}
       />
     </Space>
@@ -463,12 +466,12 @@ const GuestManagement: React.FC = () => {
   const tabItems = [
     {
       key: EGuestOfType.GROOM,
-      label: 'Nhà trai',
+      label: "Nhà trai",
       children: renderTabContent(),
     },
     {
       key: EGuestOfType.BRIDE,
-      label: 'Nhà gái',
+      label: "Nhà gái",
       children: renderTabContent(),
     },
   ];
@@ -476,20 +479,14 @@ const GuestManagement: React.FC = () => {
   return (
     <Card
       style={{
-        borderRadius: '0.25rem',
-        boxShadow: '0 4px 24px rgba(30, 130, 103, 0.08)',
-        border: '1px solid rgba(30, 130, 103, 0.1)',
+        borderRadius: "0.25rem",
       }}
     >
-      <Title level={3} style={{ color: '#1e8267', marginBottom: '24px' }}>
+      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
         Quản lý khách mời
       </Title>
 
-      <Tabs 
-        activeKey={activeTab} 
-        onChange={handleTabChange}
-        items={tabItems}
-      />
+      <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabItems} />
 
       {/* Create Guest Modal */}
       <Modal
@@ -513,7 +510,7 @@ const GuestManagement: React.FC = () => {
               <Form.Item
                 label="Tên"
                 name="name"
-                rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
+                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
               >
                 <Input placeholder="Nhập tên khách mời" />
               </Form.Item>
@@ -522,7 +519,7 @@ const GuestManagement: React.FC = () => {
               <Form.Item
                 label="Slug"
                 name="slug"
-                rules={[{ required: true, message: 'Vui lòng nhập slug!' }]}
+                rules={[{ required: true, message: "Vui lòng nhập slug!" }]}
               >
                 <Input placeholder="Nhập slug" />
               </Form.Item>
@@ -550,17 +547,15 @@ const GuestManagement: React.FC = () => {
             <Input.TextArea rows={3} placeholder="Nhập ghi chú" />
           </Form.Item>
 
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
             <Space>
-              <Button onClick={() => setIsModalVisible(false)}>
-                Hủy
-              </Button>
+              <Button onClick={() => setIsModalVisible(false)}>Hủy</Button>
               <Button
                 type="primary"
                 htmlType="submit"
                 style={{
-                  background: '#1e8267',
-                  borderColor: '#1e8267',
+                  background: "#1e8267",
+                  borderColor: "#1e8267",
                 }}
               >
                 Thêm mới
