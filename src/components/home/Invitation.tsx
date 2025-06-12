@@ -1,9 +1,24 @@
-import { Col, Row, Button, Space } from "antd";
+import { Col, Row, Button, Space, Typography } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+
+const { Text } = Typography;
 
 interface InvitationInfo {
   image: string;
-  name?: string;
+  tabName?: string;
+  brideName: string;
+  groomName: string;
+  guestName: string;
+  solarDate: {
+    hour: string;
+    date: number;
+    month: number;
+    year: number;
+    dayOfWeek: string;
+  };
+  lunarDate: string;
+  address: string;
+  ggMap: string;
 }
 
 interface CircularOverlayStyle {
@@ -23,16 +38,44 @@ const Invitation: React.FC = () => {
   const [overlayStyles, setOverlayStyles] = useState<
     CircularOverlayStyle | {}
   >();
+  const [scaleFactor, setScaleFactor] = useState<number>(1);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const BASE_IMAGE_WIDTH = 464; // Base width for which the fixed values were designed
 
   const info: InvitationInfo[] = [
     {
       image: "https://wpocean.com/html/tf/loveme/assets/images/couple/1.jpg",
-      name: "Nhà Trai",
+      tabName: "Nhà Trai",
+      brideName: "Phương Ninh",
+      groomName: "Quang Vương",
+      guestName: "",
+      solarDate: {
+        hour: "9 giờ 30",
+        date: 1,
+        month: 1,
+        year: 2026,
+        dayOfWeek: "thứ 5",
+      },
+      lunarDate: "ngày 13 tháng 11 năm Ất Tỵ",
+      address: "Hội trường thôn Kha Lý\nXã Thụy Quỳnh, Thái Thụy, Thái Bình",
+      ggMap: "",
     },
     {
       image: "https://wpocean.com/html/tf/loveme/assets/images/story/1.jpg",
-      name: "Nhà Gái",
+      tabName: "Nhà Gái",
+      brideName: "Phương Ninh",
+      groomName: "Quang Vương",
+      guestName: "Bạn ABC",
+      solarDate: {
+        hour: "9 giờ 30",
+        date: 1,
+        month: 1,
+        year: 2026,
+        dayOfWeek: "thứ 5",
+      },
+      lunarDate: "ngày 13 tháng 11 năm Ất Tỵ",
+      address: "Thôn Đào Khê Thượng\nNghĩa Châu, Nghĩa Hưng, Nam Định",
+      ggMap: "",
     },
   ];
 
@@ -48,6 +91,19 @@ const Invitation: React.FC = () => {
   const handleButtonClick = () => {
     console.log("Button clicked!");
   };
+
+  // Helper function to generate scaled styles for the invitation text
+  const getScaledStyles = useCallback(() => {
+    const scale = scaleFactor;
+    return {
+      container: {
+        top: `${322.808 * scale}px`,
+        width: `${BASE_IMAGE_WIDTH}px`,
+        transform: `scale(${scale})`,
+        transformOrigin: "top left",
+      },
+    };
+  }, [scaleFactor]);
 
   // Calculate overlay style with useCallback to fix dependency warning
   const calculateOverlayStyle = useCallback((): CircularOverlayStyle | {} => {
@@ -83,7 +139,14 @@ const Invitation: React.FC = () => {
   const updateOverlayPosition = useCallback(() => {
     const newStyle = calculateOverlayStyle();
     setOverlayStyles(newStyle);
-  }, [calculateOverlayStyle]);
+
+    // Calculate scale factor based on current image width
+    if (imageRef.current) {
+      const currentWidth = imageRef.current.getBoundingClientRect().width;
+      const newScaleFactor = currentWidth / BASE_IMAGE_WIDTH;
+      setScaleFactor(newScaleFactor);
+    }
+  }, [calculateOverlayStyle, BASE_IMAGE_WIDTH]);
 
   const handleImageLoad = () => {
     requestAnimationFrame(() => {
@@ -145,7 +208,7 @@ const Invitation: React.FC = () => {
                         size="middle"
                         style={{ width: "auto", minWidth: "120px" }}
                       >
-                        {item.name || `Person ${index + 1}`}
+                        {item.tabName || `Person ${index + 1}`}
                       </Button>
                       <Button
                         type="primary"
@@ -176,6 +239,71 @@ const Invitation: React.FC = () => {
                         className="w-full h-full object-cover"
                         style={overlayStyles}
                       />
+                      <Space
+                        direction="vertical"
+                        className="absolute"
+                        style={{
+                          display: "flex",
+                          top: getScaledStyles().container.top,
+                          width: getScaledStyles().container.width,
+                          transform: getScaledStyles().container.transform,
+                          transformOrigin:
+                            getScaledStyles().container.transformOrigin,
+                        }}
+                      >
+                        <Space direction="vertical" size={0}>
+                          <Text className="font-[VVZORGluaEhvbiUVEY] text-[rgb(188,83,77)] tracking-[0.6px] text-[39px] leading-[1.4]">
+                            {item.groomName} &amp; {item.brideName}
+                          </Text>
+                          <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
+                            TRÂN TRỌNG KÍNH MỜI
+                          </Text>
+                          <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.6] text-black text-[16px]">
+                            {item.guestName || "Quý Khách"}
+                          </Text>
+                          <Text className="font-[Quicksand,sans-serif] leading-[1.6] text-black text-[14px]">
+                            Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
+                          </Text>
+                          <div className="pt-[5px]">
+                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
+                              {item.solarDate.hour.toUpperCase()}
+                            </Text>
+                          </div>
+                          <Space size={8} align="center">
+                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
+                              {item.solarDate.dayOfWeek.toUpperCase()}
+                            </Text>
+                            <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
+                            <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
+                              {item.solarDate.date.toString().padStart(2, "0")}
+                            </Text>
+                            <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
+                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
+                              {item.solarDate.month.toString().padStart(2, "0")}{" "}
+                              - {item.solarDate.year}
+                            </Text>
+                          </Space>
+                          <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
+                            (Tức {item.lunarDate} )
+                          </Text>
+                        </Space>
+                        <Space direction="vertical">
+                          <Text
+                            className="text-[15px] font-[Mulish,sans-serif] font-bold leading-[1.6] text-[rgb(150,31,31)]"
+                            style={{ whiteSpace: "pre-line" }}
+                          >
+                            Tại: {item.address}
+                          </Text>
+                          <Text
+                            className="text-[21px] font-[VVZORGluaEhvbiUVEY] leading-[1] text-[rgb(0,0,0)]"
+                            style={{ whiteSpace: "pre-line" }}
+                          >
+                            {
+                              "Sự hiện diện của quý khách là niềm vinh dự cho\ngia đình chúng tôi!"
+                            }
+                          </Text>
+                        </Space>
+                      </Space>
                     </div>
                   </Space>
                 </Col>
