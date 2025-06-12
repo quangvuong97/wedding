@@ -6,6 +6,7 @@ import Story from "./Story";
 import Gallery from "./Gallery";
 import { getSubdomain } from "../../services/api";
 import Invitation from "./Invitation";
+import { Space } from "antd";
 
 const HomePage: React.FC = () => {
   const [subdomain, setSubdomain] = useState<string>("");
@@ -20,14 +21,14 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="App" data-subdomain={subdomain}>
+    <Space direction="vertical" size={0} style={{ display: "flex" }}>
       <Header />
       <CountDown />
       <Couple />
       <Story />
       <Gallery />
       <Invitation />
-    </div>
+    </Space>
   );
 };
 

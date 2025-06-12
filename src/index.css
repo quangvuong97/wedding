@@ -41,8 +41,7 @@
   src: url("../public/fonts/UvnDinhHon/UvnDinhHon.ttf") format("truetype");
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap");
 
 i[class^="flaticon-"]:before,
 i[class*=" flaticon-"]:before {
@@ -164,6 +163,7 @@ body {
   font-family: "Futura PT";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
 }
 
 .ant-image-preview-footer {
