@@ -21,6 +21,7 @@ import {
   DeleteOutlined,
   SaveOutlined,
   CloseOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -30,6 +31,7 @@ import {
   CreateGuestRequest,
   UpdateGuestRequest,
 } from "../../services/api";
+import Statistics from "./Statistics";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -473,6 +475,16 @@ const GuestManagement: React.FC = () => {
       key: EGuestOfType.BRIDE,
       label: "Nhà gái",
       children: renderTabContent(),
+    },
+    {
+      key: "statistics",
+      label: (
+        <span>
+          <BarChartOutlined />
+          Thống kê
+        </span>
+      ),
+      children: <Statistics />,
     },
   ];
 

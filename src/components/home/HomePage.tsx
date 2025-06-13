@@ -21,7 +21,11 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <Space direction="vertical" size={0} style={{ display: "flex" }}>
+    <Space
+      direction="vertical"
+      size={0}
+      style={{ display: "flex", textAlign: "center" }}
+    >
       <Header />
       <CountDown />
       <Couple />
