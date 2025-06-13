@@ -1,5 +1,6 @@
 import { Col, Row, Button, Space, Typography } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { CustomButton } from "../../common";
 
 const { Text } = Typography;
 
@@ -169,7 +170,7 @@ const Invitation: React.FC = () => {
     <section>
       <div className="container mx-auto px-3 w-full ssm:max-w-[540px] sm:max-w-[720px] md:max-w-[960px] lg:max-w-[1140px] xl:max-w-[1320px] xxl:max-w-[1170px]">
         <div className="flex flex-wrap -mx-3 -mt-0">
-          <div className="mb-[60px] text-center maxLg:mb-[40px] flex-shrink-0 w-full max-w-full px-3 mt-0">
+          <div className="mb-[60px] text-center maxLg:mb-[20px] flex-shrink-0 w-full max-w-full px-3 mt-0">
             <img
               src="https://wpocean.com/html/tf/loveme/assets/images/section-title2.png"
               alt=""
@@ -190,7 +191,10 @@ const Invitation: React.FC = () => {
         <div className="flex flex-wrap -mx-3 -mt-0">
           <Row
             justify="center"
-            gutter={[16, 16]}
+            gutter={[
+              { xs: 0, sm: 16, md: 16 }, // horizontal gutter (giữa các cột)
+              { xs: 40, sm: 16, md: 16 }, // vertical gutter (giữa các hàng)
+            ]}
             className="px-3 mx-auto w-full"
           >
             {info.map((item, index) => {
@@ -209,14 +213,6 @@ const Invitation: React.FC = () => {
                         style={{ width: "auto", minWidth: "120px" }}
                       >
                         {item.tabName || `Person ${index + 1}`}
-                      </Button>
-                      <Button
-                        type="primary"
-                        size="middle"
-                        onClick={handleButtonClick}
-                        style={{ width: "auto", minWidth: "120px" }}
-                      >
-                        View Details {index + 1}
                       </Button>
                     </Space>
                     <div className="w-full relative">
@@ -305,6 +301,22 @@ const Invitation: React.FC = () => {
                         </Space>
                       </Space>
                     </div>
+                    <Space size={14}>
+                      <CustomButton
+                        text="Xác nhận tham dự"
+                        icon={
+                          <i className="text-[#fff] fi fi-ss-user-trust"></i>
+                        }
+                        onClick={() => alert("Clicked!")}
+                      />
+                      <CustomButton
+                        text="Chỉ đường"
+                        icon={
+                          <i className="text-[#fff] fi fi-ss-land-layer-location"></i>
+                        }
+                        onClick={() => alert("Clicked!")}
+                      />
+                    </Space>
                   </Space>
                 </Col>
               );
