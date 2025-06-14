@@ -1,6 +1,7 @@
 import { Col, Row, Button, Space, Typography } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
+import Section from "../../common/Section";
 
 const { Text } = Typography;
 
@@ -167,164 +168,139 @@ const Invitation: React.FC = () => {
   }, [updateOverlayPosition]);
 
   return (
-    <section>
-      <div className="container mx-auto px-3 w-full ssm:max-w-[540px] sm:max-w-[720px] md:max-w-[960px] lg:max-w-[1140px] xl:max-w-[1320px] xxl:max-w-[1170px]">
-        <div className="flex flex-wrap -mx-3 -mt-0">
-          <div className="mb-[60px] text-center maxLg:mb-[20px] flex-shrink-0 w-full max-w-full px-3 mt-0">
-            <img
-              src="https://wpocean.com/html/tf/loveme/assets/images/section-title2.png"
-              alt=""
-              className="max-w-full align-middle inline"
-            />
-            <h2 className="text-[40px] leading-[55px] my-[15px] relative uppercase font-[Futura_PT] font-medium text-[#002642] maxLg:text-[32px] maxLg:leading-[40px] maxSsm:text-[22px]">
-              Wedding Invitation
-            </h2>
-            <div
-              className="max-w-[200px] mx-auto relative
-            [&::before]:absolute [&::before]:left-[-70px] [&::before]:top-1/2 [&::before]:-translate-y-1/2 [&::before]:content-[''] [&::before]:w-[144px] [&::before]:h-[1px] [&::before]:bg-[#1e8267]
-            [&::after]:absolute [&::after]:right-[-70px] [&::after]:top-1/2 [&::after]:-translate-y-1/2 [&::after]:content-[''] [&::after]:w-[144px] [&::after]:h-[1px] [&::after]:bg-[#1e8267]"
-            >
-              <div className="absolute left-1/2 w-[15px] h-[15px] border border-[#1e8267] rounded-full -translate-x-1/2 -top-[5px]"></div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-wrap -mx-3 -mt-0">
-          <Row
-            justify="center"
-            gutter={[
-              { xs: 0, sm: 16, md: 16 }, // horizontal gutter (giữa các cột)
-              { xs: 40, sm: 16, md: 16 }, // vertical gutter (giữa các hàng)
-            ]}
-            className="px-3 mx-auto w-full"
-          >
-            {info.map((item, index) => {
-              return (
-                <Col xs={24} md={12} key={index}>
+    <Section title="Wedding Invitation">
+      <Row
+        justify="center"
+        gutter={[
+          { xs: 0, sm: 16, md: 16 }, // horizontal gutter (giữa các cột)
+          { xs: 40, sm: 16, md: 16 }, // vertical gutter (giữa các hàng)
+        ]}
+        className="px-3 mx-auto w-full"
+      >
+        {info.map((item, index) => {
+          return (
+            <Col xs={24} md={12} key={index}>
+              <Space
+                direction="vertical"
+                size="middle"
+                className="w-full"
+                align="center"
+              >
+                <Space>
+                  <Button
+                    type="default"
+                    size="middle"
+                    style={{ width: "auto", minWidth: "120px" }}
+                  >
+                    {item.tabName || `Person ${index + 1}`}
+                  </Button>
+                </Space>
+                <div className="w-full relative">
+                  <img
+                    ref={(el) => {
+                      if (index === 0 && el) {
+                        imageRef.current = el;
+                      }
+                    }}
+                    src="https://w.ladicdn.com/s800x1000/5c728619c417ab07e5194baa/3-20240601020038-vnpyd.png"
+                    alt={`Invitation ${index + 1}`}
+                    className="w-full h-auto object-contain"
+                    style={{ display: "block" }}
+                    onLoad={() => handleImageLoad()}
+                  />
+
+                  <img
+                    src={item.image}
+                    alt={`Profile ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    style={overlayStyles}
+                  />
                   <Space
                     direction="vertical"
-                    size="middle"
-                    className="w-full"
-                    align="center"
+                    className="absolute"
+                    style={{
+                      display: "flex",
+                      top: getScaledStyles().container.top,
+                      width: getScaledStyles().container.width,
+                      transform: getScaledStyles().container.transform,
+                      transformOrigin:
+                        getScaledStyles().container.transformOrigin,
+                    }}
                   >
-                    <Space>
-                      <Button
-                        type="default"
-                        size="middle"
-                        style={{ width: "auto", minWidth: "120px" }}
-                      >
-                        {item.tabName || `Person ${index + 1}`}
-                      </Button>
-                    </Space>
-                    <div className="w-full relative">
-                      <img
-                        ref={(el) => {
-                          if (index === 0 && el) {
-                            imageRef.current = el;
-                          }
-                        }}
-                        src="https://w.ladicdn.com/s800x1000/5c728619c417ab07e5194baa/3-20240601020038-vnpyd.png"
-                        alt={`Invitation ${index + 1}`}
-                        className="w-full h-auto object-contain"
-                        style={{ display: "block" }}
-                        onLoad={() => handleImageLoad()}
-                      />
-
-                      <img
-                        src={item.image}
-                        alt={`Profile ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        style={overlayStyles}
-                      />
-                      <Space
-                        direction="vertical"
-                        className="absolute"
-                        style={{
-                          display: "flex",
-                          top: getScaledStyles().container.top,
-                          width: getScaledStyles().container.width,
-                          transform: getScaledStyles().container.transform,
-                          transformOrigin:
-                            getScaledStyles().container.transformOrigin,
-                        }}
-                      >
-                        <Space direction="vertical" size={0}>
-                          <Text className="font-[VVZORGluaEhvbiUVEY] text-[rgb(188,83,77)] tracking-[0.6px] text-[39px] leading-[1.4]">
-                            {item.groomName} &amp; {item.brideName}
-                          </Text>
-                          <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
-                            TRÂN TRỌNG KÍNH MỜI
-                          </Text>
-                          <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.6] text-black text-[16px]">
-                            {item.guestName || "Quý Khách"}
-                          </Text>
-                          <Text className="font-[Quicksand,sans-serif] leading-[1.6] text-black text-[14px]">
-                            Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
-                          </Text>
-                          <div className="pt-[5px]">
-                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
-                              {item.solarDate.hour.toUpperCase()}
-                            </Text>
-                          </div>
-                          <Space size={8} align="center">
-                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                              {item.solarDate.dayOfWeek.toUpperCase()}
-                            </Text>
-                            <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
-                            <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
-                              {item.solarDate.date.toString().padStart(2, "0")}
-                            </Text>
-                            <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
-                            <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                              {item.solarDate.month.toString().padStart(2, "0")}{" "}
-                              - {item.solarDate.year}
-                            </Text>
-                          </Space>
-                          <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
-                            (Tức {item.lunarDate} )
-                          </Text>
-                        </Space>
-                        <Space direction="vertical">
-                          <Text
-                            className="text-[15px] font-[Mulish,sans-serif] font-bold leading-[1.6] text-[rgb(150,31,31)]"
-                            style={{ whiteSpace: "pre-line" }}
-                          >
-                            Tại: {item.address}
-                          </Text>
-                          <Text
-                            className="text-[21px] font-[VVZORGluaEhvbiUVEY] leading-[1] text-[rgb(0,0,0)]"
-                            style={{ whiteSpace: "pre-line" }}
-                          >
-                            {
-                              "Sự hiện diện của quý khách là niềm vinh dự cho\ngia đình chúng tôi!"
-                            }
-                          </Text>
-                        </Space>
+                    <Space direction="vertical" size={0}>
+                      <Text className="font-[VVZORGluaEhvbiUVEY] text-[rgb(188,83,77)] tracking-[0.6px] text-[39px] leading-[1.4]">
+                        {item.groomName} &amp; {item.brideName}
+                      </Text>
+                      <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
+                        TRÂN TRỌNG KÍNH MỜI
+                      </Text>
+                      <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.6] text-black text-[16px]">
+                        {item.guestName || "Quý Khách"}
+                      </Text>
+                      <Text className="font-[Quicksand,sans-serif] leading-[1.6] text-black text-[14px]">
+                        Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
+                      </Text>
+                      <div className="pt-[5px]">
+                        <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
+                          {item.solarDate.hour.toUpperCase()}
+                        </Text>
+                      </div>
+                      <Space size={8} align="center">
+                        <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
+                          {item.solarDate.dayOfWeek.toUpperCase()}
+                        </Text>
+                        <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
+                        <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
+                          {item.solarDate.date.toString().padStart(2, "0")}
+                        </Text>
+                        <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
+                        <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
+                          {item.solarDate.month.toString().padStart(2, "0")} -{" "}
+                          {item.solarDate.year}
+                        </Text>
                       </Space>
-                    </div>
-                    <Space size={14}>
-                      <CustomButton
-                        text="Xác nhận tham dự"
-                        icon={
-                          <i className="text-[#fff] fi fi-ss-user-trust"></i>
+                      <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
+                        (Tức {item.lunarDate} )
+                      </Text>
+                    </Space>
+                    <Space direction="vertical">
+                      <Text
+                        className="text-[15px] font-[Mulish,sans-serif] font-bold leading-[1.6] text-[rgb(150,31,31)]"
+                        style={{ whiteSpace: "pre-line" }}
+                      >
+                        Tại: {item.address}
+                      </Text>
+                      <Text
+                        className="text-[21px] font-[VVZORGluaEhvbiUVEY] leading-[1] text-[rgb(0,0,0)]"
+                        style={{ whiteSpace: "pre-line" }}
+                      >
+                        {
+                          "Sự hiện diện của quý khách là niềm vinh dự cho\ngia đình chúng tôi!"
                         }
-                        onClick={() => alert("Clicked!")}
-                      />
-                      <CustomButton
-                        text="Chỉ đường"
-                        icon={
-                          <i className="text-[#fff] fi fi-ss-land-layer-location"></i>
-                        }
-                        onClick={() => alert("Clicked!")}
-                      />
+                      </Text>
                     </Space>
                   </Space>
-                </Col>
-              );
-            })}
-          </Row>
-        </div>
-      </div>
-    </section>
+                </div>
+                <Space size={14}>
+                  <CustomButton
+                    text="Xác nhận tham dự"
+                    icon={<i className="text-[#fff] fi fi-ss-user-trust"></i>}
+                    onClick={() => alert("Clicked!")}
+                  />
+                  <CustomButton
+                    text="Chỉ đường"
+                    icon={
+                      <i className="text-[#fff] fi fi-ss-land-layer-location"></i>
+                    }
+                    onClick={() => alert("Clicked!")}
+                  />
+                </Space>
+              </Space>
+            </Col>
+          );
+        })}
+      </Row>
+    </Section>
   );
 };
 

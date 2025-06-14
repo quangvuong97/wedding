@@ -66,7 +66,6 @@ const CountDown: React.FC = () => {
   return (
     <div
       className="
-    pt-[80px] sm:pt-[90px] md:pt-[120px]
     max-w-[304px] sm:max-w-[720px] md:max-w-[960px] lg:max-w-[1140px] xl:max-w-[1320px] xxl:max-w-[1170px] w-full
     px-[var(--bs-gutter-x,0.75rem)] mx-auto justify-around flex flex-wrap"
     >
