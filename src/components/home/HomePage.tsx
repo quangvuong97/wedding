@@ -36,8 +36,13 @@ const HomePage: React.FC = () => {
   return (
     <Space
       direction="vertical"
-      size={spaceSize} // mobile -> tablet -> desktop -> ultra wide
-      style={{ display: "flex", textAlign: "center" }}
+      size={spaceSize}
+      style={{
+        display: "flex",
+        textAlign: "center",
+        width: "100%", // ⬅️ ép Space full width theo cha
+        justifyContent: "center", // ⬅️ căn giữa nội dung nếu có flex ngang
+      }}
     >
       <Header />
       <CountDown />

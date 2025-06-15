@@ -1,10 +1,14 @@
 interface CustomTitleProps {
   text: string;
+  style?: React.CSSProperties;
 }
 
-const Title: React.FC<CustomTitleProps> = ({ text }) => {
+const Title: React.FC<CustomTitleProps> = ({ text, style }) => {
   return (
-    <div className="mb-[60px] text-center maxLg:mb-[20px] flex-shrink-0 w-full max-w-full px-3 mt-0">
+    <div
+      style={style}
+      className="mb-[60px] text-center maxLg:mb-[20px] flex-shrink-0 w-full max-w-full px-3 mt-0"
+    >
       <img
         src="https://wpocean.com/html/tf/loveme/assets/images/section-title2.png"
         alt=""
