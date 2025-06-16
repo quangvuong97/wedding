@@ -45,12 +45,20 @@ const Present: React.FC = () => {
                 size={20}
                 direction="vertical"
                 className="text-center px-[15px] py-[25px] bg-[#1e82671a] flex"
+                styles={{
+                  item: {
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  },
+                }}
               >
                 <Title className="!text-[25px] !font-futura !text-[#1e8267] !mb-[0]">
                   {item.title.toUpperCase()}
                 </Title>
                 <Divider className="border-[#1e826766] m-0" />
                 <Card
+                  style={{ width: 200 }}
                   styles={{
                     body: {
                       padding: "0",
