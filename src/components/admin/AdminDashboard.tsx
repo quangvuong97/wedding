@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, UserProfile } from '../../services/api';
 import GuestManagement from './GuestManagement';
+import ImageGalleryManagement from './ImageGalleryManagement';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -98,14 +99,7 @@ const AdminDashboard: React.FC = () => {
           </Card>
         );
       case 'content':
-        return (
-          <Card style={cardStyle}>
-            <Title level={3} style={titleStyle}>Nội Dung Trang</Title>
-            <Text style={{ color: '#666', fontSize: '16px' }}>
-              Chào mừng đến với trang quản lý nội dung. Tính năng sẽ được phát triển thêm.
-            </Text>
-          </Card>
-        );
+        return <ImageGalleryManagement />;
       case 'guests':
         return <GuestManagement />;
       default:
