@@ -11,6 +11,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, UserProfile } from '../../services/api';
 import GuestManagement from './GuestManagement';
 import ImageGalleryManagement from './ImageGalleryManagement';
+import SettingsManagement from './SettingsManagement';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -90,14 +91,7 @@ const AdminDashboard: React.FC = () => {
 
     switch (selectedKey) {
       case 'settings':
-        return (
-          <Card style={cardStyle}>
-            <Title level={3} style={titleStyle}>Cài Đặt Trang</Title>
-            <Text style={{ color: '#666', fontSize: '16px' }}>
-              Chào mừng đến với trang cài đặt. Tính năng sẽ được phát triển thêm.
-            </Text>
-          </Card>
-        );
+        return <SettingsManagement />;
       case 'content':
         return <ImageGalleryManagement />;
       case 'guests':
