@@ -32,7 +32,10 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]">
+    <div
+      className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]"
+      style={{ width: "100vw", height: "100vh" }}
+    >
       {slides.map((slide, i) => (
         <div
           key={i}

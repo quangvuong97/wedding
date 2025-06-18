@@ -23,14 +23,14 @@ import {
   CloseOutlined,
   BarChartOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import {
   guestAPI,
   EGuestOfType,
   GetGuestResponse,
   CreateGuestRequest,
   UpdateGuestRequest,
-} from "../../services/api";
+} from "../../../../services/api";
 import Statistics from "./Statistics";
 
 const { Title } = Typography;

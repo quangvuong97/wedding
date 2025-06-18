@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Card,
-  Tabs,
   Button,
   Upload,
   Modal,
@@ -24,15 +22,14 @@ import {
   LinkOutlined,
   FileImageOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import {
   imageAPI,
   EImageStoreType,
   GetImageResponse,
-} from "../../services/api";
+} from "../../../../services/api";
 import type { UploadFile } from "antd/es/upload/interface";
 
-const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -68,6 +65,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
   useEffect(() => {
     loadImages();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, type]);
 
   // Handle image selection
@@ -378,40 +376,4 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   );
 };
 
-const ImageGalleryManagement: React.FC = () => {
-  const tabs = [
-    {
-      key: EImageStoreType.CAROUSEL,
-      title: "Header",
-      type: EImageStoreType.CAROUSEL,
-    },
-    {
-      key: EImageStoreType.SWEET_MOMENTS,
-      title: "Gallery",
-      type: EImageStoreType.SWEET_MOMENTS,
-    },
-    {
-      key: EImageStoreType.FOOTER,
-      title: "Footer",
-      type: EImageStoreType.FOOTER,
-    },
-  ];
-
-  return (
-    <Card style={{ borderRadius: "0.25rem", background: "#fff" }}>
-      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
-        Quản Lý Ảnh
-      </Title>
-
-      <Tabs defaultActiveKey={EImageStoreType.CAROUSEL} type="card">
-        {tabs.map((tab) => (
-          <TabPane tab={tab.title} key={tab.key}>
-            <ImageGalleryTab type={tab.type} title={tab.title} />
-          </TabPane>
-        ))}
-      </Tabs>
-    </Card>
-  );
-};
-
-export default ImageGalleryManagement;
+export default ImageGalleryTab;

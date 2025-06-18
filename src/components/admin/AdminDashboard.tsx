@@ -9,9 +9,9 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authAPI, UserProfile } from '../../services/api';
-import GuestManagement from './GuestManagement';
-import ImageGalleryManagement from './ImageGalleryManagement';
-import SettingsManagement from './SettingsManagement';
+import GuestManagement from './menu/GuestManagement/GuestManagement';
+import ContentManagement from './menu/ContentManagement/ContentManagement';
+import SettingsManagement from './menu/SettingsManagement/SettingsManagement';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -93,7 +93,7 @@ const AdminDashboard: React.FC = () => {
       case 'settings':
         return <SettingsManagement />;
       case 'content':
-        return <ImageGalleryManagement />;
+        return <ContentManagement />;
       case 'guests':
         return <GuestManagement />;
       default:
