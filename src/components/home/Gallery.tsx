@@ -67,7 +67,7 @@ const Gallery: React.FC = () => {
 
   return (
     <Section title="Sweet Moments">
-      <div className="columns-[16rem]">
+      <div style={{ columnCount: 3 }}>
         <Image.PreviewGroup
           preview={{
             wrapStyle: { height: "calc(100% - 166px)" },

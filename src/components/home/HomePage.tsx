@@ -8,6 +8,7 @@ import { getSubdomain } from "../../services/api";
 import Invitation from "./Invitation";
 import { Grid, Space } from "antd";
 import Present from "./Present";
+import WeddingFooter from "./WeddingFooter";
 
 const { useBreakpoint } = Grid;
 
@@ -48,9 +49,10 @@ const HomePage: React.FC = () => {
       <CountDown />
       <Couple />
       <Story />
-      <Gallery />
       <Invitation />
       <Present />
+      <Gallery />
+      <WeddingFooter brideGroom="Quang Vương & Phương Ninh"/>
     </Space>
   );
 };
