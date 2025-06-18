@@ -1,32 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Tabs, 
-  Button, 
-  Upload, 
-  Modal, 
-  Input, 
-  message, 
-  Spin, 
-  Checkbox, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  Tabs,
+  Button,
+  Upload,
+  Modal,
+  Input,
+  message,
+  Spin,
+  Checkbox,
   Popconfirm,
   Row,
   Col,
   Image,
   Typography,
   Space,
-  Divider
-} from 'antd';
-import { 
-  PlusOutlined, 
-  DeleteOutlined, 
+  Divider,
+} from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
   UploadOutlined,
   LinkOutlined,
-  FileImageOutlined
-} from '@ant-design/icons';
-import { useAuth } from '../../contexts/AuthContext';
-import { imageAPI, EImageStoreType, GetImageResponse } from '../../services/api';
-import type { UploadFile } from 'antd/es/upload/interface';
+  FileImageOutlined,
+} from "@ant-design/icons";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  imageAPI,
+  EImageStoreType,
+  GetImageResponse,
+} from "../../services/api";
+import type { UploadFile } from "antd/es/upload/interface";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -45,12 +49,12 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [urlInput, setUrlInput] = useState('');
+  const [urlInput, setUrlInput] = useState("");
 
   // Load images
   const loadImages = async () => {
     if (!accessToken) return;
-    
+
     try {
       setLoading(true);
       const data = await imageAPI.getImages(accessToken, type);
@@ -69,16 +73,16 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   // Handle image selection
   const handleImageSelect = (imageId: string, checked: boolean) => {
     if (checked) {
-      setSelectedImages(prev => [...prev, imageId]);
+      setSelectedImages((prev) => [...prev, imageId]);
     } else {
-      setSelectedImages(prev => prev.filter(id => id !== imageId));
+      setSelectedImages((prev) => prev.filter((id) => id !== imageId));
     }
   };
 
   // Handle select all
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedImages(images.map(img => img.id));
+      setSelectedImages(images.map((img) => img.id));
     } else {
       setSelectedImages([]);
     }
@@ -90,7 +94,10 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
     try {
       setLoading(true);
-      const result = await imageAPI.bulkDeleteImages(accessToken, type, selectedImages);
+      const result = await imageAPI.bulkDeleteImages(accessToken, {
+        type,
+        imageIds: selectedImages,
+      });
       message.success(`Đã xóa ${result.deletedCount} ảnh thành công`);
       setSelectedImages([]);
       await loadImages();
@@ -107,8 +114,11 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
     try {
       setLoading(true);
-      await imageAPI.bulkDeleteImages(accessToken, type, [imageId]);
-      message.success('Đã xóa ảnh thành công');
+      await imageAPI.bulkDeleteImages(accessToken, {
+        type,
+        imageIds: [imageId],
+      });
+      message.success("Đã xóa ảnh thành công");
       await loadImages();
     } catch (error: any) {
       message.error(`Không thể xóa ảnh: ${error.message}`);
@@ -121,21 +131,29 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   const handleUpload = async () => {
     if (!accessToken) return;
 
-    const files = fileList.map(file => file.originFileObj as File).filter(Boolean);
-    const urls = urlInput.split('\n').filter(url => url.trim()).map(url => url.trim());
+    const files = fileList
+      .map((file) => file.originFileObj as File)
+      .filter(Boolean);
+    const urls = urlInput
+      .split("\n")
+      .filter((url) => url.trim())
+      .map((url) => url.trim());
 
     if (files.length === 0 && urls.length === 0) {
-      message.warning('Vui lòng chọn ảnh hoặc nhập URL');
+      message.warning("Vui lòng chọn ảnh hoặc nhập URL");
       return;
     }
 
     try {
       setUploadLoading(true);
-      const result = await imageAPI.uploadImages(accessToken, files, urls, type);
+      const result = await imageAPI.uploadImages(accessToken, files, {
+        type,
+        urls,
+      });
       message.success(`Đã tải lên ${result.length} ảnh thành công`);
       setUploadModalVisible(false);
       setFileList([]);
-      setUrlInput('');
+      setUrlInput("");
       await loadImages();
     } catch (error: any) {
       message.error(`Không thể tải lên ảnh: ${error.message}`);
@@ -150,19 +168,30 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
       setFileList(newFileList);
     },
     beforeUpload: () => false, // Prevent auto upload
-    accept: 'image/*',
+    accept: "image/*",
     multiple: true,
-    listType: 'picture-card' as const,
+    listType: "picture-card" as const,
   };
 
   return (
     <div>
       {/* Header Actions */}
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Space>
           <Checkbox
-            checked={selectedImages.length === images.length && images.length > 0}
-            indeterminate={selectedImages.length > 0 && selectedImages.length < images.length}
+            checked={
+              selectedImages.length === images.length && images.length > 0
+            }
+            indeterminate={
+              selectedImages.length > 0 && selectedImages.length < images.length
+            }
             onChange={(e) => handleSelectAll(e.target.checked)}
           >
             Chọn tất cả ({selectedImages.length}/{images.length})
@@ -181,11 +210,11 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
             </Popconfirm>
           )}
         </Space>
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           icon={<PlusOutlined />}
           onClick={() => setUploadModalVisible(true)}
-          style={{ background: '#1e8267', borderColor: '#1e8267' }}
+          style={{ background: "#1e8267", borderColor: "#1e8267" }}
         >
           Tải lên ảnh
         </Button>
@@ -194,18 +223,26 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
       {/* Image Gallery */}
       <Spin spinning={loading}>
         {images.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '60px 20px',
-            background: '#fafafa',
-            borderRadius: '8px',
-            border: '1px dashed #d9d9d9'
-          }}>
-            <FileImageOutlined style={{ fontSize: '48px', color: '#bfbfbf', marginBottom: '16px' }} />
-            <Title level={4} style={{ color: '#bfbfbf', margin: 0 }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "60px 20px",
+              background: "#fafafa",
+              borderRadius: "8px",
+              border: "1px dashed #d9d9d9",
+            }}
+          >
+            <FileImageOutlined
+              style={{
+                fontSize: "48px",
+                color: "#bfbfbf",
+                marginBottom: "16px",
+              }}
+            />
+            <Title level={4} style={{ color: "#bfbfbf", margin: 0 }}>
               Chưa có ảnh nào
             </Title>
-            <Text style={{ color: '#8c8c8c' }}>
+            <Text style={{ color: "#8c8c8c" }}>
               Nhấn "Tải lên ảnh" để thêm ảnh mới
             </Text>
           </div>
@@ -213,28 +250,34 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
           <Row gutter={[16, 16]}>
             {images.map((image) => (
               <Col key={image.id} xs={12} sm={8} md={6} lg={4}>
-                <div style={{ 
-                  position: 'relative',
-                  border: selectedImages.includes(image.id) ? '2px solid #1e8267' : '1px solid #f0f0f0',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  background: '#fff'
-                }}>
+                <div
+                  style={{
+                    position: "relative",
+                    border: selectedImages.includes(image.id)
+                      ? "2px solid #1e8267"
+                      : "1px solid #f0f0f0",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    background: "#fff",
+                  }}
+                >
                   {/* Selection Checkbox */}
                   <Checkbox
                     checked={selectedImages.includes(image.id)}
-                    onChange={(e) => handleImageSelect(image.id, e.target.checked)}
+                    onChange={(e) =>
+                      handleImageSelect(image.id, e.target.checked)
+                    }
                     style={{
-                      position: 'absolute',
-                      top: '8px',
-                      left: '8px',
+                      position: "absolute",
+                      top: "8px",
+                      left: "8px",
                       zIndex: 2,
-                      background: 'rgba(255,255,255,0.8)',
-                      borderRadius: '4px',
-                      padding: '2px'
+                      background: "rgba(255,255,255,0.8)",
+                      borderRadius: "4px",
+                      padding: "2px",
                     }}
                   />
-                  
+
                   {/* Delete Button */}
                   <Popconfirm
                     title="Bạn có chắc chắn muốn xóa ảnh này?"
@@ -249,10 +292,10 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
                       size="small"
                       icon={<DeleteOutlined />}
                       style={{
-                        position: 'absolute',
-                        top: '8px',
-                        right: '8px',
-                        zIndex: 2
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        zIndex: 2,
                       }}
                     />
                   </Popconfirm>
@@ -261,14 +304,23 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
                   <Image
                     src={image.imageUrl}
                     alt="Gallery image"
-                    style={{ 
-                      width: '100%', 
-                      height: '200px', 
-                      objectFit: 'cover',
-                      display: 'block'
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      display: "block",
                     }}
                     preview={{
-                      mask: <div style={{ background: 'rgba(0,0,0,0.5)', color: 'white' }}>Xem</div>
+                      mask: (
+                        <div
+                          style={{
+                            background: "rgba(0,0,0,0.5)",
+                            color: "white",
+                          }}
+                        >
+                          Xem
+                        </div>
+                      ),
                     }}
                   />
                 </div>
@@ -285,7 +337,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
         onCancel={() => {
           setUploadModalVisible(false);
           setFileList([]);
-          setUrlInput('');
+          setUrlInput("");
         }}
         onOk={handleUpload}
         confirmLoading={uploadLoading}
@@ -293,7 +345,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
         cancelText="Hủy"
         width={600}
         okButtonProps={{
-          style: { background: '#1e8267', borderColor: '#1e8267' }
+          style: { background: "#1e8267", borderColor: "#1e8267" },
         }}
       >
         <div style={{ marginBottom: 24 }}>
@@ -328,19 +380,31 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
 const ImageGalleryManagement: React.FC = () => {
   const tabs = [
-    { key: EImageStoreType.CAROUSEL, title: 'Header', type: EImageStoreType.CAROUSEL },
-    { key: EImageStoreType.SWEET_MOMENTS, title: 'Gallery', type: EImageStoreType.SWEET_MOMENTS },
-    { key: EImageStoreType.FOOTER, title: 'Footer', type: EImageStoreType.FOOTER },
+    {
+      key: EImageStoreType.CAROUSEL,
+      title: "Header",
+      type: EImageStoreType.CAROUSEL,
+    },
+    {
+      key: EImageStoreType.SWEET_MOMENTS,
+      title: "Gallery",
+      type: EImageStoreType.SWEET_MOMENTS,
+    },
+    {
+      key: EImageStoreType.FOOTER,
+      title: "Footer",
+      type: EImageStoreType.FOOTER,
+    },
   ];
 
   return (
-    <Card style={{ borderRadius: '0.25rem', background: '#fff' }}>
-      <Title level={3} style={{ color: '#1e8267', marginBottom: '24px' }}>
+    <Card style={{ borderRadius: "0.25rem", background: "#fff" }}>
+      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
         Quản Lý Ảnh
       </Title>
-      
+
       <Tabs defaultActiveKey={EImageStoreType.CAROUSEL} type="card">
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <TabPane tab={tab.title} key={tab.key}>
             <ImageGalleryTab type={tab.type} title={tab.title} />
           </TabPane>
