@@ -11,9 +11,10 @@ const Present: React.FC = () => {
 
   const DESIGN_WIDTH = 576;
   const [scale, setScale] = useState(1);
+  const [spaceHeight, setSpaceHeight] = useState(0);
 
   const divRef = useRef<HTMLDivElement | null>(null);
-  const spaceRef = useRef<HTMLDivElement | null>(null); // Thêm ref cho Space
+  const spaceRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,17 +25,28 @@ const Present: React.FC = () => {
       const newScale = ratio < 1 ? ratio : 1;
       setScale(newScale);
 
-      // Tính chiều cao sau khi scale và cập nhật cho div cha
-      console.log(spaceRef.current.getBoundingClientRect().height);
-      const spaceHeight = spaceRef.current.getBoundingClientRect().height; // * newScale;
-      divRef.current.style.height = `${spaceHeight}px`;
+      const height = spaceRef.current.getBoundingClientRect().height + 12;
+      setSpaceHeight(height);
     };
+
+    const observer = new ResizeObserver(() => {
+      if (!spaceRef.current || !divRef.current) return;
+      const height = spaceRef.current.getBoundingClientRect().height + 12;
+      setSpaceHeight(height);
+    });
+
+    if (spaceRef.current) {
+      observer.observe(spaceRef.current);
+    }
 
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [scale]);
 
   return (
     <Section titleStyle={{ marginBottom: "24px" }} title="Mừng cưới">
@@ -43,7 +55,11 @@ const Present: React.FC = () => {
         đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn vẹn
         hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
       </Text>
-      <div className="justify-center w-full pt-[12px] relative" ref={divRef}>
+      <div
+        className="justify-center w-full pt-[12px] relative"
+        ref={divRef}
+        style={{ height: spaceHeight }}
+      >
         <Space
           ref={spaceRef}
           size={16}
