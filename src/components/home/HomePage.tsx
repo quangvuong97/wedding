@@ -8,6 +8,7 @@ import Invitation from "./Invitation";
 import { Grid, Space } from "antd";
 import Present from "./Present";
 import WeddingFooter from "./WeddingFooter";
+import SVGSymbols from "../common/SVGSymbols";
 
 const { useBreakpoint } = Grid;
 
@@ -21,25 +22,28 @@ const HomePage: React.FC = () => {
   }, [screens]);
 
   return (
-    <Space
-      direction="vertical"
-      size={spaceSize}
-      style={{
-        display: "flex",
-        textAlign: "center",
-        width: "100%",
-        justifyContent: "center",
-      }}
-    >
-      <Header />
-      <CountDown />
-      <Couple />
-      <Story />
-      <Invitation />
-      <Present />
-      <Gallery />
-      <WeddingFooter brideGroom="Quang Vương & Phương Ninh" />
-    </Space>
+    <>
+      <SVGSymbols />
+      <Space
+        direction="vertical"
+        size={spaceSize}
+        style={{
+          display: "flex",
+          textAlign: "center",
+          width: "100%",
+          justifyContent: "center",
+        }}
+      >
+        <Header />
+        <CountDown />
+        <Couple />
+        <Story />
+        <Invitation />
+        <Present />
+        <Gallery />
+        <WeddingFooter brideGroom="Quang Vương & Phương Ninh" />
+      </Space>
+    </>
   );
 };
 

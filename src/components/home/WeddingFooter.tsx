@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
-import { Card } from "antd";
+import { Card, Grid } from "antd";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+
+const { useBreakpoint } = Grid;
 
 interface FooterProps {
   brideGroom: string;
@@ -9,6 +11,9 @@ interface FooterProps {
 const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
   const { response: carouselResponse } = WeddingPageApi.useGetFooter();
   const image = useMemo(() => carouselResponse?.data, [carouselResponse?.data]);
+
+  const screens = useBreakpoint();
+  const fontSize = screens.md ? "160px" : "95px";
 
   return (
     <Card
@@ -33,7 +38,7 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
     >
       <h1
         style={{
-          fontSize: "95px",
+          fontSize: fontSize,
           fontFamily: "VkJIDIIExvdmUudHRm",
           color: "#fff",
           marginBottom: "10px",
@@ -42,25 +47,29 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
         Thank You!
       </h1>
       <p
+        className={`font-dancing-script text-[#fff]`}
         style={{
-          fontSize: "24px",
-          fontFamily: "cursive",
-          color: "#fff",
-          marginBottom: "10px",
+          fontSize: screens.md ? "35px" : "25px",
         }}
       >
         - {brideGroom} -
       </p>
-      <div>
-        <span role="img" aria-label="heart">
-          ❤️
-        </span>
-        <span role="img" aria-label="heart">
-          ❤️
-        </span>
-        <span role="img" aria-label="heart">
-          ❤️
-        </span>
+      <div
+        style={{
+          width: 80,
+          height: 80,
+          fill: "rgb(188, 49, 49)",
+        }}
+      >
+        <svg
+          xmlSpace="preserve"
+          preserveAspectRatio="none"
+          width="100%"
+          height="100%"
+          fill="#BC3131"
+        >
+          <use xlinkHref="#shape_EaFugJijJm"></use>
+        </svg>
       </div>
     </Card>
   );
