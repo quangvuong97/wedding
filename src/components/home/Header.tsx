@@ -1,35 +1,18 @@
 import "../../index.css";
-import { useEffect, useState } from "react";
-const slides = [
-  {
-    image:
-      "https://wpocean.com/html/tf/loveme/assets/images/slider/slide-6.jpg",
-    title: "Wedding & Event Planner",
-    subtitle: "Your Special Day, Our Special Touch",
-  },
-  {
-    image:
-      "https://wpocean.com/html/tf/loveme/assets/images/slider/slide-4.jpg",
-    title: "Make Your Wedding Unforgettable",
-    subtitle: "Crafting Moments That Last Forever",
-  },
-  {
-    image:
-      "https://wpocean.com/html/tf/loveme/assets/images/slider/slide-5.jpg",
-    title: "Make Your Wedding Unforgettable",
-    subtitle: "Crafting Moments That Last Forever",
-  },
-];
+import { useEffect, useState, useMemo } from "react";
+import { WeddingPageApi } from "../../services/weddingPage.api";
 
 const Header: React.FC = () => {
   const [index, setIndex] = useState(0);
+  const { response: carouselResponse } = WeddingPageApi.useGetCarousel();
+  const slides = useMemo(() => carouselResponse?.data || [], [carouselResponse?.data]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides]);
 
   return (
     <div
@@ -49,7 +32,7 @@ const Header: React.FC = () => {
               : "translate-x-full opacity-0"
           }`}
           style={{
-            backgroundImage: `url(${slide.image})`,
+            backgroundImage: `url(${slide})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

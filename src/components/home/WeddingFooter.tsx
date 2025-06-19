@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Card } from "antd";
+import { WeddingPageApi } from "../../services/weddingPage.api";
 
 interface FooterProps {
   brideGroom: string;
 }
 
 const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
+  const { response: carouselResponse } = WeddingPageApi.useGetFooter();
+  const image = useMemo(() => carouselResponse?.data, [carouselResponse?.data]);
+
   return (
     <Card
       styles={{
@@ -19,8 +23,7 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
           justifyContent: "center",
           width: "100vw", // Full chiều rộng màn hình
           height: "100vh", // Chiều cao tối thiểu khi màn hình nhỏ
-          backgroundImage:
-            "url(https://w.ladicdn.com/s1300x1000/5c728619c417ab07e5194baa/studio-anh-cuoi-chat-luong-tai-thanh-hoa-2-20240602022740-qudib.jpg)",
+          backgroundImage: `url(${image && image[0]})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

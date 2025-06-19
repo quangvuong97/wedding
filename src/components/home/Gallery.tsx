@@ -1,34 +1,10 @@
 import { Button, Image } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Section from "../../common/Section";
+import { WeddingPageApi } from "../../services/weddingPage.api";
 
 const Gallery: React.FC = () => {
-  const images = [
-    "https://wpocean.com/html/tf/loveme/assets/images/couple/1.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/story/4.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/7.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/8.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/9.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/10.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/11.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/12.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-1.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-2.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-3.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/couple/1.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/story/4.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/7.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/8.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/9.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/10.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/11.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/portfolio/12.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-1.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-2.jpg",
-    "https://wpocean.com/html/tf/loveme/assets/images/blog/img-3.jpg",
-  ];
-
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
   const [first, setFirst] = useState(false);
@@ -36,7 +12,9 @@ const Gallery: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Khi currentIndex thay đổi, cuộn ảnh tương ứng vào giữa
+  const { response: carouselResponse } = WeddingPageApi.useGetGallery();
+  const images = useMemo(() => carouselResponse?.data || [], [carouselResponse?.data]); 
+
   useEffect(() => {
     if (!visible) return;
     const f = first;

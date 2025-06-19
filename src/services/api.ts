@@ -610,8 +610,8 @@ export const getSubdomain = (): string => {
   const parts = hostname.split('.');
   
   // For development (localhost)
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'localhost';
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || parts[0] === '192') {
+    return 'vuongninh';
   }
   
   // For production (subdomain.vercel.com)
