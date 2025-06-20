@@ -13,7 +13,10 @@ const Gallery: React.FC = () => {
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { response: carouselResponse } = WeddingPageApi.useGetGallery();
-  const images = useMemo(() => carouselResponse?.data || [], [carouselResponse?.data]); 
+  const images = useMemo(() => {
+    console.log("Gallery images:", carouselResponse?.data);
+    return carouselResponse?.data || [];
+  }, [carouselResponse?.data]);
 
   useEffect(() => {
     if (!visible) return;
@@ -48,7 +51,7 @@ const Gallery: React.FC = () => {
       <div style={{ columnCount: 3 }}>
         <Image.PreviewGroup
           preview={{
-            wrapStyle: { height: "calc(100% - 166px)" },
+            styles: { wrapper: { height: "calc(100% - 166px)" } },
             toolbarRender: (_, { transform: { scale } }) => (
               <div className="relative w-full">
                 <Button
