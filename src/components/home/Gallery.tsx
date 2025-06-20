@@ -3,6 +3,8 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Section from "../../common/Section";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+import { Image as ImageKit } from "@imagekit/react";
+import MarkImagePreview from "../common/MarkImagePreview";
 
 const Gallery: React.FC = () => {
   const [current, setCurrent] = useState(0);
@@ -14,7 +16,6 @@ const Gallery: React.FC = () => {
 
   const { response: carouselResponse } = WeddingPageApi.useGetGallery();
   const images = useMemo(() => {
-    console.log("Gallery images:", carouselResponse?.data);
     return carouselResponse?.data || [];
   }, [carouselResponse?.data]);
 
@@ -72,22 +73,33 @@ const Gallery: React.FC = () => {
                       ref={(el) => {
                         imageRefs.current[index] = el;
                       }}
-                      key={index}
+                      key={src}
                       className={`flex-shrink-0 cursor-pointer rounded-lg transition-transform duration-200 ${
                         current === index
                           ? "ring-4 ring-blue-500 scale-105 shadow-lg"
                           : "hover:scale-105"
                       }`}
                     >
-                      <Image
-                        src={src}
-                        alt={`image-${index}`}
-                        height={150}
-                        preview={false}
-                        style={{ display: "inline" }}
-                        className="rounded-lg"
-                        onClick={() => setCurrent(index)}
-                      />
+                      <div
+                        style={{
+                          height: "150px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <ImageKit
+                          urlEndpoint="https://ik.imagekit.io/vuongninh"
+                          src={src.split("/").pop() as string}
+                          alt={`image-${index}`}
+                          height={150}
+                          style={{
+                            height: "100%",
+                            width: "auto",
+                            display: "block",
+                          }}
+                          className="rounded-lg"
+                          onClick={() => setCurrent(index)}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -104,13 +116,19 @@ const Gallery: React.FC = () => {
             onChange: (index) => setCurrent(index),
           }}
         >
+          {images.map((item) => (
+            <Image key={item + 1} src={item} style={{ display: "none" }} />
+          ))}
+
           {images.map((item, index) => (
-            <Image
-              key={index}
+            <MarkImagePreview
               src={item}
+              urlEndpoint="https://ik.imagekit.io/vuongninh"
+              key={item + 2}
               onClick={() => {
-                setFirst(true);
                 setCurrent(index);
+                setVisible(true);
+                setFirst(true);
               }}
             />
           ))}
