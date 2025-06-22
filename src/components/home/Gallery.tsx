@@ -1,9 +1,9 @@
-import { Button, Image } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { /* Button, */ Image } from "antd";
+// import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Section from "../../common/Section";
 import { WeddingPageApi } from "../../services/weddingPage.api";
-import { Image as ImageKit } from "@imagekit/react";
+// import { Image as ImageKit } from "@imagekit/react";
 import MarkImagePreview from "../common/MarkImagePreview";
 
 const Gallery: React.FC = () => {

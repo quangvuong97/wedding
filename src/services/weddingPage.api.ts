@@ -1,6 +1,14 @@
 import { getSubdomain, EImageStoreType } from "./api";
 import useFetch from "./common";
 
+export interface UserConfig {
+  storageKey: { urlEndpoint: string };
+
+  groomName: string;
+
+  brideName: string;
+}
+
 export const WeddingPageApi = {
   useGetCarousel: () =>
     useFetch<string[]>(
@@ -14,6 +22,8 @@ export const WeddingPageApi = {
     useFetch<string[]>(
       `v1/public/${getSubdomain()}/images?type=${EImageStoreType.FOOTER}`
     ),
+  useGetConfig: () =>
+    useFetch<UserConfig>(`v1/public/${getSubdomain()}/configs`),
   // Ví dụ POST
   // useCreateGuest: () => {
   //   const config = {

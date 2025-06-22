@@ -1,11 +1,17 @@
 import "../../index.css";
 import { useEffect, useState, useMemo } from "react";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+import { Image } from "@imagekit/react";
+import { useHomeData } from "../../contexts/HomeDataContext";
 
 const Header: React.FC = () => {
   const [index, setIndex] = useState(0);
   const { response: carouselResponse } = WeddingPageApi.useGetCarousel();
-  const slides = useMemo(() => carouselResponse?.data || [], [carouselResponse?.data]);
+  const slides = useMemo(
+    () => carouselResponse?.data || [],
+    [carouselResponse?.data]
+  );
+  const homeData = useHomeData();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,12 +37,18 @@ const Header: React.FC = () => {
               ? "-translate-x-1/2 opacity-50"
               : "translate-x-full opacity-0"
           }`}
-          style={{
-            backgroundImage: `url(${slide})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+          style={{background: "#ddd"}}
         >
+          <Image
+            style={{
+              position: "absolute",
+              height: "100%",
+              width: "100%",
+              objectFit: "cover",
+            }}
+            urlEndpoint={homeData?.storageKey.urlEndpoint}
+            src={slide}
+          />
           <div className="w-full px-[var(--bs-gutter-x,.75rem)] mx-auto">
             <div className="max-w-[450px] sm:max-w-[650px] md:max-w-[760px] lg:max-w-[1090px] px-[50px] sm:px-[70px] py-[40px] sm:py-[80px] relative mx-auto text-center bg-[rgba(30,130,103,0.1)]">
               <div

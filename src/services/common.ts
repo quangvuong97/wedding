@@ -17,10 +17,7 @@ const getCacheKey = (url: string, options?: RequestInit) => {
   return JSON.stringify({ url, options });
 };
 
-const useFetch = <T = any>(
-  path: string,
-  options?: RequestInit
-) => {
+const useFetch = <T = any>(path: string, options?: RequestInit) => {
   const [response, setResponse] = useState<ApiResponse<T> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
@@ -42,7 +39,12 @@ const useFetch = <T = any>(
       }
       const res = await fetch(url, { ...options, signal: controller.signal });
       const json = await res.json();
+      if (json.error || json.statusCode < 200 || json.statusCode > 200) {
+        setError(json);
+        return;
+      }
       setResponse(json);
+      setLoading(false);
       fetchCache.set(cacheKey, json);
     } catch (err: any) {
       // Nếu lỗi mạng, wrap lại object lỗi mặc định
@@ -55,8 +57,6 @@ const useFetch = <T = any>(
       };
       setResponse(errorRes);
       setError(err);
-    } finally {
-      setLoading(false);
     }
   }, [cacheKey, path, options]);
 
