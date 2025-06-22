@@ -52,64 +52,64 @@ const Gallery: React.FC = () => {
       <div style={{ columnCount: 3 }}>
         <Image.PreviewGroup
           preview={{
-            styles: { wrapper: { height: "calc(100% - 166px)" } },
-            toolbarRender: (_, { transform: { scale } }) => (
-              <div className="relative w-full">
-                <Button
-                  icon={<LeftOutlined />}
-                  onClick={() => scroll("left")}
-                  className="!absolute left-0 top-1/2 -translate-y-1/2 z-10"
-                />
-                <div
-                  ref={scrollRef}
-                  className="flex overflow-x-auto gap-4 px-12 py-4 scroll-smooth"
-                  style={{
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
-                >
-                  {images.map((src, index) => (
-                    <div
-                      ref={(el) => {
-                        imageRefs.current[index] = el;
-                      }}
-                      key={src}
-                      className={`flex-shrink-0 cursor-pointer rounded-lg transition-transform duration-200 ${
-                        current === index
-                          ? "ring-4 ring-blue-500 scale-105 shadow-lg"
-                          : "hover:scale-105"
-                      }`}
-                    >
-                      <div
-                        style={{
-                          height: "150px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <ImageKit
-                          urlEndpoint="https://ik.imagekit.io/vuongninh"
-                          src={src.split("/").pop() as string}
-                          alt={`image-${index}`}
-                          height={150}
-                          style={{
-                            height: "100%",
-                            width: "auto",
-                            display: "block",
-                          }}
-                          className="rounded-lg"
-                          onClick={() => setCurrent(index)}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  icon={<RightOutlined />}
-                  onClick={() => scroll("right")}
-                  className="!absolute right-0 top-1/2 -translate-y-1/2 z-10"
-                />
-              </div>
-            ),
+            // styles: { wrapper: { height: "calc(100% - 166px)" } },
+            // toolbarRender: (_, { transform: { scale } }) => (
+            //   <div className="relative w-full">
+            //     <Button
+            //       icon={<LeftOutlined />}
+            //       onClick={() => scroll("left")}
+            //       className="!absolute left-0 top-1/2 -translate-y-1/2 z-10"
+            //     />
+            //     <div
+            //       ref={scrollRef}
+            //       className="flex overflow-x-auto gap-4 px-12 py-4 scroll-smooth"
+            //       style={{
+            //         scrollbarWidth: "none",
+            //         msOverflowStyle: "none",
+            //       }}
+            //     >
+            //       {images.map((src, index) => (
+            //         <div
+            //           ref={(el) => {
+            //             imageRefs.current[index] = el;
+            //           }}
+            //           key={src}
+            //           className={`flex-shrink-0 cursor-pointer rounded-lg transition-transform duration-200 ${
+            //             current === index
+            //               ? "ring-4 ring-blue-500 scale-105 shadow-lg"
+            //               : "hover:scale-105"
+            //           }`}
+            //         >
+            //           <div
+            //             style={{
+            //               height: "150px",
+            //               overflow: "hidden",
+            //             }}
+            //           >
+            //             <ImageKit
+            //               urlEndpoint="https://ik.imagekit.io/vuongninh"
+            //               src={src.split("/").pop() as string}
+            //               alt={`image-${index}`}
+            //               height={150}
+            //               style={{
+            //                 height: "100%",
+            //                 width: "auto",
+            //                 display: "block",
+            //               }}
+            //               className="rounded-lg"
+            //               onClick={() => setCurrent(index)}
+            //             />
+            //           </div>
+            //         </div>
+            //       ))}
+            //     </div>
+            //     <Button
+            //       icon={<RightOutlined />}
+            //       onClick={() => scroll("right")}
+            //       className="!absolute right-0 top-1/2 -translate-y-1/2 z-10"
+            //     />
+            //   </div>
+            // ),
             visible,
             current,
             onVisibleChange: (v) => setVisible(v),
@@ -117,7 +117,7 @@ const Gallery: React.FC = () => {
           }}
         >
           {images.map((item) => (
-            <Image key={item + 1} src={item} style={{ display: "none" }} />
+            <Image key={item + 1} src={item} style={{ height: 0, width: 0 }} />
           ))}
 
           {images.map((item, index) => (
