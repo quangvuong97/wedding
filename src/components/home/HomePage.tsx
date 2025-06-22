@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "./Header";
 import CountDown from "./CountDown";
 import Couple from "./Couple";
@@ -38,9 +38,31 @@ const HomeContent = ({
   loading: boolean;
   spaceSize: number;
 }) => {
-  if (loading) return <div style={{ textAlign: "center" }}>Loading...</div>;
+  const [, setReadyStates] = useState({});
+  const [isAllReady, setIsAllReady] = useState(false);
+  const childCount = 1;
+
+  // Hàm callback để nhận thông báo từ component con
+  const handleChildReady = (childId: string) => {
+    setReadyStates((prev) => {
+      const newState = { ...prev, [childId]: true };
+      const allReady = Object.keys(newState).length === childCount;
+      setIsAllReady(allReady);
+      return newState;
+    });
+  };
+
+  useEffect(() => {
+    console.log("isAllReady: ", isAllReady);
+  }, [isAllReady]);
+
   return (
     <>
+      {(loading || !isAllReady) && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
+          <div className="text-2xl font-bold text-blue-600">Loading...</div>
+        </div>
+      )}
       <SVGSymbols />
       <Space
         direction="vertical"
@@ -50,9 +72,14 @@ const HomeContent = ({
           textAlign: "center",
           width: "100%",
           justifyContent: "center",
+          transitionDuration: "1500ms"
         }}
+        
+        className={`transition-opacity ${
+          isAllReady ? "opacity-100" : "opacity-0"
+        }`}
       >
-        <Header />
+        <Header childId="header" onReady={handleChildReady} />
         <CountDown />
         <Couple />
         <Story />
