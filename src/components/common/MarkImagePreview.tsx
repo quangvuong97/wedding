@@ -4,12 +4,14 @@ import React from "react";
 interface MarkImagePreviewProps {
   urlEndpoint: string;
   src: string;
+  bodyWidth?: number;
   onClick?: () => void;
 }
 
 const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
   src,
   urlEndpoint,
+  bodyWidth,
   onClick,
 }: MarkImagePreviewProps) => {
   return (
@@ -17,7 +19,12 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
       style={{ position: "relative", display: "inline-block" }}
       onClick={onClick}
     >
-      <Image urlEndpoint={urlEndpoint} src={src} />
+      <Image
+        urlEndpoint={urlEndpoint}
+        src={src}
+        imageBreakpoints={bodyWidth ? [bodyWidth / 1.5] : undefined}
+        deviceBreakpoints={bodyWidth ? [bodyWidth / 1.5] : undefined}
+      />
       <div
         className="hover:!opacity-100"
         style={{

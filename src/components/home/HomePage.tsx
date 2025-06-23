@@ -58,11 +58,11 @@ const HomeContent = ({
 
   return (
     <>
-      {(loading || !isAllReady) && (
+      {/* {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
           <div className="text-2xl font-bold text-blue-600">Loading...</div>
         </div>
-      )}
+      )} */}
       <SVGSymbols />
       <Space
         direction="vertical"
@@ -72,12 +72,11 @@ const HomeContent = ({
           textAlign: "center",
           width: "100%",
           justifyContent: "center",
-          transitionDuration: "1500ms"
+          transitionDuration: "1500ms",
         }}
-        
-        className={`transition-opacity ${
-          isAllReady ? "opacity-100" : "opacity-0"
-        }`}
+        // className={`transition-opacity ${
+        //   isAllReady ? "opacity-100" : "opacity-0"
+        // }`}
       >
         <Header childId="header" onReady={handleChildReady} />
         <CountDown />

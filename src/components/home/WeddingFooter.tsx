@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Card, Grid } from "antd";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+import { useHomeData } from "../../contexts/HomeDataContext";
 
 const { useBreakpoint } = Grid;
 
@@ -11,12 +12,14 @@ interface FooterProps {
 const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
   const { response: carouselResponse } = WeddingPageApi.useGetFooter();
   const image = useMemo(() => carouselResponse?.data, [carouselResponse?.data]);
+  const homeData = useHomeData();
 
   const screens = useBreakpoint();
   const fontSize = screens.md ? "160px" : "95px";
 
   return (
     <Card
+      style={{ border: 0 }}
       styles={{
         body: {
           padding: "20px",
@@ -33,6 +36,7 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           color: "#fff",
+          borderRadius: 0,
         },
       }}
     >
@@ -52,7 +56,7 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
           fontSize: screens.md ? "35px" : "25px",
         }}
       >
-        - {brideGroom} -
+        - {`${homeData?.groomName} & ${homeData?.brideName}`} -
       </p>
       <div
         style={{

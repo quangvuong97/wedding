@@ -5,14 +5,18 @@ import Section from "../../common/Section";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 // import { Image as ImageKit } from "@imagekit/react";
 import MarkImagePreview from "../common/MarkImagePreview";
+import { useHomeData } from "../../contexts/HomeDataContext";
 
 const Gallery: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
   const [first, setFirst] = useState(false);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const homeData = useHomeData();
+
+  // const scrollRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const { response: carouselResponse } = WeddingPageApi.useGetGallery();
   const images = useMemo(() => {
@@ -40,16 +44,16 @@ const Gallery: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, visible]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === "left" ? -300 : 300;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
+  // const scroll = (direction: "left" | "right") => {
+  //   if (scrollRef.current) {
+  //     const scrollAmount = direction === "left" ? -300 : 300;
+  //     scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  //   }
+  // };
 
   return (
     <Section title="Sweet Moments">
-      <div style={{ columnCount: 3 }}>
+      <div style={{ columnCount: 3 }} ref={divRef}>
         <Image.PreviewGroup
           preview={{
             // styles: { wrapper: { height: "calc(100% - 166px)" } },
@@ -123,7 +127,8 @@ const Gallery: React.FC = () => {
           {images.map((item, index) => (
             <MarkImagePreview
               src={item}
-              urlEndpoint="https://ik.imagekit.io/vuongninh"
+              bodyWidth={divRef.current?.getBoundingClientRect().width}
+              urlEndpoint={homeData?.storageKey.urlEndpoint || ""}
               key={item + 2}
               onClick={() => {
                 setCurrent(index);
