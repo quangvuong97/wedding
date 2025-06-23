@@ -7,6 +7,36 @@ export interface UserConfig {
   groomName: string;
 
   brideName: string;
+
+  brideAccountName: string;
+
+  brideAccountNumber: string;
+
+  brideAddress: string;
+
+  brideGgAddress: string;
+
+  groomAccountName: string;
+
+  groomAccountNumber: string;
+
+  groomAddress: string;
+
+  groomGgAddress: string;
+
+  solarDate: Date;
+
+  lunarDate: string;
+
+  weddingHours: string;
+
+  dataGroomQR: string;
+
+  dataBrideQR: string;
+
+  logoBankGroom: string;
+
+  logoBankBride: string;
 }
 
 export const WeddingPageApi = {
