@@ -43,7 +43,14 @@
 
 @font-face {
   font-family: "VkJIDIIExvdmUudHRm";
-  src: url("../public/fonts/VkJIDIIExvdmUudHRm/VkJIDIIExvdmUudHRm.ttf") format("truetype");
+  src: url("../public/fonts/VkJIDIIExvdmUudHRm/VkJIDIIExvdmUudHRm.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "VVRNIFZpYVyblKRidGY";
+  src: url("../public/fonts/UTM ViceroyJF/utm-viceroyjf-20240502170713-wbcvj.ttf")
+    format("truetype");
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap");

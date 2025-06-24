@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
+import { Image } from "@imagekit/react";
 
 const { Text } = Typography;
 
@@ -234,8 +235,9 @@ const Invitation: React.FC = () => {
                     onLoad={() => handleImageLoad()}
                   />
 
-                  <img
-                    src={item?.image}
+                  <Image
+                    urlEndpoint={homeData?.storageKey.urlEndpoint}
+                    src={item?.image || ""}
                     alt={`Profile ${index + 1}`}
                     className="w-full h-full object-cover"
                     style={overlayStyles}
@@ -253,7 +255,7 @@ const Invitation: React.FC = () => {
                     }}
                   >
                     <Space direction="vertical" size={0}>
-                      <Text className="font-[VVZORGluaEhvbiUVEY] text-[rgb(188,83,77)] tracking-[0.6px] text-[39px] leading-[1.4]">
+                      <Text className="font-[VVRNIFZpYVyblKRidGY] text-[rgb(188,83,77)] text-[33px] leading-[1.63]">
                         {item?.groomName} &amp; {item?.brideName}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">

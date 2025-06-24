@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Row,
   Col,
@@ -17,7 +17,7 @@ import {
   FileImageOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { authAPI, imageAPI, UserProfile } from "../../../../services/api";
+import { imageAPI } from "../../../../services/api";
 import { useAdminData } from "../../../../contexts/AdminDataContext";
 
 const INVITATION_IMAGES = [
