@@ -37,6 +37,10 @@ export interface UserConfig {
   logoBankGroom: string;
 
   logoBankBride: string;
+
+  guestName: string;
+
+  guestId: string;
 }
 
 export const WeddingPageApi = {
@@ -52,8 +56,10 @@ export const WeddingPageApi = {
     useFetch<string[]>(
       `v1/public/${getSubdomain()}/images?type=${EImageStoreType.FOOTER}`
     ),
-  useGetConfig: () =>
-    useFetch<UserConfig>(`v1/public/${getSubdomain()}/configs`),
+  useGetConfig: (guest: string | null) =>
+    useFetch<UserConfig>(
+      `v1/public/${getSubdomain()}/configs?guest=${guest || ""}`
+    ),
   // Ví dụ POST
   // useCreateGuest: () => {
   //   const config = {

@@ -28,6 +28,7 @@ import {
   Banks,
 } from "../../../../services/api";
 import dayjs from "dayjs";
+import TextArea from "antd/es/input/TextArea";
 
 const { Title, Text } = Typography;
 
@@ -43,7 +44,7 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
   const { accessToken } = useAuth();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [loadingBanks, setLoadingBanks] = useState(false);
+  const [, setLoadingBanks] = useState(false);
   const [banks, setBanks] = useState<any>();
 
   useEffect(() => {
@@ -188,7 +189,8 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
         >
           <Row gutter={[24, 0]}>
             <Col xs={24} lg={12}>
-              <Form.Item noStyle
+              <Form.Item
+                style={{ margin: 0 }}
                 label="Tên Chú Rể"
                 name="groomName"
                 rules={[
@@ -204,7 +206,8 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
             </Col>
 
             <Col xs={24} lg={12}>
-              <Form.Item noStyle
+              <Form.Item
+                style={{ margin: 0 }}
                 label="Tên Cô Dâu"
                 name="brideName"
                 rules={[
@@ -234,7 +237,7 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
         >
           <Row gutter={[24, 0]}>
             <Col xs={24} lg={6}>
-              <Form.Item label="Giờ" name="weddingHours" noStyle>
+              <Form.Item label="Giờ" name="weddingHours" style={{ margin: 0 }}>
                 <Input
                   placeholder="Nhập giờ tổ chức"
                   suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
@@ -242,7 +245,11 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
               </Form.Item>
             </Col>
             <Col xs={24} lg={6}>
-              <Form.Item label="Dương lịch" name="solarDate" noStyle>
+              <Form.Item
+                label="Dương lịch"
+                name="solarDate"
+                style={{ margin: 0 }}
+              >
                 <DatePicker
                   placeholder="Chọn ngày cưới"
                   style={{ width: "100%" }}
@@ -252,7 +259,7 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item label="Âm lịch" name="lunarDate" noStyle>
+              <Form.Item label="Âm lịch" name="lunarDate" style={{ margin: 0 }}>
                 <Input
                   placeholder="Nhập lịch âm"
                   suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
@@ -277,12 +284,17 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
             <Col xs={24} lg={12}>
               <Title level={5}>Nhà Trai</Title>
               <Space direction="vertical" style={{ display: "flex" }}>
-                <Space.Compact style={{ width: "100%" }} block>
-                  <Button style={{ width: "30%" }}>Địa chỉ</Button>
-                  <Form.Item name="groomAddress" noStyle>
-                    <Input placeholder="Nhập địa chỉ tổ chức nhà trai" />
-                  </Form.Item>
-                </Space.Compact>
+                <Form.Item
+                  label="Địa chỉ"
+                  name="groomAddress"
+                  style={{ margin: 0 }}
+                >
+                  <TextArea
+                    rows={2}
+                    style={{ textAlign: "center" }}
+                    placeholder="Nhập địa chỉ tổ chức nhà trai"
+                  />
+                </Form.Item>
                 <Space.Compact style={{ width: "100%" }} block>
                   <Button style={{ width: "30%" }}>Google Map</Button>
                   <Form.Item name="groomGgAddress" noStyle>
@@ -295,12 +307,17 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
             <Col xs={24} lg={12}>
               <Title level={5}>Nhà Gái</Title>
               <Space direction="vertical" style={{ display: "flex" }}>
-                <Space.Compact style={{ width: "100%" }} block>
-                  <Button style={{ width: "30%" }}>Địa chỉ</Button>
-                  <Form.Item name="brideAddress" noStyle>
-                    <Input placeholder="Nhập địa chỉ tổ chức nhà gái" />
-                  </Form.Item>
-                </Space.Compact>
+                <Form.Item
+                  name="brideAddress"
+                  style={{ margin: 0 }}
+                  label="Địa chỉ"
+                >
+                  <TextArea
+                    rows={2}
+                    style={{ textAlign: "center" }}
+                    placeholder="Nhập địa chỉ tổ chức nhà gái"
+                  />
+                </Form.Item>
                 <Space.Compact style={{ width: "100%" }} block>
                   <Button style={{ width: "30%" }}>Google Map</Button>
                   <Form.Item name="brideGgAddress" noStyle>

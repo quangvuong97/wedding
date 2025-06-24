@@ -2,18 +2,19 @@ import { Col, Row, Button, Space, Typography } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
+import { useHomeData } from "../../contexts/HomeDataContext";
 
 const { Text } = Typography;
 
 interface InvitationInfo {
   image: string;
-  tabName?: string;
+  tabName: string;
   brideName: string;
   groomName: string;
-  guestName: string;
+  guestName: string | null;
   solarDate: {
     hour: string;
-    date: number;
+    day: number;
     month: number;
     year: number;
     dayOfWeek: string;
@@ -37,49 +38,73 @@ interface CircularOverlayStyle {
 }
 
 const Invitation: React.FC = () => {
+  const homeData = useHomeData();
   const [overlayStyles, setOverlayStyles] = useState<
     CircularOverlayStyle | {}
   >();
   const [scaleFactor, setScaleFactor] = useState<number>(1);
+  const [info, setInfo] = useState<
+    [InvitationInfo | undefined, InvitationInfo | undefined]
+  >([undefined, undefined]);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const BASE_IMAGE_WIDTH = 464; // Base width for which the fixed values were designed
 
-  const info: InvitationInfo[] = [
-    {
-      image: "https://wpocean.com/html/tf/loveme/assets/images/couple/1.jpg",
-      tabName: "Nhà Trai",
-      brideName: "Phương Ninh",
-      groomName: "Quang Vương",
-      guestName: "",
-      solarDate: {
-        hour: "9 giờ 30",
-        date: 1,
-        month: 1,
-        year: 2026,
-        dayOfWeek: "thứ 5",
+  useEffect(() => {
+    if (!homeData) return;
+    const date = new Date(homeData.solarDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const weekdays = [
+      "Chủ Nhật",
+      "Thứ 2",
+      "Thứ 3",
+      "Thứ 4",
+      "Thứ 5",
+      "Thứ 6",
+      "Thứ 7",
+    ];
+
+    const dayOfWeek = weekdays[date.getDay()];
+
+    setInfo([
+      {
+        image: "https://ik.imagekit.io/vuongninh/groomFamily",
+        tabName: "Nhà Trai",
+        brideName: homeData.brideName,
+        groomName: homeData.groomName,
+        guestName: homeData.guestName,
+        solarDate: {
+          hour: homeData.weddingHours,
+          day,
+          month,
+          year,
+          dayOfWeek,
+        },
+        lunarDate: homeData.lunarDate,
+        address: homeData.groomAddress,
+        ggMap: homeData.brideGgAddress,
       },
-      lunarDate: "ngày 13 tháng 11 năm Ất Tỵ",
-      address: "Hội trường thôn Kha Lý\nXã Thụy Quỳnh, Thái Thụy, Thái Bình",
-      ggMap: "",
-    },
-    {
-      image: "https://wpocean.com/html/tf/loveme/assets/images/story/1.jpg",
-      tabName: "Nhà Gái",
-      brideName: "Phương Ninh",
-      groomName: "Quang Vương",
-      guestName: "Bạn ABC",
-      solarDate: {
-        hour: "9 giờ 30",
-        date: 1,
-        month: 1,
-        year: 2026,
-        dayOfWeek: "thứ 5",
+      {
+        image: "https://ik.imagekit.io/vuongninh/brideFamily",
+        tabName: "Nhà Gái",
+        brideName: homeData.brideName,
+        groomName: homeData.groomName,
+        guestName: homeData.guestName,
+        solarDate: {
+          hour: homeData.weddingHours,
+          day,
+          month,
+          year,
+          dayOfWeek,
+        },
+        lunarDate: homeData.lunarDate,
+        address: homeData.brideAddress,
+        ggMap: homeData.brideGgAddress,
       },
-      lunarDate: "ngày 13 tháng 11 năm Ất Tỵ",
-      address: "Thôn Đào Khê Thượng\nNghĩa Châu, Nghĩa Hưng, Nam Định",
-      ggMap: "",
-    },
-  ];
+    ]);
+  }, [homeData]);
 
   const circularAreaConfig = useMemo(
     () => ({
@@ -192,7 +217,7 @@ const Invitation: React.FC = () => {
                     size="middle"
                     style={{ width: "auto", minWidth: "120px" }}
                   >
-                    {item.tabName || `Person ${index + 1}`}
+                    {item?.tabName || `Person ${index + 1}`}
                   </Button>
                 </Space>
                 <div className="w-full relative">
@@ -210,7 +235,7 @@ const Invitation: React.FC = () => {
                   />
 
                   <img
-                    src={item.image}
+                    src={item?.image}
                     alt={`Profile ${index + 1}`}
                     className="w-full h-full object-cover"
                     style={overlayStyles}
@@ -229,38 +254,38 @@ const Invitation: React.FC = () => {
                   >
                     <Space direction="vertical" size={0}>
                       <Text className="font-[VVZORGluaEhvbiUVEY] text-[rgb(188,83,77)] tracking-[0.6px] text-[39px] leading-[1.4]">
-                        {item.groomName} &amp; {item.brideName}
+                        {item?.groomName} &amp; {item?.brideName}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
                         TRÂN TRỌNG KÍNH MỜI
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.6] text-black text-[16px]">
-                        {item.guestName || "Quý Khách"}
+                        {item?.guestName || "Quý Khách"}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] leading-[1.6] text-black text-[14px]">
                         Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
                       </Text>
                       <div className="pt-[5px]">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
-                          {item.solarDate.hour.toUpperCase()}
+                          {item?.solarDate.hour.toUpperCase()}
                         </Text>
                       </div>
                       <Space size={8} align="center">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                          {item.solarDate.dayOfWeek.toUpperCase()}
+                          {item?.solarDate?.dayOfWeek.toUpperCase()}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
                         <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
-                          {item.solarDate.date.toString().padStart(2, "0")}
+                          {item?.solarDate?.day?.toString().padStart(2, "0")}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                          {item.solarDate.month.toString().padStart(2, "0")} -{" "}
-                          {item.solarDate.year}
+                          {item?.solarDate?.month?.toString().padStart(2, "0")}{" "}
+                          - {item?.solarDate.year}
                         </Text>
                       </Space>
                       <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
-                        (Tức {item.lunarDate} )
+                        (Tức {item?.lunarDate} )
                       </Text>
                     </Space>
                     <Space direction="vertical">
@@ -268,7 +293,7 @@ const Invitation: React.FC = () => {
                         className="text-[15px] font-[Mulish,sans-serif] font-bold leading-[1.6] text-[rgb(150,31,31)]"
                         style={{ whiteSpace: "pre-line" }}
                       >
-                        Tại: {item.address}
+                        Tại: {item?.address}
                       </Text>
                       <Text
                         className="text-[21px] font-[VVZORGluaEhvbiUVEY] leading-[1] text-[rgb(0,0,0)]"

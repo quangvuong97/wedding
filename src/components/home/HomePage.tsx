@@ -11,12 +11,17 @@ import WeddingFooter from "./WeddingFooter";
 import SVGSymbols from "../common/SVGSymbols";
 import { HomeDataContext } from "../../contexts/HomeDataContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+import { useSearchParams } from "react-router-dom";
 
 const { useBreakpoint } = Grid;
 
 const HomePage: React.FC = () => {
   const screens = useBreakpoint();
-  const { response, loading } = WeddingPageApi.useGetConfig();
+  const [searchParams] = useSearchParams();
+
+  const { response, loading } = WeddingPageApi.useGetConfig(
+    searchParams.get("guest")
+  );
 
   const spaceSize = useMemo(() => {
     if (screens.lg) return 120;

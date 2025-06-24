@@ -57,13 +57,13 @@ export interface UpdateConfigRequest {
   brideAccountNumber?: string;
   brideAddress?: string;
   brideGgAddress?: string;
-  brideBank?: Banks,
+  brideBank?: Banks;
   brideName?: string;
   groomAccountName?: string;
   groomAccountNumber?: string;
   groomAddress?: string;
   groomGgAddress?: string;
-  groomBank?: Banks,
+  groomBank?: Banks;
   groomName?: string;
   solarDate?: string;
   lunarDate?: string;
@@ -687,7 +687,6 @@ export const getSubdomain = (): string => {
   const hostname = window.location.hostname;
   const parts = hostname.split(".");
 
-  // For development (localhost)
   if (
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
@@ -696,7 +695,6 @@ export const getSubdomain = (): string => {
     return "vuongninh";
   }
 
-  // For production (subdomain.vercel.com)
   if (parts.length >= 3) {
     return parts[0];
   }
