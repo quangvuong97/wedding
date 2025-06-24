@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, Tabs, Typography } from "antd";
 import { EImageStoreType } from "../../../../services/api";
 import ImageGalleryTab from "./ImageGalleryTab";
+import InvitationTab from "./InvitationTab";
 
 const { Title } = Typography;
 
@@ -36,6 +37,11 @@ const ContentManagement: React.FC = () => {
       children: (
         <ImageGalleryTab type={EImageStoreType.FOOTER} title={"Footer"} />
       ),
+    },
+    {
+      key: EImageStoreType.INVITATION,
+      label: "Thiệp mời",
+      children: <InvitationTab />,
     },
   ];
 

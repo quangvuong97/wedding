@@ -498,6 +498,7 @@ export enum EImageStoreType {
   CAROUSEL = "carousel",
   SWEET_MOMENTS = "sweet_moments",
   FOOTER = "footer",
+  INVITATION = "invitation",
 }
 
 export interface UploadImagesRequest {
@@ -673,6 +674,56 @@ export const imageAPI = {
         throw new Error("Failed to delete images");
       }
 
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+
+  uploadImageWithName: async (
+    token: string,
+    file: File,
+    name: string,
+    url?: string
+  ): Promise<string> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+    if (!file && !url) {
+      throw new Error("File or URL is required");
+    }
+    try {
+      const formData = new FormData();
+      if (file) {
+        formData.append("file", file);
+      }
+      formData.append("name", name);
+      if (url) {
+        formData.append("url", url);
+      }
+      const response = await fetch(`${API_URL}/v1/images/upload-one`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to upload image");
+        }
+      }
+      const apiResponse: ApiResponse<string> = await response.json();
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to upload image");
+      }
       return apiResponse.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes("fetch")) {
