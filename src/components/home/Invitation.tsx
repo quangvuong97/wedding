@@ -236,7 +236,9 @@ const Invitation: React.FC = () => {
                   />
 
                   <Image
+                    key={Date.now()}
                     urlEndpoint={homeData?.storageKey.urlEndpoint}
+                    queryParameters={{ date: Date.now() }}
                     src={item?.image || ""}
                     alt={`Profile ${index + 1}`}
                     className="w-full h-full object-cover"

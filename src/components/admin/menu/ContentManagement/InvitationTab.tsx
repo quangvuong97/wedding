@@ -123,7 +123,9 @@ const InvitationTab: React.FC = () => {
               {!error[img.name] ? (
                 <Image
                   key={reloadKey + img.key}
-                  src={`${adminData?.config?.storageKey?.urlEndpoint}/${img.name}?${reloadKey}`}
+                  src={`${adminData?.config?.storageKey?.urlEndpoint}/${
+                    img.name
+                  }?${Date.now()}${reloadKey}`}
                   alt={img.label}
                   style={imageStyle}
                   width={300}
