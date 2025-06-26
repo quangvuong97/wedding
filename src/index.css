@@ -53,6 +53,12 @@
     format("truetype");
 }
 
+@font-face {
+  font-family: "VVZOTWpSGuZyUVEY";
+  src: url("../public/fonts/UnvMoiHong/uvnmoihong-20240502170800-ouaqa.ttf")
+    format("truetype");
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap");
 
 i[class^="flaticon-"]:before,

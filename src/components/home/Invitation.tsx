@@ -1,11 +1,12 @@
-import { Col, Row, Button, Space, Typography } from "antd";
+import { Col, Row, Space, Typography } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import { Image } from "@imagekit/react";
+import { useSearchParams } from "react-router-dom";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 interface InvitationInfo {
   image: string;
@@ -40,6 +41,7 @@ interface CircularOverlayStyle {
 
 const Invitation: React.FC = () => {
   const homeData = useHomeData();
+  const [searchParams] = useSearchParams();
   const [overlayStyles, setOverlayStyles] = useState<
     CircularOverlayStyle | {}
   >();
@@ -85,7 +87,7 @@ const Invitation: React.FC = () => {
         },
         lunarDate: homeData.lunarDate,
         address: homeData.groomAddress,
-        ggMap: homeData.brideGgAddress,
+        ggMap: homeData.groomGgAddress,
       },
       {
         image: "https://ik.imagekit.io/vuongninh/brideFamily",
@@ -116,8 +118,9 @@ const Invitation: React.FC = () => {
     []
   );
 
-  const handleButtonClick = () => {
-    console.log("Button clicked!");
+  const handleConfirmAttendance = () => {
+    const guestId = searchParams.get("guest");
+    alert(`guestId: ${guestId}`);
   };
 
   // Helper function to generate scaled styles for the invitation text
@@ -213,13 +216,15 @@ const Invitation: React.FC = () => {
                 align="center"
               >
                 <Space>
-                  <Button
-                    type="default"
-                    size="middle"
-                    style={{ width: "auto", minWidth: "120px" }}
+                  <Title
+                    style={{
+                      fontFamily: "VVZOTWpSGuZyUVEY",
+                      margin: 0,
+                      color: "#1e8267",
+                    }}
                   >
-                    {item?.tabName || `Person ${index + 1}`}
-                  </Button>
+                    {item?.tabName}
+                  </Title>
                 </Space>
                 <div className="w-full relative">
                   <img
@@ -228,7 +233,7 @@ const Invitation: React.FC = () => {
                         imageRef.current = el;
                       }
                     }}
-                    src="https://w.ladicdn.com/s800x1000/5c728619c417ab07e5194baa/3-20240601020038-vnpyd.png"
+                    src="images/thiep.png"
                     alt={`Invitation ${index + 1}`}
                     className="w-full h-auto object-contain"
                     style={{ display: "block" }}
@@ -314,14 +319,16 @@ const Invitation: React.FC = () => {
                   <CustomButton
                     text="Xác nhận tham dự"
                     icon={<i className="text-[#fff] fi fi-ss-user-trust"></i>}
-                    onClick={() => alert("Clicked!")}
+                    onClick={() => handleConfirmAttendance()}
                   />
                   <CustomButton
                     text="Chỉ đường"
                     icon={
                       <i className="text-[#fff] fi fi-ss-land-layer-location"></i>
                     }
-                    onClick={() => alert("Clicked!")}
+                    onClick={() =>
+                      item?.ggMap && window.open(item?.ggMap, "_blank")
+                    }
                   />
                 </Space>
               </Space>

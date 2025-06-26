@@ -127,7 +127,7 @@ const Header: React.FC<{
                 <img src="https://i.ibb.co/0Vv7LF6j/shape3.png" alt="" />
               </div>
               <div className="absolute -bottom-[54px] left-0">
-                <img src="https://i.ibb.co/w9YJzQ7/shape4.png" alt="" />
+                <img src="images/shape4.png" alt="" />
               </div>
             </div>
           </div>
