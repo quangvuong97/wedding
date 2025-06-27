@@ -41,7 +41,6 @@ interface CircularOverlayStyle {
 
 const Invitation: React.FC = () => {
   const homeData = useHomeData();
-  const [searchParams] = useSearchParams();
   const [overlayStyles, setOverlayStyles] = useState<
     CircularOverlayStyle | {}
   >();
@@ -77,7 +76,7 @@ const Invitation: React.FC = () => {
         tabName: "Nhà Trai",
         brideName: homeData.brideName,
         groomName: homeData.groomName,
-        guestName: homeData.guestName,
+        guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
         solarDate: {
           hour: homeData.weddingHours,
           day,
@@ -94,7 +93,7 @@ const Invitation: React.FC = () => {
         tabName: "Nhà Gái",
         brideName: homeData.brideName,
         groomName: homeData.groomName,
-        guestName: homeData.guestName,
+        guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
         solarDate: {
           hour: homeData.weddingHours,
           day,
@@ -119,8 +118,7 @@ const Invitation: React.FC = () => {
   );
 
   const handleConfirmAttendance = () => {
-    const guestId = searchParams.get("guest");
-    alert(`guestId: ${guestId}`);
+    alert(`guest`);
   };
 
   // Helper function to generate scaled styles for the invitation text

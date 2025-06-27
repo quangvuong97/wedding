@@ -297,8 +297,8 @@ const GuestManagement: React.FC = () => {
       dataIndex: "slug",
       key: "slug",
       width: 120,
-      render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, "slug"),
+      // render: (text: string, record: GetGuestResponse) =>
+      //   renderEditableCell(text, record, "slug"),
     },
     {
       title: "SĐT",
@@ -528,6 +528,11 @@ const GuestManagement: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
+              <Form.Item label="Số điện thoại" name="phoneNumber">
+                <Input placeholder="Nhập số điện thoại" />
+              </Form.Item>
+            </Col>
+            {/* <Col span={12}>
               <Form.Item
                 label="Slug"
                 name="slug"
@@ -535,13 +540,13 @@ const GuestManagement: React.FC = () => {
               >
                 <Input placeholder="Nhập slug" />
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Số điện thoại" name="phoneNumber">
-                <Input placeholder="Nhập số điện thoại" />
+              <Form.Item label="Facebook" name="facebook">
+                <Input placeholder="Nhập link Facebook" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -550,10 +555,6 @@ const GuestManagement: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
-
-          <Form.Item label="Facebook" name="facebook">
-            <Input placeholder="Nhập link Facebook" />
-          </Form.Item>
 
           <Form.Item label="Ghi chú" name="note">
             <Input.TextArea rows={3} placeholder="Nhập ghi chú" />

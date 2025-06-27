@@ -8,7 +8,7 @@ export interface ApiResponse<T> {
   totalElements?: number;
 }
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+export const API_URL = /* process.env.REACT_APP_API_URL || */ "http://localhost:3000";
 
 // Simple in-memory cache
 const fetchCache = new Map<string, any>();

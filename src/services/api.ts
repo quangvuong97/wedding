@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+import { API_URL } from "./common";
 
 export interface LoginRequest {
   username: string;

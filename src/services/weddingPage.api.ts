@@ -38,9 +38,11 @@ export interface UserConfig {
 
   logoBankBride: string;
 
-  guestName: string;
+  guestSlug?: string;
 
-  guestId: string;
+  guestName?: string;
+
+  guestOf?: "groom" | "bride";
 }
 
 export const WeddingPageApi = {
