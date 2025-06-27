@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getSubdomain, EImageStoreType } from "./api";
 import useFetch from "./common";
 
@@ -45,6 +46,13 @@ export interface UserConfig {
   guestOf?: "groom" | "bride";
 }
 
+export interface ConfirmAttendanceRequest {
+  isAttendance: "attendance" | "not_attendance";
+  guestSlug?: string;
+  guestOf?: "groom" | "bride";
+  name?: string;
+}
+
 export const WeddingPageApi = {
   useGetCarousel: () =>
     useFetch<string[]>(
@@ -62,7 +70,35 @@ export const WeddingPageApi = {
     useFetch<UserConfig>(
       `v1/public/${getSubdomain()}/configs?guest=${guest || ""}`
     ),
-  // Ví dụ POST
+  useConfirmAttendance: () => {
+    const [loading, setLoading] = useState(false);
+    const [response, setResponse] = useState<any>(null);
+    const [error, setError] = useState<any>(null);
+    const username = getSubdomain();
+
+    const confirm = async (body: ConfirmAttendanceRequest) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`http://localhost:3000/v1/public/${username}/confirm-attendance`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        setResponse(json);
+        return json;
+      } catch (err) {
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return { confirm, loading, response, error };
+  },
+  // V�� dụ POST
   // useCreateGuest: () => {
   //   const config = {
   //     url: "v1/guests",

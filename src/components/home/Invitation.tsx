@@ -1,10 +1,19 @@
-import { Col, Row, Space, Typography } from "antd";
+import {
+  Col,
+  Row,
+  Space,
+  Typography,
+  Modal,
+  Button,
+  Input,
+  message,
+} from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import { Image } from "@imagekit/react";
-import { useSearchParams } from "react-router-dom";
+import { WeddingPageApi } from "../../services/weddingPage.api";
 
 const { Text, Title } = Typography;
 
@@ -117,8 +126,66 @@ const Invitation: React.FC = () => {
     []
   );
 
-  const handleConfirmAttendance = () => {
-    alert(`guest`);
+  // State cho popup xác nhận
+  const [showModal, setShowModal] = useState(false);
+  const [isAttendance, setIsAttendance] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  // Sử dụng custom hook mới
+  const { confirm, loading: confirmLoading } =
+    WeddingPageApi.useConfirmAttendance();
+
+  // Lưu tabName để xác định guestOf khi cần
+  const [currentTabName, setCurrentTabName] = useState<string>("");
+
+  const handleConfirmAttendance = (tabName: string) => {
+    setShowModal(true);
+    setIsAttendance(null);
+    setName("");
+    setNameError("");
+    setCurrentTabName(tabName);
+  };
+
+  const handleModalCancel = () => {
+    setShowModal(false);
+    setIsAttendance(null);
+    setNameError("");
+  };
+
+  const handleAttendanceSelect = (value: string) => {
+    setIsAttendance(value);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    if (e.target.value) setNameError("");
+  };
+
+  const handleSubmitConfirm = async () => {
+    if (!isAttendance) return;
+    if (!homeData?.guestSlug && !name.trim()) {
+      setNameError("Nhập tên của bạn giúp vợ chồng mình nhé");
+      return;
+    }
+    try {
+      const body: any = {
+        isAttendance,
+      };
+      if (homeData?.guestSlug) {
+        body.guestSlug = homeData.guestSlug;
+      } else {
+        body.guestOf = currentTabName === "Nhà Trai" ? "groom" : "bride";
+        body.name = name.trim();
+      }
+      await confirm(body);
+      setShowModal(false);
+      setShowThankYou(true);
+      setTimeout(() => setShowThankYou(false), 5000);
+    } catch (err) {
+      message.error("Có lỗi xảy ra, vui lòng thử lại!");
+    }
   };
 
   // Helper function to generate scaled styles for the invitation text
@@ -196,6 +263,76 @@ const Invitation: React.FC = () => {
 
   return (
     <Section title="Wedding Invitation">
+      <Modal
+        open={showModal}
+        onCancel={handleModalCancel}
+        footer={null}
+        centered
+        destroyOnClose
+      >
+        <div style={{ textAlign: "center", padding: 8 }}>
+          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>
+            Cảm ơn bạn đã xác nhận giùm vợ chồng mình nhé
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <Button
+              type={isAttendance === "attendance" ? "primary" : "default"}
+              onClick={() => handleAttendanceSelect("attendance")}
+              style={{ marginRight: 8 }}
+            >
+              Có, tôi sẽ đến
+            </Button>
+            <Button
+              type={isAttendance === "not_attendance" ? "primary" : "default"}
+              onClick={() => handleAttendanceSelect("not_attendance")}
+            >
+              Xin lỗi, tôi bận mất rồi
+            </Button>
+          </div>
+          {!homeData?.guestSlug && (
+            <div style={{ marginBottom: 12 }}>
+              <Input
+                placeholder="Nhập tên của bạn"
+                value={name}
+                onChange={handleNameChange}
+              />
+              {nameError && (
+                <div style={{ color: "red", marginTop: 4, fontSize: 13 }}>
+                  {nameError}
+                </div>
+              )}
+            </div>
+          )}
+          <Button
+            type="primary"
+            loading={confirmLoading}
+            disabled={!isAttendance || (!homeData?.guestSlug && !name.trim())}
+            onClick={handleSubmitConfirm}
+            style={{ marginTop: 8, width: 160 }}
+          >
+            Xác nhận
+          </Button>
+        </div>
+      </Modal>
+      <Modal
+        open={showThankYou}
+        footer={null}
+        closable={false}
+        centered
+        destroyOnClose
+        onCancel={() => setShowThankYou(false)}
+      >
+        <div style={{ textAlign: "center", padding: 16 }}>
+          <div style={{ fontWeight: 600, fontSize: 20, marginBottom: 10 }}>
+            Cảm ơn đã phản hồi cho hai vợ chồng
+          </div>
+          <div style={{ fontSize: 16, marginBottom: 8 }}>
+            Thank you!
+            <br />
+            Chúc bạn thật nhiều sức khỏe nhé ❤️️
+          </div>
+        </div>
+      </Modal>
       <Row
         justify="center"
         gutter={[
@@ -317,7 +454,7 @@ const Invitation: React.FC = () => {
                   <CustomButton
                     text="Xác nhận tham dự"
                     icon={<i className="text-[#fff] fi fi-ss-user-trust"></i>}
-                    onClick={() => handleConfirmAttendance()}
+                    onClick={() => handleConfirmAttendance(item?.tabName || "")}
                   />
                   <CustomButton
                     text="Chỉ đường"
