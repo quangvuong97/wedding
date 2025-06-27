@@ -1,13 +1,28 @@
 import { Button, Card, Divider, Image, QRCode, Space, Typography } from "antd";
 import Section from "../../common/Section";
 import { useEffect, useRef, useState } from "react";
+import { useHomeData } from "../../contexts/HomeDataContext";
 
 const { Title, Text } = Typography;
 
 const Present: React.FC = () => {
-  const qrData = [{ title: "Chú Rể" }, { title: "Cô Dâu" }];
-  const dataQR =
-    "00020101021238560010A0000007270126000697041501121133666688880208QRIBFTTA53037045405790005802VN62220818Ung";
+  const homeData = useHomeData();
+  const qrData = [
+    {
+      title: "Chú Rể",
+      dataQR: homeData?.dataGroomQR,
+      accountNo: homeData?.groomAccountNumber,
+      accountName: homeData?.groomAccountName,
+      bankLog: homeData?.logoBankGroom,
+    },
+    {
+      title: "Cô Dâu",
+      dataQR: homeData?.dataBrideQR,
+      accountNo: homeData?.brideAccountNumber,
+      accountName: homeData?.brideAccountName,
+      bankLog: homeData?.logoBankBride,
+    },
+  ];
 
   const DESIGN_WIDTH = 576;
   const [scale, setScale] = useState(1);
@@ -49,14 +64,14 @@ const Present: React.FC = () => {
   }, [scale]);
 
   return (
-    <Section titleStyle={{ marginBottom: "24px" }} title="Mừng cưới">
-      <Text style={{ marginBottom: "30px" }}>
+    <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
+      <Text>
         Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy hãy
         đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn vẹn
         hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
       </Text>
       <div
-        className="justify-center w-full pt-[12px] relative"
+        className="justify-center w-full pt-[24px] relative"
         ref={divRef}
         style={{ height: spaceHeight }}
       >
@@ -76,16 +91,10 @@ const Present: React.FC = () => {
                 styles={{ body: { padding: 16 } }}
               >
                 <div className="absolute -top-[20px] -right-[5px] p-[5px] bg-white">
-                  <img
-                    src="https://wpocean.com/html/tf/loveme/assets/images/event-shape-1.png"
-                    alt="top-left-decoration"
-                  />
+                  <img src="images/shape1.png" alt="top-left-decoration" />
                 </div>
                 <div className="absolute -bottom-[20px] -left-[5px] transform rotate-180 p-[2px] bg-white">
-                  <img
-                    src="https://wpocean.com/html/tf/loveme/assets/images/event-shape-1.png"
-                    alt="bottom-right-decoration"
-                  />
+                  <img src="images/shape1.png" alt="bottom-right-decoration" />
                 </div>
                 <Space
                   size={6}
@@ -117,25 +126,31 @@ const Present: React.FC = () => {
                     }}
                   >
                     <Image
-                      wrapperStyle={{ height: 40, display: "flex" }}
-                      src="https://api.vietqr.io/img/TCB.png"
+                      wrapperStyle={{
+                        height: 40,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        // width: 100%;
+                        /* height: 300px; */
+                        overflow: "hidden",
+                      }}
+                      src={item.bankLog}
                       preview={false}
-                      width={180}
+                      width={138}
                       style={{ objectFit: "cover" }}
                     />
-                    <QRCode value={dataQR} size={140} bordered={false} />
+                    <QRCode
+                      value={item.dataQR || ""}
+                      size={140}
+                      bordered={false}
+                    />
                     <div className="flex justify-center">
                       <div className="w-[40%]">
-                        <img
-                          alt=""
-                          src="https://camo.githubusercontent.com/b624142eb1373b5f2b06067da2427c6386d90d17519aee75ad69d2b8baefee59/68747470733a2f2f7265732e636c6f7564696e6172792e636f6d2f7461736b6d616e616765726561676c6f623132332f696d6167652f75706c6f61642f76313634313937303939352f5669657451522e34366137386362625f7574777a7a682e706e67"
-                        />
+                        <img alt="" src="images/vietQR.png" />
                       </div>
                       <div className="w-[50%]">
-                        <img
-                          alt=""
-                          src="https://kiemtrabank.com/assets/images/Napas247.b58ff17b.png"
-                        />
+                        <img alt="" src="images/napas247.png" />
                       </div>
                     </div>
                   </Card>
@@ -148,7 +163,7 @@ const Present: React.FC = () => {
                         fontWeight: 700,
                       }}
                     >
-                      NGUYEN THI PHUONG NINH
+                      {item.accountName?.toUpperCase()}
                     </Text>
                     <Text
                       className="font-muli text-[#848892]"
@@ -158,7 +173,7 @@ const Present: React.FC = () => {
                         fontWeight: 700,
                       }}
                     >
-                      09878977234323
+                      {item.accountNo?.toUpperCase()}
                     </Text>
                   </Space>
                   <Space>
