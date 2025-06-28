@@ -1,12 +1,26 @@
-import { Button, Card, Divider, Image, QRCode, Space, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Divider,
+  Image,
+  message,
+  QRCode,
+  Space,
+  Typography,
+} from "antd";
 import Section from "../../common/Section";
-import { useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { useHomeData } from "../../contexts/HomeDataContext";
 
 const { Title, Text } = Typography;
 
 const Present: React.FC = () => {
   const homeData = useHomeData();
+  const count = 2;
+  const qrRef = useMemo(
+    () => Array.from({ length: count }, () => createRef<HTMLDivElement>()),
+    [count]
+  );
   const qrData = [
     {
       title: "Chú Rể",
@@ -30,6 +44,7 @@ const Present: React.FC = () => {
 
   const divRef = useRef<HTMLDivElement | null>(null);
   const spaceRef = useRef<HTMLDivElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,13 +78,146 @@ const Present: React.FC = () => {
     };
   }, [scale]);
 
+  const [qrUrl, setQrUrl] = useState<(string | undefined)[]>([
+    undefined,
+    undefined,
+  ]);
+  useEffect(() => {
+    for (let index = 0; index < qrRef.length; index++) {
+      const qrR = qrRef[index];
+      if (qrR.current) {
+        const canvas = qrR.current.querySelector("canvas");
+        if (canvas) {
+          setQrUrl((value) => {
+            value[index] = canvas.toDataURL("image/png");
+            return value;
+          });
+        } else {
+          const svgElement = qrR.current.querySelector("svg");
+          if (svgElement) {
+            console.log(svgElement);
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const svgBlob = new Blob([svgData], {
+              type: "image/svg+xml;charset=utf-8",
+            });
+            const svgUrl = URL.createObjectURL(svgBlob);
+
+            const img = document.createElement("img", {}) as HTMLImageElement;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = svgElement!.clientWidth;
+              canvas.height = svgElement!.clientHeight;
+              const ctx = canvas.getContext("2d");
+              ctx!.fillStyle = "#ffffff"; // Màu trắng
+              ctx!.fillRect(0, 0, canvas.width, canvas.height);
+              ctx!.drawImage(img, 0, 0);
+              setQrUrl((value) => {
+                value[index] = canvas.toDataURL("image/png");
+                return value;
+              });
+              URL.revokeObjectURL(svgUrl);
+            };
+            img.src = svgUrl;
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeData?.dataGroomQR, homeData?.dataBrideQR]);
+
+  const isIOS =
+    /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) &&
+    ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
+  const downloadQR = async (index: number) => {
+    const url = qrUrl[index];
+    if (!url) return;
+    if (isIOS) {
+      const newWindow = window.open();
+
+      if (newWindow) {
+        newWindow.document.write(`
+        <html>
+          <head>
+            <title>QR Code</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+            <style>
+              html, body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                background: #fff; /* hoặc trắng nếu bạn muốn */
+              }
+              img {
+                max-width: 80%;
+                max-height: 80%;
+                object-fit: contain;
+              }
+              h1 {
+                text-align: center;
+                max-width: 90%;
+              }
+            </style>
+          </head>
+          <body>
+          <h1>Nhấn giữ vào ảnh để sao chép hoặc tải về nhé!</h1>
+            <img src="${url}" alt="QR Code" />
+          </body>
+        </html>
+      `);
+        newWindow.document.close();
+      } else {
+        alert("Không thể mở ảnh. Hãy kiểm tra popup blocker.");
+      }
+    } else {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "vuong-ninh-wedding-code.png";
+      link.click();
+    }
+  };
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      message.success("Đã copy!");
+    } catch (err) {
+      // Fallback cho browser không hỗ trợ Clipboard API
+      if (textAreaRef.current) {
+        const textArea = textAreaRef.current;
+        textArea.value = text;
+        textArea.focus({ preventScroll: true });
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+          message.success("Đã copy!");
+        } catch (err) {
+          message.error("Copy thất bại!");
+        }
+        textArea.value = "";
+      }
+    }
+  };
+
   return (
     <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
-      <Text>
+      <Text className="font-muli">
         Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy hãy
         đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn vẹn
         hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
       </Text>
+      <textarea
+        ref={textAreaRef}
+        readOnly
+        className="absolute w-px h-px opacity-0 -left-[9999px] -top-[9999px]"
+        aria-hidden="true"
+      />
       <div
         className="justify-center w-full pt-[24px] relative"
         ref={divRef}
@@ -83,7 +231,7 @@ const Present: React.FC = () => {
             transform: `scale(${scale})`,
           }}
         >
-          {qrData.map((item) => {
+          {qrData.map((item, index) => {
             return (
               <Card
                 key={item.title}
@@ -108,7 +256,7 @@ const Present: React.FC = () => {
                     },
                   }}
                 >
-                  <Title className="!text-[25px] !font-futura !text-[#1e8267] !mb-[0]">
+                  <Title className="!text-[25px] !font-[Mulish,sans-serif] !font-bold !text-[#1e8267] !mb-[0]">
                     {item.title.toUpperCase()}
                   </Title>
                   <Divider className="border-[#1e826766] m-0" />
@@ -131,20 +279,37 @@ const Present: React.FC = () => {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        // width: 100%;
-                        /* height: 300px; */
                         overflow: "hidden",
                       }}
                       src={item.bankLog}
                       preview={false}
-                      width={138}
-                      style={{ objectFit: "cover" }}
+                      width={140}
+                      style={{
+                        objectFit: "cover",
+                        height: "100%",
+                        width: "auto",
+                      }}
                     />
-                    <QRCode
-                      value={item.dataQR || ""}
-                      size={140}
-                      bordered={false}
-                    />
+                    <div ref={qrRef[index]} style={{ display: "none" }}>
+                      <QRCode
+                        bgColor="#FFF"
+                        style={{ border: 0 }}
+                        value={item.dataQR || ""}
+                        size={140}
+                        bordered={false}
+                      />
+                    </div>
+                    {qrUrl && qrUrl[index] ? (
+                      <Image
+                        preview={false}
+                        src={qrUrl[index]}
+                        alt="QR Code"
+                        width={140}
+                        height={140}
+                      />
+                    ) : (
+                      <p>Đang tạo QR...</p>
+                    )}
                     <div className="flex justify-center">
                       <div className="w-[40%]">
                         <img alt="" src="images/vietQR.png" />
@@ -168,7 +333,7 @@ const Present: React.FC = () => {
                     <Text
                       className="font-muli text-[#848892]"
                       style={{
-                        fontSize: 15,
+                        fontSize: 14,
                         lineHeight: "30px",
                         fontWeight: 700,
                       }}
@@ -179,11 +344,13 @@ const Present: React.FC = () => {
                   <Space>
                     <Button
                       className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
+                      onClick={() => downloadQR(index)}
                       icon={<i className="fi fi-br-download"></i>}
                     >
                       Tải QR
                     </Button>
                     <Button
+                      onClick={() => handleCopy(item.accountNo || "")}
                       icon={<i className="fi fi-rr-duplicate"></i>}
                       className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
                     >

@@ -10,7 +10,6 @@ module.exports = {
     extend: {
       fontFamily: {
         futura: ['"Futura PT"', "sans-serif"],
-        muli: ["'Muli'", "sans-serif"],
         'dancing-script': ["'Dancing Script'", "sans-serif"]
       },
       colors: {
