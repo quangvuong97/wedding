@@ -29,11 +29,10 @@ module.exports = {
       "xl": "1400px",
       "xxl": "1440px",
 
-      "maxXs": { max: "1399px" },  // max-width: 575px
-      "maxSm": { max: "1199px" },  // max-width: 767px
-      "maxMd": { max: "991px" },  // max-width: 991px
-      "maxLg": { max: "767px" }, // max-width: 1199px
-      // "xl": { max: "575px" }, // max-width: 1399px
+      "maxXs": { max: "1399px" },
+      "maxSm": { max: "1199px" },
+      "maxMd": { max: "991px" }, 
+      "maxLg": { max: "767px" }, 
       "maxSsm": { max: "576px" },
     },
   },
