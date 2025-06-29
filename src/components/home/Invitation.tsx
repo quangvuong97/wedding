@@ -6,7 +6,6 @@ import {
   Modal,
   Button,
   Input,
-  message,
 } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
@@ -169,23 +168,19 @@ const Invitation: React.FC = () => {
       setNameError("Nhập tên của bạn giúp vợ chồng mình nhé");
       return;
     }
-    try {
-      const body: any = {
-        isAttendance,
-      };
-      if (homeData?.guestSlug) {
-        body.guestSlug = homeData.guestSlug;
-      } else {
-        body.guestOf = currentTabName === "Nhà Trai" ? "groom" : "bride";
-        body.name = name.trim();
-      }
-      await confirm(body);
-      setShowModal(false);
-      setShowThankYou(true);
-      setTimeout(() => setShowThankYou(false), 5000);
-    } catch (err) {
-      message.error("Có lỗi xảy ra, vui lòng thử lại!");
+    const body: any = {
+      isAttendance,
+    };
+    if (homeData?.guestSlug) {
+      body.guestSlug = homeData.guestSlug;
+    } else {
+      body.guestOf = currentTabName === "Nhà Trai" ? "groom" : "bride";
+      body.name = name.trim();
     }
+    await confirm(body);
+    setShowModal(false);
+    setShowThankYou(true);
+    setTimeout(() => setShowThankYou(false), 5000);
   };
 
   // Helper function to generate scaled styles for the invitation text
@@ -268,7 +263,7 @@ const Invitation: React.FC = () => {
         onCancel={handleModalCancel}
         footer={null}
         centered
-        destroyOnClose
+        destroyOnHidden
       >
         <div style={{ textAlign: "center", padding: 8 }}>
           <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>

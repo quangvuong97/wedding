@@ -80,7 +80,7 @@ export const WeddingPageApi = {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:3000/v1/public/${username}/confirm-attendance`, {
+        const res = await fetch(`$/v1/public/${username}/confirm-attendance`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -89,8 +89,8 @@ export const WeddingPageApi = {
         setResponse(json);
         return json;
       } catch (err) {
-        setError(err);
-        throw err;
+        return;
+        // throw err;
       } finally {
         setLoading(false);
       }

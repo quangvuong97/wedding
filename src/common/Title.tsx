@@ -14,7 +14,7 @@ const Title: React.FC<CustomTitleProps> = ({ text, style }) => {
         alt=""
         className="max-w-full align-middle inline"
       />
-      <h2 className="text-[40px] leading-[55px] my-[15px] relative uppercase font-[Futura_PT] font-medium text-[#002642] maxLg:text-[32px] maxLg:leading-[40px] maxSsm:text-[22px]">
+      <h2 className="text-[45px] leading-[55px] my-[15px] relative font-[marsha] font-medium text-[#002642] maxLg:text-[32px] maxLg:leading-[40px] maxSsm:text-[22px]">
         {text}
       </h2>
       <div
