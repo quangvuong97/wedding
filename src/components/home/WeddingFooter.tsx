@@ -31,7 +31,9 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
           justifyContent: "center",
           width: "100vw", // Full chiều rộng màn hình
           height: "100vh", // Chiều cao tối thiểu khi màn hình nhỏ
-          backgroundImage: `url(${image && image[0]})`,
+          backgroundImage: `url(${homeData?.storageKey.urlEndpoint}${
+            image && image[0]
+          })`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

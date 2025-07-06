@@ -1,12 +1,4 @@
-import {
-  Col,
-  Row,
-  Space,
-  Typography,
-  Modal,
-  Button,
-  Input,
-} from "antd";
+import { Col, Row, Space, Typography, Modal, Button, Input } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
@@ -80,7 +72,7 @@ const Invitation: React.FC = () => {
 
     setInfo([
       {
-        image: "https://ik.imagekit.io/vuongninh/groomFamily",
+        image: "/groomFamily",
         tabName: "Nhà Trai",
         brideName: homeData.brideName,
         groomName: homeData.groomName,
@@ -97,7 +89,7 @@ const Invitation: React.FC = () => {
         ggMap: homeData.groomGgAddress,
       },
       {
-        image: "https://ik.imagekit.io/vuongninh/brideFamily",
+        image: "/brideFamily",
         tabName: "Nhà Gái",
         brideName: homeData.brideName,
         groomName: homeData.groomName,

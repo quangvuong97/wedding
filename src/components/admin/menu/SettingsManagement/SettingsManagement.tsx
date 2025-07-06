@@ -4,6 +4,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import { authAPI, UserProfile } from "../../../../services/api";
 import WeddingConfigTab from "./WeddingConfigTab";
 import StorageConfigTab from "./StorageConfigTab";
+import { useAdminData } from "../../../../contexts/AdminDataContext";
 
 const { Title, Text } = Typography;
 
@@ -32,8 +33,10 @@ const SettingsManagement: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
+  const { setAdminData } = useAdminData();
   const handleProfileUpdate = (updatedProfile: UserProfile) => {
     setProfile(updatedProfile);
+    setAdminData((value) => ({ ...value, ...updatedProfile }));
   };
 
   if (loading) {

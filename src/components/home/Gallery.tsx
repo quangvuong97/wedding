@@ -121,7 +121,11 @@ const Gallery: React.FC = () => {
           }}
         >
           {images.map((item) => (
-            <Image key={item + 1} src={item} style={{ height: 0, width: 0 }} />
+            <Image
+              key={item + 1}
+              src={homeData?.storageKey.urlEndpoint + item}
+              style={{ height: 0, width: 0 }}
+            />
           ))}
 
           {images.map((item, index) => (

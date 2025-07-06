@@ -515,8 +515,7 @@ export interface BulkDeleteImagesRequest {
 
 export interface GetImageResponse {
   id: string;
-  imageId: string;
-  imageUrl: string;
+  imagePath: string;
   type: EImageStoreType;
 }
 

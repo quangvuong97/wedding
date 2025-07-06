@@ -122,7 +122,9 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <AdminDataContext.Provider value={profile}>
+    <AdminDataContext.Provider
+      value={{ adminData: profile, setAdminData: setProfile }}
+    >
       <Layout style={{ minHeight: "100vh" }}>
         <Layout>
           <Sider

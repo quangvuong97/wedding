@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Button,
   Upload,
@@ -29,6 +29,7 @@ import {
   GetImageResponse,
 } from "../../../../services/api";
 import type { UploadFile } from "antd/es/upload/interface";
+import { useAdminData } from "../../../../contexts/AdminDataContext";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -47,6 +48,11 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [urlInput, setUrlInput] = useState("");
+  const { adminData } = useAdminData();
+  const urlEndpoint = useMemo(() => {
+    return adminData?.config.storageKey.filter((e) => e.isDefault)[0]
+      .urlEndpoint;
+  }, [adminData]);
 
   // Load images
   const loadImages = async () => {
@@ -65,7 +71,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
   useEffect(() => {
     loadImages();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, type]);
 
   // Handle image selection
@@ -300,7 +306,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
 
                   {/* Image */}
                   <Image
-                    src={image.imageUrl}
+                    src={urlEndpoint ? urlEndpoint + image.imagePath : ""}
                     alt="Gallery image"
                     style={{
                       width: "100%",

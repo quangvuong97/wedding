@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Form,
   Input,
   Button,
   message,
@@ -10,7 +9,13 @@ import {
   Space,
   Popconfirm,
 } from "antd";
-import { SaveOutlined, PlusOutlined, DeleteOutlined, StarOutlined, StarFilled } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  StarOutlined,
+  StarFilled,
+} from "@ant-design/icons";
 import { useAuth } from "../../../../contexts/AuthContext";
 import {
   authAPI,
@@ -38,19 +43,26 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
   onUpdate,
 }) => {
   const { accessToken } = useAuth();
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [storageKeys, setStorageKeys] = useState<StorageKeyRequest[]>([]);
 
   useEffect(() => {
     if (profile?.config?.storageKey) {
-      setStorageKeys(profile.config.storageKey.length > 0 ? profile.config.storageKey : [emptyStorageKey()]);
+      setStorageKeys(
+        profile.config.storageKey.length > 0
+          ? profile.config.storageKey
+          : [emptyStorageKey()]
+      );
     } else {
       setStorageKeys([emptyStorageKey()]);
     }
   }, [profile]);
 
-  const handleFieldChange = (index: number, field: keyof StorageKeyRequest, value: string | boolean) => {
+  const handleFieldChange = (
+    index: number,
+    field: keyof StorageKeyRequest,
+    value: string | boolean
+  ) => {
     setStorageKeys((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
@@ -67,7 +79,9 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
   };
 
   const handleSetDefault = (index: number) => {
-    setStorageKeys((prev) => prev.map((item, i) => ({ ...item, isDefault: i === index })));
+    setStorageKeys((prev) =>
+      prev.map((item, i) => ({ ...item, isDefault: i === index }))
+    );
   };
 
   const handleSave = async () => {
@@ -105,7 +119,10 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
           storageKey: storageKeys,
         },
       };
-      const updatedProfile = await authAPI.updateProfile(accessToken, updateData);
+      const updatedProfile = await authAPI.updateProfile(
+        accessToken,
+        updateData
+      );
       onUpdate(updatedProfile);
       message.success("Cấu hình kho lưu trữ đã được cập nhật thành công!");
     } catch (error: any) {
@@ -119,12 +136,12 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
     <div>
       <div style={{ marginBottom: 24 }}>
         <Text type="secondary">
-          Cấu hình thông tin kết n��i với dịch vụ lưu trữ ảnh và tệp tin
+          Cấu hình thông tin kết nối với dịch vụ lưu trữ ảnh và tệp tin
         </Text>
       </div>
       <Table
         dataSource={storageKeys}
-        rowKey={(_, idx) => idx!.toString()}
+        rowKey={(storageRequest) => storageRequest.urlEndpoint}
         pagination={false}
         bordered
         style={{ marginBottom: 16 }}
@@ -137,7 +154,9 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
             <Input
               value={text}
               minLength={10}
-              onChange={(e) => handleFieldChange(idx, "publicKey", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(idx, "publicKey", e.target.value)
+              }
               placeholder="Nhập Public Key"
             />
           )}
@@ -150,7 +169,9 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
             <Input.Password
               value={text}
               minLength={10}
-              onChange={(e) => handleFieldChange(idx, "privateKey", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(idx, "privateKey", e.target.value)
+              }
               placeholder="Nhập Private Key"
             />
           )}
@@ -162,7 +183,9 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
           render={(text, _, idx) => (
             <Input
               value={text}
-              onChange={(e) => handleFieldChange(idx, "urlEndpoint", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(idx, "urlEndpoint", e.target.value)
+              }
               placeholder="https://your-storage-service.com/api"
             />
           )}

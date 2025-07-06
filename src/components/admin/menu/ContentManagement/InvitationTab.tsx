@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Row,
   Col,
@@ -62,7 +62,11 @@ const InvitationTab: React.FC = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState<{ [key: string]: boolean }>({});
 
-  const adminData = useAdminData();
+  const { adminData } = useAdminData();
+  const urlEndpoint = useMemo(() => {
+    return adminData?.config.storageKey.filter((e) => e.isDefault)[0]
+      .urlEndpoint;
+  }, [adminData]);
 
   const [uploadModal, setUploadModal] = useState<{
     open: boolean;
@@ -123,9 +127,7 @@ const InvitationTab: React.FC = () => {
               {!error[img.name] ? (
                 <Image
                   key={reloadKey + img.key}
-                  src={`${adminData?.config?.storageKey[0].urlEndpoint}/${
-                    img.name
-                  }?${Date.now()}${reloadKey}`}
+                  src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}
                   alt={img.label}
                   style={imageStyle}
                   width={300}
