@@ -34,6 +34,8 @@ export interface UserProfile {
     brideGgAddress: string;
     brideName: string;
     brideBankId: number;
+    groomIntroduction: string;
+    brideIntroduction: string;
     groomAccountName: string;
     groomAccountNumber: string;
     groomAddress: string;
@@ -61,6 +63,8 @@ export interface UpdateConfigRequest {
   brideGgAddress?: string;
   brideBank?: Banks;
   brideName?: string;
+  groomIntroduction?: string;
+  brideIntroduction?: string;
   groomAccountName?: string;
   groomAccountNumber?: string;
   groomAddress?: string;

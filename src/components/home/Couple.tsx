@@ -6,12 +6,12 @@ const Couple: React.FC = () => {
   const couple = {
     groom: {
       name: homeData?.groomName,
-      info: "Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis give you com of system.",
+      info: homeData?.groomIntroduction,
       img: "https://wpocean.com/html/tf/loveme/assets/images/couple/2.jpg",
     },
     bride: {
       name: homeData?.brideName,
-      info: "Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis give you com of system.",
+      info: homeData?.brideIntroduction,
       img: "https://wpocean.com/html/tf/loveme/assets/images/couple/3.jpg",
     },
   };
@@ -45,7 +45,7 @@ const Couple: React.FC = () => {
             alt=""
           />
         </div>
-        <h3 className="mb-[0.8em] font-dancing-script font-bold text-[28px] text-[#002642]">
+        <h3 className="mb-[0.8em] font-semibold text-[22px] text-[#002642]">
           {couple[object].name}
         </h3>
         <p className="text-[16px] text-[#848892] leading-[1.8em]">

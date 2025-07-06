@@ -17,6 +17,10 @@ export interface UserConfig {
 
   brideGgAddress: string;
 
+  brideIntroduction: string;
+
+  groomIntroduction: string;
+
   groomAccountName: string;
 
   groomAccountNumber: string;

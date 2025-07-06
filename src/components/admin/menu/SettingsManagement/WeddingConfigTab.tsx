@@ -70,6 +70,8 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
         brideAddress: profile.config.brideAddress,
         brideGgAddress: profile.config.brideGgAddress,
         brideName: profile.config.brideName,
+        groomIntroduction: profile.config.groomIntroduction,
+        brideIntroduction: profile.config.brideIntroduction,
         groomAccountName: profile.config.groomAccountName,
         groomAccountNumber: profile.config.groomAccountNumber,
         groomAddress: profile.config.groomAddress,
@@ -114,6 +116,8 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
           brideBank: banks.find((e: Banks) => e.shortName === values.brideBank),
           brideGgAddress: values.brideGgAddress,
           brideName: values.brideName,
+          groomIntroduction: values.groomIntroduction,
+          brideIntroduction: values.brideIntroduction,
           groomAccountName: values.groomAccountName,
           groomAccountNumber: values.groomAccountNumber,
           groomAddress: values.groomAddress,
@@ -189,37 +193,63 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
         >
           <Row gutter={[24, 0]}>
             <Col xs={24} lg={12}>
-              <Form.Item
-                style={{ margin: 0 }}
-                label="Tên Chú Rể"
-                name="groomName"
-                rules={[
-                  { required: true, message: "Vui lòng nhập tên chú rể" },
-                  { min: 2, message: "Tên phải có ít nhất 2 ký tự" },
-                ]}
-              >
-                <Input
-                  placeholder="Nhập tên chú rể"
-                  prefix={<UserOutlined style={{ color: "#1e8267" }} />}
-                />
-              </Form.Item>
+              <Space direction="vertical" style={{ display: "flex" }}>
+                <Form.Item
+                  style={{ margin: 0 }}
+                  label="Tên Chú Rể"
+                  name="groomName"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên chú rể" },
+                    { min: 2, message: "Tên phải có ít nhất 2 ký tự" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập tên chú rể"
+                    prefix={<UserOutlined style={{ color: "#1e8267" }} />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Lời giới thiệu"
+                  name="groomIntroduction"
+                  style={{ margin: 0 }}
+                >
+                  <TextArea
+                    rows={5}
+                    style={{ textAlign: "right" }}
+                    placeholder="Nhập địa chỉ tổ chức nhà trai"
+                  />
+                </Form.Item>
+              </Space>
             </Col>
 
             <Col xs={24} lg={12}>
-              <Form.Item
-                style={{ margin: 0 }}
-                label="Tên Cô Dâu"
-                name="brideName"
-                rules={[
-                  { required: true, message: "Vui lòng nhập tên cô dâu" },
-                  { min: 2, message: "Tên phải có ít nhất 2 ký tự" },
-                ]}
-              >
-                <Input
-                  placeholder="Nhập tên cô dâu"
-                  prefix={<UserOutlined style={{ color: "#1e8267" }} />}
-                />
-              </Form.Item>
+              <Space direction="vertical" style={{ display: "flex" }}>
+                <Form.Item
+                  style={{ margin: 0 }}
+                  label="Tên Cô Dâu"
+                  name="brideName"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên cô dâu" },
+                    { min: 2, message: "Tên phải có ít nhất 2 ký tự" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập tên cô dâu"
+                    prefix={<UserOutlined style={{ color: "#1e8267" }} />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Lời giới thiệu"
+                  name="brideIntroduction"
+                  style={{ margin: 0 }}
+                >
+                  <TextArea
+                    rows={5}
+                    style={{ textAlign: "left" }}
+                    placeholder="Nhập địa chỉ tổ chức nhà trai"
+                  />
+                </Form.Item>
+              </Space>
             </Col>
           </Row>
         </Card>
