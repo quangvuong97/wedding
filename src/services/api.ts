@@ -505,6 +505,7 @@ export enum EImageStoreType {
   SWEET_MOMENTS = "sweet_moments",
   FOOTER = "footer",
   INVITATION = "invitation",
+  COUPLE = "couple",
 }
 
 export interface UploadImagesRequest {

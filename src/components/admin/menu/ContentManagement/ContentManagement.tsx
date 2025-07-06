@@ -3,6 +3,7 @@ import { Card, Tabs, Typography } from "antd";
 import { EImageStoreType } from "../../../../services/api";
 import ImageGalleryTab from "./ImageGalleryTab";
 import InvitationTab from "./InvitationTab";
+import CoupleTab from "./CoupleTab";
 
 const { Title } = Typography;
 
@@ -20,6 +21,11 @@ const ContentManagement: React.FC = () => {
       children: (
         <ImageGalleryTab type={EImageStoreType.CAROUSEL} title={"Header"} />
       ),
+    },
+    {
+      key: EImageStoreType.COUPLE,
+      label: "Giới thiệu",
+      children: <CoupleTab />,
     },
     {
       key: EImageStoreType.SWEET_MOMENTS,
