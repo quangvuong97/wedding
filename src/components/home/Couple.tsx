@@ -23,9 +23,6 @@ const Couple: React.FC = () => {
   const genInfo = (object: "groom" | "bride") => {
     return (
       <div
-        // w-[29%] maxMd:w-full maxXs:w-[34%]
-        // pb-[40px] maxMd:p-[0px]
-        // pt-[140px] maxXs:pt-[70px] maxSm:pt-[10px] maxMd:pt-0
         className={`
           flex flex-col maxMd:items-center h-full justify-center maxMd:text-center
           ${
@@ -45,7 +42,7 @@ const Couple: React.FC = () => {
         "
         >
           <Image
-            urlEndpoint="https://ik.imagekit.io/quangvuong1015"
+            urlEndpoint={homeData?.storageKey?.urlEndpoint}
             className="rounded-full w-full"
             src={couple[object].img}
             alt=""
@@ -82,7 +79,7 @@ const Couple: React.FC = () => {
           <div className="col-content relative">
             <Image
               className="absolute left-[10%] top-1/2 -translate-y-1/2 rounded-[235px] w-[80%] h-[85%] max-w-[470px]"
-              urlEndpoint="https://ik.imagekit.io/quangvuong1015"
+              urlEndpoint={homeData?.storageKey?.urlEndpoint}
               src="/coupleImage"
               alt=""
             />
