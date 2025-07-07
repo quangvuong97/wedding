@@ -29,11 +29,12 @@ module.exports = {
       "xl": "1400px",
       "xxl": "1440px",
 
+      "maxXxl": { max: "1439px" },
       "maxXs": { max: "1399px" },
       "maxSm": { max: "1199px" },
       "maxMd": { max: "991px" }, 
       "maxLg": { max: "767px" }, 
-      "maxSsm": { max: "576px" },
+      "maxSsm": { max: "575px" },
     },
   },
   plugins: [],
