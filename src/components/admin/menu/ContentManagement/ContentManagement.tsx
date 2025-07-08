@@ -28,6 +28,18 @@ const ContentManagement: React.FC = () => {
       children: <CoupleTab />,
     },
     {
+      key: EImageStoreType.STORY,
+      label: "Story",
+      children: (
+        <ImageGalleryTab type={EImageStoreType.STORY} title={"story"} />
+      ),
+    },
+    {
+      key: EImageStoreType.INVITATION,
+      label: "Thiệp mời",
+      children: <InvitationTab />,
+    },
+    {
       key: EImageStoreType.SWEET_MOMENTS,
       label: "Gallery",
       children: (
@@ -43,11 +55,6 @@ const ContentManagement: React.FC = () => {
       children: (
         <ImageGalleryTab type={EImageStoreType.FOOTER} title={"Footer"} />
       ),
-    },
-    {
-      key: EImageStoreType.INVITATION,
-      label: "Thiệp mời",
-      children: <InvitationTab />,
     },
   ];
 

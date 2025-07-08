@@ -27,7 +27,7 @@ const menuItems = [
   {
     key: "content",
     icon: <FileTextOutlined />,
-    label: "Nội Dung Trang",
+    label: "Quản Lý Ảnh",
   },
   {
     key: "guests",

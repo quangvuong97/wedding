@@ -502,6 +502,7 @@ export const guestAPI = {
 // Image API Types
 export enum EImageStoreType {
   CAROUSEL = "carousel",
+  STORY = "story",
   SWEET_MOMENTS = "sweet_moments",
   FOOTER = "footer",
   INVITATION = "invitation",
