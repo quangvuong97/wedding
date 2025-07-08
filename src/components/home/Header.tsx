@@ -124,7 +124,7 @@ const Header: React.FC<{
               <div className="absolute right-0 bottom-0 w-[1px] bg-white h-[41%] sm:h-[64%] lg:h-[71.7%]"></div>
               <div className="absolute left-0 top-0 w-[1px] bg-white h-[41%] sm:h-[64%] lg:h-[71.7%]"></div>
               <div className="absolute -top-[55px] right-0">
-                <img src="https://i.ibb.co/0Vv7LF6j/shape3.png" alt="" />
+                <img src="images/shape3.png" alt="" />
               </div>
               <div className="absolute -bottom-[54px] left-0">
                 <img src="images/shape4.png" alt="" />

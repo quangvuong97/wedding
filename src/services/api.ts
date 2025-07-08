@@ -53,6 +53,7 @@ export interface UserProfile {
     weddingHours: string;
     storageKey: StorageKeyResponse[];
     story: StoryResponse[];
+    audios: string[];
   };
 }
 
@@ -89,6 +90,7 @@ export interface UpdateConfigRequest {
   weddingHours?: string;
   storageKey?: StorageKeyRequest[];
   story?: StoryRequest[];
+  audios?: string[];
 }
 
 export interface UpdateProfileRequest {

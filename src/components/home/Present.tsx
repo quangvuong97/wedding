@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Divider,
+  FloatButton,
   Image,
   message,
   QRCode,
@@ -43,6 +44,7 @@ const Present: React.FC = () => {
   const [spaceHeight, setSpaceHeight] = useState(0);
 
   const divRef = useRef<HTMLDivElement | null>(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
   const spaceRef = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -205,165 +207,184 @@ const Present: React.FC = () => {
     }
   };
 
+  const scrollToTarget = () => {
+    targetRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
-      <Text className="font-muli">
-        Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy hãy
-        đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn vẹn
-        hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
-      </Text>
-      <textarea
-        ref={textAreaRef}
-        readOnly
-        className="absolute w-px h-px opacity-0 -left-[9999px] -top-[9999px]"
-        aria-hidden="true"
-      />
-      <div
-        className="justify-center w-full pt-[24px] relative"
-        ref={divRef}
-        style={{ height: spaceHeight }}
-      >
-        <Space
-          ref={spaceRef}
-          size={16}
-          style={{
-            transformOrigin: "top left",
-            transform: `scale(${scale})`,
+    <div ref={targetRef}>
+      <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
+        <FloatButton
+          onClick={scrollToTarget}
+          type="primary"
+          tooltip={{
+            title: "Mừng cưới",
+            color: "#1e8267",
+            placement: "left",
           }}
+          icon={<i className="fi fi-tr-freemium"></i>}
+        />
+        <Text className="font-muli">
+          Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy
+          hãy đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn
+          vẹn hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
+        </Text>
+        <textarea
+          ref={textAreaRef}
+          readOnly
+          className="absolute w-px h-px opacity-0 -left-[9999px] -top-[9999px]"
+          aria-hidden="true"
+        />
+        <div
+          className="justify-center w-full pt-[24px] relative"
+          ref={divRef}
+          style={{ height: spaceHeight }}
         >
-          {qrData.map((item, index) => {
-            return (
-              <Card
-                key={item.title}
-                className="w-[280px] rounded-none border-2 border-[#1e8267]"
-                styles={{ body: { padding: 16 } }}
-              >
-                <div className="absolute -top-[20px] -right-[5px] p-[5px] bg-white">
-                  <img src="images/shape1.png" alt="top-left-decoration" />
-                </div>
-                <div className="absolute -bottom-[20px] -left-[5px] transform rotate-180 p-[2px] bg-white">
-                  <img src="images/shape1.png" alt="bottom-right-decoration" />
-                </div>
-                <Space
-                  size={6}
-                  direction="vertical"
-                  className="text-center px-[15px] py-[12px] bg-[#1e82671a] flex"
-                  styles={{
-                    item: {
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                    },
-                  }}
+          <Space
+            ref={spaceRef}
+            size={16}
+            style={{
+              transformOrigin: "top left",
+              transform: `scale(${scale})`,
+            }}
+          >
+            {qrData.map((item, index) => {
+              return (
+                <Card
+                  key={item.title}
+                  className="w-[280px] rounded-none border-2 border-[#1e8267]"
+                  styles={{ body: { padding: 16 } }}
                 >
-                  <Title className="!text-[25px] !font-[Mulish,sans-serif] !font-bold !text-[#1e8267] !mb-[0]">
-                    {item.title.toUpperCase()}
-                  </Title>
-                  <Divider className="border-[#1e826766] m-0" />
-                  <Card
-                    style={{ width: 200 }}
+                  <div className="absolute -top-[20px] -right-[5px] p-[5px] bg-white">
+                    <img src="images/shape1.png" alt="top-left-decoration" />
+                  </div>
+                  <div className="absolute -bottom-[20px] -left-[5px] transform rotate-180 p-[2px] bg-white">
+                    <img
+                      src="images/shape1.png"
+                      alt="bottom-right-decoration"
+                    />
+                  </div>
+                  <Space
+                    size={6}
+                    direction="vertical"
+                    className="text-center px-[15px] py-[12px] bg-[#1e82671a] flex"
                     styles={{
-                      body: {
-                        padding: "0",
+                      item: {
+                        width: "100%",
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
                         justifyContent: "center",
-                        textAlign: "center",
                       },
                     }}
                   >
-                    <Image
-                      wrapperStyle={{
-                        height: 40,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        overflow: "hidden",
+                    <Title className="!text-[25px] !font-[Mulish,sans-serif] !font-bold !text-[#1e8267] !mb-[0]">
+                      {item.title.toUpperCase()}
+                    </Title>
+                    <Divider className="border-[#1e826766] m-0" />
+                    <Card
+                      style={{ width: 200 }}
+                      styles={{
+                        body: {
+                          padding: "0",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
+                        },
                       }}
-                      src={item.bankLog}
-                      preview={false}
-                      width={140}
-                      style={{
-                        objectFit: "cover",
-                        height: "100%",
-                        width: "auto",
-                      }}
-                    />
-                    <div ref={qrRef[index]} style={{ display: "none" }}>
-                      <QRCode
-                        bgColor="#FFF"
-                        style={{ border: 0 }}
-                        value={item.dataQR || ""}
-                        size={140}
-                        bordered={false}
-                      />
-                    </div>
-                    {qrUrl && qrUrl[index] ? (
+                    >
                       <Image
+                        wrapperStyle={{
+                          height: 40,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          overflow: "hidden",
+                        }}
+                        src={item.bankLog}
                         preview={false}
-                        src={qrUrl[index]}
-                        alt="QR Code"
                         width={140}
-                        height={140}
+                        style={{
+                          objectFit: "cover",
+                          height: "100%",
+                          width: "auto",
+                        }}
                       />
-                    ) : (
-                      <p>Đang tạo QR...</p>
-                    )}
-                    <div className="flex justify-center">
-                      <div className="w-[40%]">
-                        <img alt="" src="images/vietQR.png" />
+                      <div ref={qrRef[index]} style={{ display: "none" }}>
+                        <QRCode
+                          bgColor="#FFF"
+                          style={{ border: 0 }}
+                          value={item.dataQR || ""}
+                          size={140}
+                          bordered={false}
+                        />
                       </div>
-                      <div className="w-[50%]">
-                        <img alt="" src="images/napas247.png" />
+                      {qrUrl && qrUrl[index] ? (
+                        <Image
+                          preview={false}
+                          src={qrUrl[index]}
+                          alt="QR Code"
+                          width={140}
+                          height={140}
+                        />
+                      ) : (
+                        <p>Đang tạo QR...</p>
+                      )}
+                      <div className="flex justify-center">
+                        <div className="w-[40%]">
+                          <img alt="" src="images/vietQR.png" />
+                        </div>
+                        <div className="w-[50%]">
+                          <img alt="" src="images/napas247.png" />
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                  <Space size={0} direction="vertical" className="flex">
-                    <Text
-                      className="font-muli text-[#848892]"
-                      style={{
-                        fontSize: 15,
-                        lineHeight: "30px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {item.accountName?.toUpperCase()}
-                    </Text>
-                    <Text
-                      className="font-muli text-[#848892]"
-                      style={{
-                        fontSize: 14,
-                        lineHeight: "30px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {item.accountNo?.toUpperCase()}
-                    </Text>
+                    </Card>
+                    <Space size={0} direction="vertical" className="flex">
+                      <Text
+                        className="font-muli text-[#848892]"
+                        style={{
+                          fontSize: 15,
+                          lineHeight: "30px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.accountName?.toUpperCase()}
+                      </Text>
+                      <Text
+                        className="font-muli text-[#848892]"
+                        style={{
+                          fontSize: 14,
+                          lineHeight: "30px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.accountNo?.toUpperCase()}
+                      </Text>
+                    </Space>
+                    <Space>
+                      <Button
+                        className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
+                        onClick={() => downloadQR(index)}
+                        icon={<i className="fi fi-br-download"></i>}
+                      >
+                        Tải QR
+                      </Button>
+                      <Button
+                        onClick={() => handleCopy(item.accountNo || "")}
+                        icon={<i className="fi fi-rr-duplicate"></i>}
+                        className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
+                      >
+                        Copy STK
+                      </Button>
+                    </Space>
                   </Space>
-                  <Space>
-                    <Button
-                      className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
-                      onClick={() => downloadQR(index)}
-                      icon={<i className="fi fi-br-download"></i>}
-                    >
-                      Tải QR
-                    </Button>
-                    <Button
-                      onClick={() => handleCopy(item.accountNo || "")}
-                      icon={<i className="fi fi-rr-duplicate"></i>}
-                      className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
-                    >
-                      Copy STK
-                    </Button>
-                  </Space>
-                </Space>
-              </Card>
-            );
-          })}
-        </Space>
-      </div>
-    </Section>
+                </Card>
+              );
+            })}
+          </Space>
+        </div>
+      </Section>
+    </div>
   );
 };
 

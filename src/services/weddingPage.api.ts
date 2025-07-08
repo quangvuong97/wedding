@@ -56,6 +56,8 @@ export interface UserConfig {
 
     description: string;
   }[];
+
+  audio: string;
 }
 
 export interface ConfirmAttendanceRequest {

@@ -1,4 +1,13 @@
-import { Col, Row, Space, Typography, Modal, Button, Input } from "antd";
+import {
+  Col,
+  Row,
+  Space,
+  Typography,
+  Modal,
+  Button,
+  Input,
+  FloatButton,
+} from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
@@ -250,6 +259,17 @@ const Invitation: React.FC = () => {
 
   return (
     <Section title="Wedding Invitation">
+      <FloatButton
+        style={{ insetBlockEnd: 100 }}
+        type="primary"
+        tooltip={{
+          title: "Xác nhận tham dự",
+          color: "#1e8267",
+          placement: "left",
+        }}
+        icon={<i className="fi fi-tr-document-writer"></i>}
+        onClick={() => handleConfirmAttendance("")}
+      />
       <Modal
         open={showModal}
         onCancel={handleModalCancel}

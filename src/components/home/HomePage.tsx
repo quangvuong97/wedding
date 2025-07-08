@@ -1,15 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "./Header";
 import CountDown from "./CountDown";
 import Couple from "./Couple";
 import Story from "./Story";
 import Gallery from "./Gallery";
 import Invitation from "./Invitation";
-import { Grid, Space } from "antd";
+import { FloatButton, Grid, Space } from "antd";
 import Present from "./Present";
 import WeddingFooter from "./WeddingFooter";
 import SVGSymbols from "../common/SVGSymbols";
-import { HomeDataContext } from "../../contexts/HomeDataContext";
+import { HomeDataContext, useHomeData } from "../../contexts/HomeDataContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
 
@@ -46,6 +46,7 @@ const HomeContent = ({
   const [, setReadyStates] = useState({});
   const [isAllReady, setIsAllReady] = useState(false);
   const childCount = 1;
+  const homeData = useHomeData();
 
   // Hàm callback để nhận thông báo từ component con
   const handleChildReady = (childId: string) => {
@@ -61,6 +62,36 @@ const HomeContent = ({
     console.log("isAllReady: ", isAllReady);
   }, [isAllReady]);
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const waitForLoad = (audio: HTMLAudioElement) =>
+    new Promise<void>((resolve) => {
+      if (audio.readyState >= 2) return resolve();
+      audio.onloadeddata = () => resolve();
+      audio.load();
+    });
+
+  const toggleAudio = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        await waitForLoad(audio);
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error("Lỗi khi phát nhạc:", err);
+      }
+    }
+  };
+
   return (
     <>
       {/* {loading && (
@@ -69,6 +100,26 @@ const HomeContent = ({
         </div>
       )} */}
       <SVGSymbols />
+      <FloatButton
+        onClick={toggleAudio}
+        style={{ insetInlineStart: 24 }}
+        type="primary"
+        tooltip={{
+          title: "Bật/tắt nhạc",
+          color: "#1e8267",
+          placement: "left",
+        }}
+        icon={
+          isPlaying ? (
+            <i className="fi fi-tr-volume-down"></i>
+          ) : (
+            <i className="fi fi-tr-volume-mute"></i>
+          )
+        }
+      />
+      <audio ref={audioRef} loop preload="auto">
+        <source src={homeData?.audio} type="audio/mpeg" />
+      </audio>
       <Space
         direction="vertical"
         size={spaceSize}

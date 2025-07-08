@@ -7,7 +7,7 @@ import { Image } from "@imagekit/react";
 const Story: React.FC = () => {
   const { response: imageStoryResponse } = WeddingPageApi.useGetStory();
   const homeData = useHomeData();
-  const story = homeData?.story.map((e, i) => {
+  const story = homeData?.story?.map((e, i) => {
     return {
       title: e.title,
       date: e.date,
@@ -52,7 +52,7 @@ const Story: React.FC = () => {
                 }
               >
                 <Image
-                  urlEndpoint="https://ik.imagekit.io/quangvuong1015"
+                  urlEndpoint={homeData?.storageKey.urlEndpoint}
                   src={e.image || ""}
                   alt=""
                   width={310}
@@ -60,7 +60,7 @@ const Story: React.FC = () => {
                 />
                 <div className="absolute -bottom-[14%] left-1/2 -translate-x-1/2">
                   <img
-                    src="https://wpocean.com/html/tf/loveme/assets/images/story/shape.png"
+                    src="images/story.shape.png"
                     alt=""
                     className="rounded-full inline-block max-w-full align-middle"
                   />
@@ -130,7 +130,7 @@ const Story: React.FC = () => {
                           storyIcons[
                             index === story.length - 1
                               ? storyIcons.length - 1
-                              : index
+                              : index - 1
                           ]
                         }`}
                       ></i>

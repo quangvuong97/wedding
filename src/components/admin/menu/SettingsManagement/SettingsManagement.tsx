@@ -6,6 +6,7 @@ import WeddingConfigTab from "./WeddingConfigTab";
 import StorageConfigTab from "./StorageConfigTab";
 import { useAdminData } from "../../../../contexts/AdminDataContext";
 import StoryConfigTab from "./StoryConfigTab";
+import AudioConfigTab from "./AudioConfigTab";
 
 const { Title, Text } = Typography;
 
@@ -93,6 +94,13 @@ const SettingsManagement: React.FC = () => {
       label: "Cấu hình story",
       children: (
         <StoryConfigTab profile={profile} onUpdate={handleProfileUpdate} />
+      ),
+    },
+    {
+      key: "audio",
+      label: "Cấu hình nhạc",
+      children: (
+        <AudioConfigTab profile={profile} onUpdate={handleProfileUpdate} />
       ),
     },
   ];
