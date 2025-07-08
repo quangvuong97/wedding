@@ -37,9 +37,10 @@ const { TextArea } = Input;
 interface ImageGalleryTabProps {
   type: EImageStoreType;
   title: string;
+  customTitle?: React.ReactNode
 }
 
-const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
+const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title, customTitle }) => {
   const { accessToken } = useAuth();
   const [images, setImages] = useState<GetImageResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -180,6 +181,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title }) => {
   return (
     <div>
       {/* Header Actions */}
+      {customTitle}
       <div
         style={{
           marginBottom: 16,

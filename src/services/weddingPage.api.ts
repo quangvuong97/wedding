@@ -48,6 +48,14 @@ export interface UserConfig {
   guestName?: string;
 
   guestOf?: "groom" | "bride";
+
+  story: {
+    title: string;
+
+    date: string;
+
+    description: string;
+  }[];
 }
 
 export interface ConfirmAttendanceRequest {
@@ -61,6 +69,10 @@ export const WeddingPageApi = {
   useGetCarousel: () =>
     useFetch<string[]>(
       `v1/public/${getSubdomain()}/images?type=${EImageStoreType.CAROUSEL}`
+    ),
+  useGetStory: () =>
+    useFetch<string[]>(
+      `v1/public/${getSubdomain()}/images?type=${EImageStoreType.STORY}`
     ),
   useGetGallery: () =>
     useFetch<string[]>(
