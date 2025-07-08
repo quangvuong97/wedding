@@ -24,6 +24,12 @@ export interface StorageKeyResponse {
   isDefault: boolean;
 }
 
+export interface StoryResponse {
+  title: string;
+  date: string;
+  description: string;
+}
+
 export interface UserProfile {
   userId: string;
   username: string;
@@ -46,6 +52,7 @@ export interface UserProfile {
     solarDate: Date;
     weddingHours: string;
     storageKey: StorageKeyResponse[];
+    story: StoryResponse[];
   };
 }
 
@@ -54,6 +61,12 @@ export interface StorageKeyRequest {
   privateKey: string;
   urlEndpoint: string;
   isDefault: boolean;
+}
+
+export interface StoryRequest {
+  title: string;
+  date: string;
+  description: string;
 }
 
 export interface UpdateConfigRequest {
@@ -75,6 +88,7 @@ export interface UpdateConfigRequest {
   lunarDate?: string;
   weddingHours?: string;
   storageKey?: StorageKeyRequest[];
+  story?: StoryRequest[];
 }
 
 export interface UpdateProfileRequest {
