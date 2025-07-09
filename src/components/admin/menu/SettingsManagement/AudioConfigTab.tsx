@@ -30,28 +30,33 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
 }) => {
   const { accessToken } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [audios, setAudios] = useState<string[]>([]);
+  const [audios, setAudios] = useState<{ id: string; url: string }[]>([]);
 
   useEffect(() => {
     if (profile?.config?.audios) {
       setAudios(
-        profile.config.audios.length > 0 ? profile.config.audios : [""]
+        profile.config.audios.length > 0
+          ? profile.config.audios.map((e, i) => ({ id: i.toString(), url: e }))
+          : []
       );
     } else {
-      setAudios([""]);
+      setAudios([{ id: "0", url: "" }]);
     }
   }, [profile]);
 
   const handleFieldChange = (index: number, value: string) => {
     setAudios((prev) => {
       const updated = [...prev];
-      updated[index] = value;
+      updated[index].url = value;
       return updated;
     });
   };
 
   const handleAdd = () => {
-    setAudios((prev) => [...prev, ""]);
+    setAudios((prev) => [
+      ...prev,
+      { id: (+prev[prev.length - 1].id + 1).toString(), url: "" },
+    ]);
   };
 
   const handleRemove = (index: number) => {
@@ -63,7 +68,7 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
     for (let i = 0; i < audios.length; i++) {
       const audio = audios[i];
       try {
-        new URL(audio);
+        new URL(audio.url);
       } catch {
         message.error(`URL Endpoint ở dòng ${i + 1} không hợp lệ`);
         return;
@@ -72,7 +77,7 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
     try {
       setLoading(true);
       const updateData: UpdateProfileRequest = {
-        config: { audios },
+        config: { audios: audios.map((e) => e.url) },
       };
       const updatedProfile = await authAPI.updateProfile(
         accessToken,
@@ -91,20 +96,20 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
     <div>
       <div style={{ marginBottom: 24 }}>
         <Text type="secondary">
-          Cấu hình thông tin kết nối với dịch vụ lưu trữ ảnh và tệp tin
+          Cấu hình danh sách bài hát phát trên web. Mỗi lần vào web sẽ lấy ngẫu nhiên một bài để phát
         </Text>
       </div>
       <Table
         dataSource={audios}
-        // rowKey={(storageRequest) => storageRequest.urlEndpoint}
+        rowKey={(audio) => audio.id.toString()}
         pagination={false}
         bordered
         style={{ marginBottom: 16 }}
       >
         <Table.Column
           title="Link nhạc"
-          dataIndex="audio"
-          key="audio"
+          dataIndex="url"
+          key="url"
           render={(text, _, idx) => (
             <Input
               value={text}

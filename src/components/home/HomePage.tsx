@@ -12,6 +12,7 @@ import SVGSymbols from "../common/SVGSymbols";
 import { HomeDataContext, useHomeData } from "../../contexts/HomeDataContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
+import ReactAudioPlayer from "react-audio-player";
 
 const { useBreakpoint } = Grid;
 
@@ -62,7 +63,7 @@ const HomeContent = ({
     console.log("isAllReady: ", isAllReady);
   }, [isAllReady]);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<ReactAudioPlayer>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const waitForLoad = (audio: HTMLAudioElement) =>
@@ -78,11 +79,11 @@ const HomeContent = ({
 
     try {
       if (isPlaying) {
-        audio.pause();
+        audio.audioEl.current.pause();
         setIsPlaying(false);
       } else {
-        await waitForLoad(audio);
-        await audio.play();
+        await waitForLoad(audio.audioEl.current);
+        await audio.audioEl.current.play();
         setIsPlaying(true);
       }
     } catch (err: any) {
@@ -91,6 +92,33 @@ const HomeContent = ({
       }
     }
   };
+
+  useEffect(() => {
+    const handleInteraction = async () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      try {
+        await audio.audioEl.current.play();
+        setIsPlaying(true);
+        console.log("✅ Nhạc đã phát sau tương tác");
+      } catch (err) {
+        console.error("❌ Không thể phát nhạc:", err);
+      }
+
+      // Xóa sự kiện sau khi chạy
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+  }, []);
 
   return (
     <>
@@ -117,9 +145,17 @@ const HomeContent = ({
           )
         }
       />
-      <audio ref={audioRef} loop preload="auto">
-        <source src={homeData?.audio} type="audio/mpeg" />
-      </audio>
+      <ReactAudioPlayer
+        src={homeData?.audio}
+        ref={(e) => {
+          audioRef.current = e;
+        }}
+        loop
+        preload="auto"
+        autoPlay
+      >
+        {/* <source src={homeData?.audio} type="audio/mpeg" /> */}
+      </ReactAudioPlayer>
       <Space
         direction="vertical"
         size={spaceSize}
