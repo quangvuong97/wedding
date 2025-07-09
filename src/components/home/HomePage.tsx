@@ -12,7 +12,6 @@ import SVGSymbols from "../common/SVGSymbols";
 import { HomeDataContext, useHomeData } from "../../contexts/HomeDataContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
-import ReactAudioPlayer from "react-audio-player";
 
 const { useBreakpoint } = Grid;
 
@@ -46,6 +45,7 @@ const HomeContent = ({
 }) => {
   const [, setReadyStates] = useState({});
   const [isAllReady, setIsAllReady] = useState(false);
+  const [openTooltip, setOpenTooltip] = useState(true);
   const childCount = 1;
   const homeData = useHomeData();
 
@@ -63,7 +63,7 @@ const HomeContent = ({
     console.log("isAllReady: ", isAllReady);
   }, [isAllReady]);
 
-  const audioRef = useRef<ReactAudioPlayer>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const waitForLoad = (audio: HTMLAudioElement) =>
@@ -79,11 +79,11 @@ const HomeContent = ({
 
     try {
       if (isPlaying) {
-        audio.audioEl.current.pause();
+        audio.pause();
         setIsPlaying(false);
       } else {
-        await waitForLoad(audio.audioEl.current);
-        await audio.audioEl.current.play();
+        await waitForLoad(audio);
+        await audio.play();
         setIsPlaying(true);
       }
     } catch (err: any) {
@@ -94,19 +94,21 @@ const HomeContent = ({
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      setOpenTooltip(false);
+    }, 2500);
     const handleInteraction = async () => {
       const audio = audioRef.current;
       if (!audio) return;
 
       try {
-        await audio.audioEl.current.play();
+        await audio.play();
         setIsPlaying(true);
         console.log("✅ Nhạc đã phát sau tương tác");
       } catch (err) {
         console.error("❌ Không thể phát nhạc:", err);
       }
 
-      // Xóa sự kiện sau khi chạy
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
     };
@@ -135,6 +137,15 @@ const HomeContent = ({
         tooltip={{
           title: "Bật/tắt nhạc",
           color: "#1e8267",
+          onOpenChange(visible) {
+            setOpenTooltip(visible);
+            if (visible) {
+              setTimeout(() => {
+                setOpenTooltip(false);
+              }, 1500);
+            }
+          },
+          open: openTooltip,
           placement: "left",
         }}
         icon={
@@ -145,17 +156,7 @@ const HomeContent = ({
           )
         }
       />
-      <ReactAudioPlayer
-        src={homeData?.audio}
-        ref={(e) => {
-          audioRef.current = e;
-        }}
-        loop
-        preload="auto"
-        autoPlay
-      >
-        {/* <source src={homeData?.audio} type="audio/mpeg" /> */}
-      </ReactAudioPlayer>
+      <audio ref={audioRef} src={homeData?.audio} loop preload="auto" />
       <Space
         direction="vertical"
         size={spaceSize}
