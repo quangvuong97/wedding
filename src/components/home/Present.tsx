@@ -216,6 +216,7 @@ const Present: React.FC = () => {
       <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
         <FloatButton
           onClick={scrollToTarget}
+          style={{ insetBlockEnd: 76 }}
           type="primary"
           tooltip={{
             title: "Mừng cưới",

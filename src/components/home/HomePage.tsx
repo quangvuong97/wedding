@@ -131,8 +131,8 @@ const HomeContent = ({
       )} */}
       <SVGSymbols />
       <FloatButton
+        style={{ insetBlockEnd: 24 }}
         onClick={toggleAudio}
-        style={{ insetInlineStart: 24 }}
         type="primary"
         tooltip={{
           title: "Bật/tắt nhạc",

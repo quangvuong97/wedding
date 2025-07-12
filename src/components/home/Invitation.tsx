@@ -260,7 +260,7 @@ const Invitation: React.FC = () => {
   return (
     <Section title="Wedding Invitation">
       <FloatButton
-        style={{ insetBlockEnd: 100 }}
+        style={{ insetBlockEnd: 128 }}
         type="primary"
         tooltip={{
           title: "Xác nhận tham dự",

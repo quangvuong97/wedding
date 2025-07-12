@@ -1,9 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "../../index.css";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { Image } from "@imagekit/react";
 import { useHomeData } from "../../contexts/HomeDataContext";
+import { Grid } from "antd";
+
+const { useBreakpoint } = Grid;
 
 const Header: React.FC<{
   childId: string;
@@ -11,6 +14,10 @@ const Header: React.FC<{
 }> = ({ childId, onReady }) => {
   const [index, setIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const screens = useBreakpoint();
 
   const { response: carouselResponse, loading } =
     WeddingPageApi.useGetCarousel();
@@ -19,26 +26,65 @@ const Header: React.FC<{
     [carouselResponse?.data]
   );
   const homeData = useHomeData();
+  const solarDate = homeData?.solarDate && new Date(homeData.solarDate);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [slides]);
+    if (!screens.xs && slides.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setIndex((prevIndex) => (prevIndex + 1) % slides.length);
+      }, 5000);
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [slides, screens.xs]);
 
   useEffect(() => {
     if (slides.length <= 0) return;
     if (!loading && imagesLoaded) {
-      console.log("ok");
       onReady(childId);
     }
   }, [loading, imagesLoaded]);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    if (
+      touchStartX.current !== null &&
+      touchEndX.current !== null &&
+      Math.abs(touchStartX.current - touchEndX.current) > 50
+    ) {
+      if (touchStartX.current > touchEndX.current) {
+        // swipe left
+        setIndex((prev) => (prev + 1) % slides.length);
+      } else {
+        // swipe right
+        setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+      }
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  // Navigation buttons for desktop
+  const goPrev = () =>
+    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  const goNext = () => setIndex((prev) => (prev + 1) % slides.length);
 
   return (
     <div
       className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]"
       style={{ width: "100vw", height: "100vh" }}
+      onTouchStart={screens.xs ? handleTouchStart : undefined}
+      onTouchMove={screens.xs ? handleTouchMove : undefined}
+      onTouchEnd={screens.xs ? handleTouchEnd : undefined}
     >
       {slides.map((slide, i) => (
         <div
@@ -81,11 +127,7 @@ const Header: React.FC<{
                   transitionDuration: "1200ms",
                 }}
               >
-                <h2
-                  className="text-[1.441562473rem] xxs:text-[1.6rem] xs:text-[1.91rem] sm:text-[2.666rem] md:text-[3.333rem] lg:text-[89px] leading-[36px] sm:leading-[55px] md:leading-[60px] text-white mt-[10px] mb-[10px] lg:mb-[35px] font-dancing-script flex items-center justify-center"
-                  style={{ fontWeight: 450 }}
-                >
-                  {/* font-semibold */}
+                <h2 className="text-[30px] gap-[10px] xxs:text-[1.6rem] xs:text-[28px] sm:text-[2.666rem] md:text-[3.333rem] lg:text-[85px] leading-[36px] sm:leading-[55px] md:leading-[60px] text-white mt-[10px] mb-[10px] lg:mb-[35px] font-['Great_Vibes',cursive] font-normal not-italic flex items-center justify-center">
                   <p>{homeData?.groomName}</p>
                   <svg
                     focusable="false"
@@ -116,7 +158,13 @@ const Header: React.FC<{
                   className="text-[1.06667rem] sm:text-[1.2rem] md:text-[30px] leading-[22px] sm:leading-[30px] md:leading-[45px] max-w-[780px] text-white mx-auto mb-[0px] font-muli"
                   style={{ fontWeight: 600 }}
                 >
-                  02 Tháng 11 Năm 2025
+                  {solarDate && typeof solarDate !== "string" ? (
+                    `${solarDate.getDate().toString().padStart(2, "0")} Tháng ${(solarDate.getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0")} Năm ${solarDate.getFullYear()}`
+                  ) : (
+                    ""
+                  )}
                 </p>
               </div>
               <div className="absolute left-0 top-0 h-[1px] bg-white w-[15%] xxxs:w-[30%] xxs:w-[36%] xs:w-[44%] sm:w-[67%] lg:w-[76.7%]"></div>
@@ -133,6 +181,41 @@ const Header: React.FC<{
           </div>
         </div>
       ))}
+      {slides.length > 1 && (
+        <div className="absolute left-1/2 bottom-8 -translate-x-1/2 flex gap-2 z-20">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                i === index
+                  ? "bg-white"
+                  : "opacity-100 bg-[rgba(255,255,255,0.2)]"
+              }`}
+              style={{ outline: "none" }}
+              onClick={() => setIndex(i)}
+              aria-label={`Chuyển đến ảnh ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+      {!screens.xs && slides.length > 1 && (
+        <>
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-[rgba(30,130,103,0.5)] hover:bg-[rgba(30,130,103,0.8)] text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition"
+            onClick={goPrev}
+            aria-label="Ảnh trước"
+          >
+            <i className="flaticon-right-arrow rotate-[180deg] text-2xl"></i>
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-[rgba(30,130,103,0.5)] hover:bg-[rgba(30,130,103,0.8)] text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition"
+            onClick={goNext}
+            aria-label="Ảnh tiếp theo"
+          >
+            <i className="flaticon-right-arrow text-2xl"></i>
+          </button>
+        </>
+      )}
     </div>
   );
 };

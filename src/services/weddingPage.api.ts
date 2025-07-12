@@ -29,7 +29,7 @@ export interface UserConfig {
 
   groomGgAddress: string;
 
-  solarDate: Date;
+  solarDate: string;
 
   lunarDate: string;
 

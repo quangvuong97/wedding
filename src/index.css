@@ -50,7 +50,7 @@
   src: url("../public/fonts/DFVNHelloHoney/DFVNHelloHoney.otf");
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Muli:wght@400;700&family=Comfortaa&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Muli:wght@400;700&family=Comfortaa&family=Great+Vibes&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&display=swap");
 
 @import url('https://cdn-uicons.flaticon.com/3.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css');
 
@@ -87,7 +87,7 @@ i[class*=" flaticon-"]:before {
 .flaticon-edit:before {
   content: "\f107";
 }
-.flaticon-left-arrow:before {
+.flaticon-left-arrow2:before {
   content: "\f108";
 }
 .flaticon-wedding:before {
