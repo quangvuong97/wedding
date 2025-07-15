@@ -45,9 +45,18 @@ const HomeContent = ({
 }) => {
   const [, setReadyStates] = useState({});
   const [isAllReady, setIsAllReady] = useState(false);
-  const [openTooltip, setOpenTooltip] = useState(true);
+  const [openTooltip, setOpenTooltip] = useState({
+    audio: false,
+    invitation: false,
+    present: false,
+  });
   const childCount = 1;
   const homeData = useHomeData();
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  const childMethodsRef = useRef<{
+    handleConfirmAttendance: (tabName: string) => void;
+  }>(undefined);
+  const [openFloatGroup, setOpenFloatGroup] = useState(false);
 
   // Hàm callback để nhận thông báo từ component con
   const handleChildReady = (childId: string) => {
@@ -94,9 +103,6 @@ const HomeContent = ({
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setOpenTooltip(false);
-    }, 2500);
     const handleInteraction = async () => {
       const audio = audioRef.current;
       if (!audio) return;
@@ -116,11 +122,59 @@ const HomeContent = ({
     document.addEventListener("click", handleInteraction);
     document.addEventListener("touchstart", handleInteraction);
 
+    setOpenFloatGroup(true);
+    setTimeout(
+      () =>
+        setOpenTooltip({
+          audio: true,
+          invitation: true,
+          present: true,
+        }),
+      400
+    );
+    setTimeout(() => setOpenFloatGroup(false), 2200);
+
     return () => {
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
     };
   }, []);
+
+  const scrollToTarget = () => {
+    targetRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleConfirmAttendance = () => {
+    childMethodsRef.current?.handleConfirmAttendance("");
+  };
+
+  const onOpenChangeFloatButton = (
+    type: "audio" | "invitation" | "present",
+    visible: boolean
+  ) => {
+    setOpenTooltip((prev) => ({ ...prev, [type]: visible }));
+  };
+
+  const timeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
+  useEffect(() => {
+    Object.entries(openTooltip).forEach(([key, value]) => {
+      if (value) {
+        if (timeoutRef.current[key]) {
+          clearTimeout(timeoutRef.current[key]);
+        }
+
+        timeoutRef.current[key] = setTimeout(() => {
+          setOpenTooltip((prev) => ({ ...prev, [key]: false }));
+          delete timeoutRef.current[key];
+        }, 1500);
+      }
+    });
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.values(timeoutRef.current).forEach(clearTimeout);
+    };
+  }, [openTooltip]);
 
   return (
     <>
@@ -131,21 +185,14 @@ const HomeContent = ({
       )} */}
       <SVGSymbols />
       <FloatButton
-        style={{ insetBlockEnd: 24 }}
+        style={{ insetInlineStart: 16, insetBlockEnd: 24 }}
         onClick={toggleAudio}
         type="primary"
         tooltip={{
           title: "Bật/tắt nhạc",
           color: "#1e8267",
-          onOpenChange(visible) {
-            setOpenTooltip(visible);
-            if (visible) {
-              setTimeout(() => {
-                setOpenTooltip(false);
-              }, 1500);
-            }
-          },
-          open: openTooltip,
+          onOpenChange: (visible) => onOpenChangeFloatButton("audio", visible),
+          open: openTooltip.audio,
           placement: "left",
         }}
         icon={
@@ -156,6 +203,53 @@ const HomeContent = ({
           )
         }
       />
+      <FloatButton.Group
+        open={openFloatGroup}
+        trigger="click"
+        style={{ right: 16, bottom: 24 }}
+        icon={<i className="fi fi-rr-menu-burger"></i>}
+        type="primary"
+        onOpenChange={(isOpen) => {
+          setOpenFloatGroup(isOpen);
+          if (isOpen)
+            setTimeout(
+              () =>
+                setOpenTooltip((pre) => ({
+                  ...pre,
+                  invitation: true,
+                  present: true,
+                })),
+              350
+            );
+        }}
+      >
+        <FloatButton
+          onClick={() => handleConfirmAttendance()}
+          tooltip={{
+            title: "Xác nhận tham dự",
+            placement: "left",
+            color: "#1e8267",
+            onOpenChange: (visible) =>
+              onOpenChangeFloatButton("invitation", visible),
+            open: openTooltip.invitation,
+          }}
+          type="primary"
+          icon={<i className="fi fi-tr-document-writer"></i>}
+        />
+        <FloatButton
+          onClick={scrollToTarget}
+          tooltip={{
+            title: "Mừng cưới",
+            placement: "left",
+            color: "#1e8267",
+            onOpenChange: (visible) =>
+              onOpenChangeFloatButton("present", visible),
+            open: openTooltip.present,
+          }}
+          type="primary"
+          icon={<i className="fi fi-tr-freemium"></i>}
+        />
+      </FloatButton.Group>
       <audio ref={audioRef} src={homeData?.audio} loop preload="auto" />
       <Space
         direction="vertical"
@@ -175,8 +269,8 @@ const HomeContent = ({
         <CountDown />
         <Couple />
         <Story />
-        <Invitation />
-        <Present />
+        <Invitation bind={(methods) => (childMethodsRef.current = methods)} />
+        <Present targetRef={targetRef} />
         <Gallery />
         <WeddingFooter brideGroom="Quang Vương & Phương Ninh" />
       </Space>

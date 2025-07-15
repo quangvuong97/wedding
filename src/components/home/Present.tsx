@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   Divider,
-  FloatButton,
   Image,
   message,
   QRCode,
@@ -14,8 +13,9 @@ import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { useHomeData } from "../../contexts/HomeDataContext";
 
 const { Title, Text } = Typography;
-
-const Present: React.FC = () => {
+const Present: React.FC<{
+  targetRef: React.RefObject<HTMLDivElement | null>;
+}> = ({ targetRef }) => {
   const homeData = useHomeData();
   const count = 2;
   const qrRef = useMemo(
@@ -44,7 +44,6 @@ const Present: React.FC = () => {
   const [spaceHeight, setSpaceHeight] = useState(0);
 
   const divRef = useRef<HTMLDivElement | null>(null);
-  const targetRef = useRef<HTMLDivElement | null>(null);
   const spaceRef = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -207,24 +206,9 @@ const Present: React.FC = () => {
     }
   };
 
-  const scrollToTarget = () => {
-    targetRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <div ref={targetRef}>
       <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
-        <FloatButton
-          onClick={scrollToTarget}
-          style={{ insetBlockEnd: 76 }}
-          type="primary"
-          tooltip={{
-            title: "Mừng cưới",
-            color: "#1e8267",
-            placement: "left",
-          }}
-          icon={<i className="fi fi-tr-freemium"></i>}
-        />
         <Text className="font-muli">
           Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy
           hãy đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn

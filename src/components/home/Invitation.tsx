@@ -1,13 +1,4 @@
-import {
-  Col,
-  Row,
-  Space,
-  Typography,
-  Modal,
-  Button,
-  Input,
-  FloatButton,
-} from "antd";
+import { Col, Row, Space, Typography, Modal, Button, Input } from "antd";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
@@ -48,7 +39,13 @@ interface CircularOverlayStyle {
   zIndex: number;
 }
 
-const Invitation: React.FC = () => {
+type InvitationProps = {
+  bind: (methods: {
+    handleConfirmAttendance: (tabName: string) => void;
+  }) => void;
+};
+
+const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const homeData = useHomeData();
   const [overlayStyles, setOverlayStyles] = useState<
     CircularOverlayStyle | {}
@@ -147,6 +144,8 @@ const Invitation: React.FC = () => {
     setNameError("");
     setCurrentTabName(tabName);
   };
+
+  bind({ handleConfirmAttendance });
 
   const handleModalCancel = () => {
     setShowModal(false);
@@ -259,17 +258,6 @@ const Invitation: React.FC = () => {
 
   return (
     <Section title="Wedding Invitation">
-      <FloatButton
-        style={{ insetBlockEnd: 128 }}
-        type="primary"
-        tooltip={{
-          title: "Xác nhận tham dự",
-          color: "#1e8267",
-          placement: "left",
-        }}
-        icon={<i className="fi fi-tr-document-writer"></i>}
-        onClick={() => handleConfirmAttendance("")}
-      />
       <Modal
         open={showModal}
         onCancel={handleModalCancel}

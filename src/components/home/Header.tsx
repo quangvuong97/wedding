@@ -81,7 +81,7 @@ const Header: React.FC<{
   return (
     <div
       className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]"
-      style={{ width: "100vw", height: "100vh" }}
+      style={{ width: "100%", height: "100vh" }}
       onTouchStart={screens.xs ? handleTouchStart : undefined}
       onTouchMove={screens.xs ? handleTouchMove : undefined}
       onTouchEnd={screens.xs ? handleTouchEnd : undefined}
