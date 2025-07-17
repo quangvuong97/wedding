@@ -45,6 +45,52 @@ type InvitationProps = {
   }) => void;
 };
 
+type ButtonFamilyProps = {
+  isFamilyType: "groom" | "bride" | null;
+  onClick: (isFamilyType: "groom" | "bride") => void;
+};
+
+const ButtonFamily: React.FC<ButtonFamilyProps> = ({
+  isFamilyType,
+  onClick,
+}) => {
+  const homeData = useHomeData();
+  return (
+    <div
+      style={{
+        marginBottom: 12,
+        display: "flex",
+        justifyContent: "center",
+        gap: 12,
+      }}
+    >
+      {["groom", "bride"].map((familyType) => (
+        <Button
+          type={
+            homeData?.guestOf === familyType ||
+            isFamilyType?.toString() === familyType
+              ? "primary"
+              : "default"
+          }
+          onClick={() =>
+            homeData?.guestOf ? null : onClick(familyType as "groom" | "bride")
+          }
+          className="bt-ov-bg-hv flex flex-col gap-0 px-[13px] pt-1 h-auto shadow-none"
+        >
+          <img
+            src={
+              familyType === "groom" ? "/images/groom.png" : "/images/bride.png"
+            }
+            alt="icon"
+            style={{ width: 126, aspectRatio: 1 }}
+          />
+          {familyType === "groom" ? "Khách nhà trai" : "Khách nhà gái"}
+        </Button>
+      ))}
+    </div>
+  );
+};
+
 const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const homeData = useHomeData();
   const [overlayStyles, setOverlayStyles] = useState<
@@ -125,7 +171,10 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
 
   // State cho popup xác nhận
   const [showModal, setShowModal] = useState(false);
-  const [isAttendance, setIsAttendance] = useState<string | null>(null);
+  const [isAttendance, setIsAttendance] = useState<
+    "attendance" | "not_attendance" | null
+  >(null);
+  const [isFamily, setIsFamily] = useState<"groom" | "bride" | null>(null);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const [showThankYou, setShowThankYou] = useState(false);
@@ -134,27 +183,28 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const { confirm, loading: confirmLoading } =
     WeddingPageApi.useConfirmAttendance();
 
-  // Lưu tabName để xác định guestOf khi cần
-  const [currentTabName, setCurrentTabName] = useState<string>("");
-
   const handleConfirmAttendance = (tabName: string) => {
     setShowModal(true);
     setIsAttendance(null);
+    if (homeData?.guestOf) {
+      setIsFamily(homeData?.guestOf);
+    } else {
+      if (tabName) {
+        setIsFamily(tabName === "Nhà Trai" ? "groom" : "bride");
+      } else {
+        setIsFamily(null);
+      }
+    }
     setName("");
     setNameError("");
-    setCurrentTabName(tabName);
   };
 
   bind({ handleConfirmAttendance });
 
   const handleModalCancel = () => {
     setShowModal(false);
-    setIsAttendance(null);
+    setIsFamily(null);
     setNameError("");
-  };
-
-  const handleAttendanceSelect = (value: string) => {
-    setIsAttendance(value);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,9 +213,18 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   };
 
   const handleSubmitConfirm = async () => {
-    if (!isAttendance) return;
+    if (!isFamily) {
+      setNameError("Bạn là khách bên nhà trai 👦🏻 hay nhà gái 👧🏻 vậy?");
+      return;
+    }
     if (!homeData?.guestSlug && !name.trim()) {
-      setNameError("Nhập tên của bạn giúp vợ chồng mình nhé");
+      setNameError("Bạn ơi cho tụi mình xin tên dễ thương với nha 📝🧸");
+      return;
+    }
+    if (!isAttendance) {
+      setNameError(
+        "Nhớ bấm chọn có đến được không nhaaaa, tụi mình mong chờ lắm đó 🥹💌"
+      );
       return;
     }
     const body: any = {
@@ -174,7 +233,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     if (homeData?.guestSlug) {
       body.guestSlug = homeData.guestSlug;
     } else {
-      body.guestOf = currentTabName === "Nhà Trai" ? "groom" : "bride";
+      body.guestOf = isFamily;
       body.name = name.trim();
     }
     await confirm(body);
@@ -264,26 +323,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         footer={null}
         centered
         destroyOnHidden
+        width={372}
       >
-        <div style={{ textAlign: "center", padding: 8 }}>
+        <div style={{ textAlign: "center" }}>
           <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>
             Cảm ơn bạn đã xác nhận giùm vợ chồng mình nhé
           </div>
-          <div style={{ marginBottom: 16 }}>
-            <Button
-              type={isAttendance === "attendance" ? "primary" : "default"}
-              onClick={() => handleAttendanceSelect("attendance")}
-              style={{ marginRight: 8 }}
-            >
-              Có, tôi sẽ đến
-            </Button>
-            <Button
-              type={isAttendance === "not_attendance" ? "primary" : "default"}
-              onClick={() => handleAttendanceSelect("not_attendance")}
-            >
-              Xin lỗi, tôi bận mất rồi
-            </Button>
-          </div>
+          <ButtonFamily isFamilyType={isFamily} onClick={setIsFamily} />
           {!homeData?.guestSlug && (
             <div style={{ marginBottom: 12 }}>
               <Input
@@ -291,22 +337,36 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                 value={name}
                 onChange={handleNameChange}
               />
-              {nameError && (
-                <div style={{ color: "red", marginTop: 4, fontSize: 13 }}>
-                  {nameError}
-                </div>
-              )}
             </div>
           )}
-          <Button
-            type="primary"
+          <div className="flex flex-wrap gap-3 mb-[12px]">
+            <Button
+              type={isAttendance === "attendance" ? "primary" : "default"}
+              onClick={() => setIsAttendance("attendance")}
+              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
+            >
+              Có, tôi sẽ đến
+            </Button>
+            <Button
+              type={isAttendance === "not_attendance" ? "primary" : "default"}
+              onClick={() => setIsAttendance("not_attendance")}
+              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
+            >
+              Xin lỗi, tôi bận mất rồi
+            </Button>
+          </div>
+          {nameError && (
+            <div style={{ color: "red", marginBottom: 12, fontSize: 13 }}>
+              {nameError}
+            </div>
+          )}
+          <CustomButton
             loading={confirmLoading}
-            disabled={!isAttendance || (!homeData?.guestSlug && !name.trim())}
             onClick={handleSubmitConfirm}
-            style={{ marginTop: 8, width: 160 }}
+            style={{ width: 160 }}
           >
             Xác nhận
-          </Button>
+          </CustomButton>
         </div>
       </Modal>
       <Modal
@@ -314,7 +374,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         footer={null}
         closable={false}
         centered
-        destroyOnClose
+        destroyOnHidden
         onCancel={() => setShowThankYou(false)}
       >
         <div style={{ textAlign: "center", padding: 16 }}>
@@ -393,7 +453,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                   >
                     <Space direction="vertical" size={0}>
                       <Text className="font-[VVRNIFZpYVyblKRidGY] text-[rgb(188,83,77)] text-[33px] leading-[1.63]">
-                        {item?.groomName} &amp; {item?.brideName}
+                        {item?.tabName === "Nhà Trai"
+                          ? item?.groomName
+                          : item?.brideName}{" "}
+                        &amp;{" "}
+                        {item?.tabName === "Nhà Trai"
+                          ? item?.brideName
+                          : item?.groomName}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
                         TRÂN TRỌNG KÍNH MỜI

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getSubdomain, EImageStoreType } from "./api";
-import useFetch from "./common";
+import useFetch, { API_URL } from "./common";
 
 export interface UserConfig {
   storageKey: { urlEndpoint: string };
@@ -93,12 +93,16 @@ export const WeddingPageApi = {
     const [response, setResponse] = useState<any>(null);
     const [error, setError] = useState<any>(null);
     const username = getSubdomain();
+    const url = new URL(
+      `v1/public/${username}/confirm-attendance`,
+      API_URL
+    ).toString();
 
     const confirm = async (body: ConfirmAttendanceRequest) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`$/v1/public/${username}/confirm-attendance`, {
+        const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
