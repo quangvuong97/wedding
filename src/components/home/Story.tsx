@@ -32,7 +32,7 @@ const Story: React.FC = () => {
     "flaticon-wedding-rings",
   ];
   return (
-    <Section title="Our Love Story">
+    <Section title="Chuyện Tình Yêu">
       <div className="relative sm:[&::after]:content-[''] [&::after]:bg-[#1e8267] [&::after]:w-[2px] [&::after]:h-full [&::after]:absolute [&::after]:left-1/2 [&::after]:top-0 [&::after]:-translate-x-1/2">
         <div
           className="bg-white w-[20px] h-[20px] absolute left-1/2 top-0 border border-[#738ea5] -translate-x-1/2 rounded-full z-[1]
@@ -51,13 +51,15 @@ const Story: React.FC = () => {
                     : " [&::before]:absolute [&::before]:top-[195px] [&::before]:w-[90%] [&::before]:h-[90%] [&::before]:border [&::before]:border-dashed [&::before]:border-[#1e8267] [&::before]:content-[''] [&::before]:rounded-full [&::before]:-z-[1] [&::before]:border-b-0 [&::before]:border-r-0 [&::before]:border-t-0 maxSsm:[&::before]:left-[-140px] maxXs:[&::before]:left-[-88px] [&::before]:left-[-96px] [&::before]:rotate-[66deg] maxSm:[&::before]:left-[-71px] maxXxl:[&::before]:-left-[133px] maxMd:[&::before]:-left-[52px]")
                 }
               >
-                <Image
-                  urlEndpoint={homeData?.storageKey.urlEndpoint}
-                  src={e.image || ""}
-                  alt=""
-                  width={310}
-                  className="rounded-full inline-block max-w-full align-middle aspect-square"
-                />
+                {e.image && homeData?.storageKey.urlEndpoint ? (
+                  <Image
+                    urlEndpoint={homeData?.storageKey.urlEndpoint}
+                    src={e.image}
+                    alt=""
+                    width={310}
+                    className="rounded-full inline-block max-w-full align-middle aspect-square"
+                  />
+                ) : null}
                 <div className="absolute -bottom-[14%] left-1/2 -translate-x-1/2">
                   <img
                     src="images/story.shape.png"
@@ -90,6 +92,7 @@ const Story: React.FC = () => {
             return (
               <Row
                 gutter={[0, 30]}
+                key={e?.title || index.toString()}
                 className={`${!check ? "sm:flex-row-reverse" : ""} ${
                   index > 0 ? "pt-[15px] mt-[50px]" : ""
                 } ${index === story.length - 1 ? "maxLg:hidden" : ""}`}

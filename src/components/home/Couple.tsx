@@ -41,12 +41,14 @@ const Couple: React.FC = () => {
         mb-[20px]
         "
         >
-          <Image
-            urlEndpoint={homeData?.storageKey?.urlEndpoint}
-            className="rounded-full w-full"
-            src={couple[object].img}
-            alt=""
-          />
+          {homeData?.storageKey?.urlEndpoint && couple[object].img ? (
+            <Image
+              urlEndpoint={homeData?.storageKey?.urlEndpoint}
+              className="rounded-full w-full"
+              src={couple[object].img}
+              alt=""
+            />
+          ) : null}
         </div>
         <h3 className="mb-[0.8em] font-semibold text-[22px] text-[#002642]">
           {couple[object].name}
@@ -77,12 +79,14 @@ const Couple: React.FC = () => {
           className="responsive-col justify-center flex"
         >
           <div className="col-content relative">
-            <Image
-              className="absolute left-[10%] top-1/2 -translate-y-1/2 rounded-[235px] w-[80%] h-[85%] max-w-[470px]"
-              urlEndpoint={homeData?.storageKey?.urlEndpoint}
-              src="/coupleImage"
-              alt=""
-            />
+            {homeData?.storageKey?.urlEndpoint ? (
+              <Image
+                className="absolute left-[10%] top-1/2 -translate-y-1/2 rounded-[235px] w-[80%] h-[85%] max-w-[470px] object-cover"
+                urlEndpoint={homeData?.storageKey?.urlEndpoint}
+                src="/coupleImage"
+                alt=""
+              />
+            ) : null}
             <div className="relative max-w-[577px] maxMd:max-w-[335px]">
               <img src="images/shape.png" alt="" />
             </div>

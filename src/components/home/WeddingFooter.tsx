@@ -17,6 +17,11 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
   const screens = useBreakpoint();
   const fontSize = screens.md ? "160px" : "95px";
 
+  const background =
+    homeData?.storageKey.urlEndpoint && image && image[0]
+      ? `url(${homeData?.storageKey.urlEndpoint}${image[0]})`
+      : "";
+
   return (
     <Card
       style={{ border: 0 }}
@@ -29,16 +34,14 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          width: "100vw", // Full chiều rộng màn hình
-          height: "100vh", // Chiều cao tối thiểu khi màn hình nhỏ
-          backgroundImage: `url(${homeData?.storageKey.urlEndpoint}${
-            image && image[0]
-          })`,
+          width: "100vw",
+          height: "100vh",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           color: "#fff",
           borderRadius: 0,
+          ...(background ? { backgroundImage: background } : {}),
         },
       }}
     >

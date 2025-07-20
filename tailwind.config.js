@@ -4,9 +4,6 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    backgroundImage: {
-      'clock': "url('https://i.ibb.co/wNz7BqJH/clock-bg.png')",
-    },
     extend: {
       fontFamily: {
         futura: ['"Futura PT"', "sans-serif"],
@@ -32,8 +29,8 @@ module.exports = {
       "maxXxl": { max: "1439px" },
       "maxXs": { max: "1399px" },
       "maxSm": { max: "1199px" },
-      "maxMd": { max: "991px" }, 
-      "maxLg": { max: "767px" }, 
+      "maxMd": { max: "991px" },
+      "maxLg": { max: "767px" },
       "maxSsm": { max: "575px" },
     },
   },

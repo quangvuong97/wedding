@@ -137,7 +137,9 @@ const Present: React.FC<{
       const newWindow = window.open();
 
       if (newWindow) {
-        newWindow.document.write(`
+        newWindow.document.body.insertAdjacentHTML(
+          "beforeend",
+          `
         <html>
           <head>
             <title>QR Code</title>
@@ -170,7 +172,8 @@ const Present: React.FC<{
             <img src="${url}" alt="QR Code" />
           </body>
         </html>
-      `);
+      `
+        );
         newWindow.document.close();
       } else {
         alert("Không thể mở ảnh. Hãy kiểm tra popup blocker.");
@@ -208,7 +211,7 @@ const Present: React.FC<{
 
   return (
     <div ref={targetRef}>
-      <Section titleStyle={{ marginBottom: "30px" }} title="Mừng cưới">
+      <Section titleStyle={{ marginBottom: "30px" }} title="Hộp Mừng Cưới">
         <Text className="font-muli">
           Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy
           hãy đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn
@@ -234,6 +237,7 @@ const Present: React.FC<{
             }}
           >
             {qrData.map((item, index) => {
+              if (!item) return null;
               return (
                 <Card
                   key={item.title}
@@ -296,13 +300,15 @@ const Present: React.FC<{
                         }}
                       />
                       <div ref={qrRef[index]} style={{ display: "none" }}>
-                        <QRCode
-                          bgColor="#FFF"
-                          style={{ border: 0 }}
-                          value={item.dataQR || ""}
-                          size={140}
-                          bordered={false}
-                        />
+                        {item.dataQR ? (
+                          <QRCode
+                            bgColor="#FFF"
+                            style={{ border: 0 }}
+                            value={item.dataQR || ""}
+                            size={140}
+                            bordered={false}
+                          />
+                        ) : null}
                       </div>
                       {qrUrl && qrUrl[index] ? (
                         <Image

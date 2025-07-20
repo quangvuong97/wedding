@@ -66,6 +66,7 @@ const ButtonFamily: React.FC<ButtonFamilyProps> = ({
     >
       {["groom", "bride"].map((familyType) => (
         <Button
+          key={familyType}
           type={
             homeData?.guestOf === familyType ||
             isFamilyType?.toString() === familyType
@@ -101,7 +102,9 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     [InvitationInfo | undefined, InvitationInfo | undefined]
   >([undefined, undefined]);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const BASE_IMAGE_WIDTH = 464; // Base width for which the fixed values were designed
+  const thankYouImgRef = useRef<HTMLImageElement | null>(null);
+  const [thankYouScale, setThankYouScale] = useState<number>(1);
+  const BASE_IMAGE_WIDTH = 464;
 
   useEffect(() => {
     if (!homeData) return;
@@ -169,7 +172,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     []
   );
 
-  // State cho popup xác nhận
   const [showModal, setShowModal] = useState(false);
   const [isAttendance, setIsAttendance] = useState<
     "attendance" | "not_attendance" | null
@@ -179,7 +181,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const [nameError, setNameError] = useState("");
   const [showThankYou, setShowThankYou] = useState(false);
 
-  // Sử dụng custom hook mới
   const { confirm, loading: confirmLoading } =
     WeddingPageApi.useConfirmAttendance();
 
@@ -242,7 +243,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     setTimeout(() => setShowThankYou(false), 5000);
   };
 
-  // Helper function to generate scaled styles for the invitation text
   const getScaledStyles = useCallback(() => {
     const scale = scaleFactor;
     return {
@@ -255,7 +255,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     };
   }, [scaleFactor]);
 
-  // Calculate overlay style with useCallback to fix dependency warning
   const calculateOverlayStyle = useCallback((): CircularOverlayStyle | {} => {
     if (!imageRef.current) return {};
 
@@ -290,7 +289,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     const newStyle = calculateOverlayStyle();
     setOverlayStyles(newStyle);
 
-    // Calculate scale factor based on current image width
     if (imageRef.current) {
       const currentWidth = imageRef.current.getBoundingClientRect().width;
       const newScaleFactor = currentWidth / BASE_IMAGE_WIDTH;
@@ -315,8 +313,20 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [updateOverlayPosition]);
 
+  useEffect(() => {
+    if (!showThankYou) return;
+    function handleResize() {
+      const width =
+        thankYouImgRef.current?.getBoundingClientRect().width || 520;
+      setThankYouScale(width / 520);
+    }
+    handleResize(); // đo ngay khi mở modal
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [showThankYou]);
+
   return (
-    <Section title="Wedding Invitation">
+    <Section title="Thiệp Mời">
       <Modal
         open={showModal}
         onCancel={handleModalCancel}
@@ -335,6 +345,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
               <Input
                 placeholder="Nhập tên của bạn"
                 value={name}
+                className="text-[16px]"
                 onChange={handleNameChange}
               />
             </div>
@@ -374,18 +385,47 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         footer={null}
         closable={false}
         centered
+        width={544}
         destroyOnHidden
         onCancel={() => setShowThankYou(false)}
+        styles={{
+          content: { padding: 0, margin: "0 12px" },
+          body: { position: "relative" },
+        }}
       >
-        <div style={{ textAlign: "center", padding: 16 }}>
-          <div style={{ fontWeight: 600, fontSize: 20, marginBottom: 10 }}>
-            Cảm ơn đã phản hồi cho hai vợ chồng
+        <img
+          src="images/thankYou.jpg"
+          alt=""
+          ref={thankYouImgRef}
+          onLoad={() => {
+            const width =
+              thankYouImgRef.current?.getBoundingClientRect().width || 520;
+            setThankYouScale(width / 520);
+          }}
+        />
+        <div
+          className="flex flex-col text-center items-center absolute top-[39%] left-1/2 -translate-x-1/2 w-[520px] gap-[12px] origin-top-left"
+          style={{ scale: thankYouScale }}
+        >
+          <Text className="font-['Cormorant_Garamond',serif] font-normal italic text-[17px] text-[#3A5653] w-[72%]">
+            Cảm ơn bạn đã phản hồi lời mời cưới của tụi mình! Tụi mình rất mong
+            được gặp bạn trong ngày đặc biệt ấy.
+          </Text>
+          <div className="flex w-[38%] gap-[8px] ">
+            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
+              {"THÁNG " + info[0]?.solarDate.month}
+            </Text>
+            <Text className="font-['Cormorant_Infant',serif] text-[32px] leading-[24px] h-[24px] font-normal text-[#3A5653]">
+              {info[0]?.solarDate.day}
+            </Text>
+            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
+              {info[0]?.solarDate.year}
+            </Text>
           </div>
-          <div style={{ fontSize: 16, marginBottom: 8 }}>
-            Thank you!
-            <br />
-            Chúc bạn thật nhiều sức khỏe nhé ❤️️
-          </div>
+          <Text className="font-['Cormorant_Garamond',serif] font-medium italic text-[15px] text-[#3A5653] w-[49%]">
+            Chúc bạn luôn được bao quanh bởi những điều dịu dàng, an lành và ấm
+            áp.
+          </Text>
         </div>
       </Modal>
       <Row
@@ -397,6 +437,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         className="px-3 mx-auto w-full"
       >
         {info.map((item, index) => {
+          if (!item) return null;
           return (
             <Col xs={24} md={12} key={index}>
               <Space
@@ -429,16 +470,17 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                     style={{ display: "block" }}
                     onLoad={() => handleImageLoad()}
                   />
-
-                  <Image
-                    key={Date.now()}
-                    urlEndpoint={homeData?.storageKey.urlEndpoint}
-                    queryParameters={{ date: Date.now() }}
-                    src={item?.image || ""}
-                    alt={`Profile ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    style={overlayStyles}
-                  />
+                  {homeData?.storageKey.urlEndpoint && item.image ? (
+                    <Image
+                      key={Date.now()}
+                      urlEndpoint={homeData?.storageKey.urlEndpoint}
+                      queryParameters={{ date: Date.now() }}
+                      src={item.image}
+                      alt={`Profile ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      style={overlayStyles}
+                    />
+                  ) : null}
                   <Space
                     direction="vertical"
                     className="absolute"
@@ -472,12 +514,12 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                       </Text>
                       <div className="pt-[5px]">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
-                          {item?.solarDate.hour.toUpperCase()}
+                          {item?.solarDate?.hour?.toUpperCase()}
                         </Text>
                       </div>
                       <Space size={8} align="center">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                          {item?.solarDate?.dayOfWeek.toUpperCase()}
+                          {item?.solarDate?.dayOfWeek?.toUpperCase()}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
                         <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">

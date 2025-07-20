@@ -14,6 +14,9 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
   bodyWidth,
   onClick,
 }: MarkImagePreviewProps) => {
+  const breakpoint = bodyWidth ? Math.round(bodyWidth * 1.2) : undefined;
+
+  if (!urlEndpoint || !src) return null;
   return (
     <div
       style={{ position: "relative", display: "inline-block" }}
@@ -22,8 +25,8 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
       <Image
         urlEndpoint={urlEndpoint}
         src={src}
-        imageBreakpoints={bodyWidth ? [bodyWidth / 1.5] : undefined}
-        deviceBreakpoints={bodyWidth ? [bodyWidth / 1.5] : undefined}
+        imageBreakpoints={breakpoint ? [breakpoint] : undefined}
+        deviceBreakpoints={breakpoint ? [breakpoint] : undefined}
       />
       <div
         className="hover:!opacity-100"

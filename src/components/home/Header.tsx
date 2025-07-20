@@ -100,22 +100,24 @@ const Header: React.FC<{
           }`}
           style={{ background: "#ddd" }}
         >
-          <Image
-            style={{
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              objectFit: "cover",
-            }}
-            transformation={[{ format: "auto" }]}
-            loading="lazy"
-            lqip={{ active: true }}
-            urlEndpoint={homeData?.storageKey.urlEndpoint}
-            src={slide}
-            onLoad={() => {
-              i === 0 && setImagesLoaded(true);
-            }}
-          />
+          {homeData?.storageKey.urlEndpoint && slide ? (
+            <Image
+              style={{
+                position: "absolute",
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+              }}
+              transformation={[{ format: "auto" }]}
+              loading="lazy"
+              lqip={{ active: true }}
+              urlEndpoint={homeData?.storageKey.urlEndpoint}
+              src={slide}
+              onLoad={() => {
+                i === 0 && setImagesLoaded(true);
+              }}
+            />
+          ) : null}
           <div className="w-full px-[var(--bs-gutter-x,.75rem)] mx-auto">
             <div className="max-w-[450px] sm:max-w-[650px] md:max-w-[760px] lg:max-w-[1090px] px-[50px] sm:px-[70px] py-[40px] sm:py-[80px] relative mx-auto text-center bg-[rgba(30,130,103,0.1)]">
               <div
@@ -158,13 +160,14 @@ const Header: React.FC<{
                   className="text-[1.06667rem] sm:text-[1.2rem] md:text-[30px] leading-[22px] sm:leading-[30px] md:leading-[45px] max-w-[780px] text-white mx-auto mb-[0px] font-muli"
                   style={{ fontWeight: 600 }}
                 >
-                  {solarDate && typeof solarDate !== "string" ? (
-                    `${solarDate.getDate().toString().padStart(2, "0")} Tháng ${(solarDate.getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0")} Năm ${solarDate.getFullYear()}`
-                  ) : (
-                    ""
-                  )}
+                  {solarDate && typeof solarDate !== "string"
+                    ? `${solarDate
+                        .getDate()
+                        .toString()
+                        .padStart(2, "0")} Tháng ${(solarDate.getMonth() + 1)
+                        .toString()
+                        .padStart(2, "0")} Năm ${solarDate.getFullYear()}`
+                    : ""}
                 </p>
               </div>
               <div className="absolute left-0 top-0 h-[1px] bg-white w-[15%] xxxs:w-[30%] xxs:w-[36%] xs:w-[44%] sm:w-[67%] lg:w-[76.7%]"></div>

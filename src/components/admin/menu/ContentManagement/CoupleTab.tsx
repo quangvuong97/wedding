@@ -129,7 +129,7 @@ const CoupleTab: React.FC = () => {
           <div style={{ marginBottom: 16, fontWeight: 600 }}>{img.label}</div>
           <Spin spinning={!!loading[img.name]}>
             <div style={imageBoxStyle}>
-              {!error[img.name] ? (
+              {!error[img.name] && urlEndpoint ? (
                 <Image
                   key={reloadKey + img.key}
                   src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}

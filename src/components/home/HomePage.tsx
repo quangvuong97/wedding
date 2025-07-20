@@ -12,6 +12,7 @@ import SVGSymbols from "../common/SVGSymbols";
 import { HomeDataContext, useHomeData } from "../../contexts/HomeDataContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 const { useBreakpoint } = Grid;
 
@@ -68,9 +69,9 @@ const HomeContent = ({
     });
   };
 
-  useEffect(() => {
-    console.log("isAllReady: ", isAllReady);
-  }, [isAllReady]);
+  // useEffect(() => {
+  //   console.log("isAllReady: ", isAllReady);
+  // }, [isAllReady]);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -110,7 +111,7 @@ const HomeContent = ({
       try {
         await audio.play();
         setIsPlaying(true);
-        console.log("✅ Nhạc đã phát sau tương tác");
+        // console.log("✅ Nhạc đã phát sau tương tác");
       } catch (err) {
         console.error("❌ Không thể phát nhạc:", err);
       }
@@ -119,8 +120,28 @@ const HomeContent = ({
       document.removeEventListener("touchstart", handleInteraction);
     };
 
+    let wasPlaying = false;
+    const handleVisibilityChange = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (document.hidden) {
+        wasPlaying = !audio.paused;
+        if (wasPlaying) {
+          audio.pause();
+        }
+      } else {
+        if (wasPlaying) {
+          audio.play().catch((e) => {
+            console.warn("Không thể phát audio:", e);
+          });
+        }
+      }
+    };
+
     document.addEventListener("click", handleInteraction);
     document.addEventListener("touchstart", handleInteraction);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     setOpenFloatGroup(true);
     setTimeout(
@@ -137,6 +158,8 @@ const HomeContent = ({
     return () => {
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
+
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
@@ -266,7 +289,7 @@ const HomeContent = ({
         // }`}
       >
         <Header childId="header" onReady={handleChildReady} />
-        <CountDown />
+        {dayjs().isBefore(dayjs(homeData?.solarDate)) ? <CountDown /> : ""}
         <Couple />
         <Story />
         <Invitation bind={(methods) => (childMethodsRef.current = methods)} />

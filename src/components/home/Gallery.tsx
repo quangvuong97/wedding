@@ -52,7 +52,7 @@ const Gallery: React.FC = () => {
   // };
 
   return (
-    <Section title="Sweet Moments">
+    <Section title="Khoảnh Khắc Ngọt Ngào">
       <div style={{ columnCount: 3 }} ref={divRef}>
         <Image.PreviewGroup
           preview={{
@@ -120,18 +120,20 @@ const Gallery: React.FC = () => {
             onChange: (index) => setCurrent(index),
           }}
         >
-          {images.map((item) => (
-            <Image
-              key={item + 1}
-              src={homeData?.storageKey.urlEndpoint + item}
-              style={{ height: 0, width: 0 }}
-            />
-          ))}
+          {images.map((item) =>
+            homeData?.storageKey.urlEndpoint ? (
+              <Image
+                key={item + 1}
+                src={homeData?.storageKey.urlEndpoint + item}
+                style={{ height: 0, width: 0 }}
+              />
+            ) : null
+          )}
 
           {images.map((item, index) => (
             <MarkImagePreview
               src={item}
-              bodyWidth={divRef.current?.getBoundingClientRect().width}
+              bodyWidth={window.innerWidth / 3}
               urlEndpoint={homeData?.storageKey.urlEndpoint || ""}
               key={item + 2}
               onClick={() => {
