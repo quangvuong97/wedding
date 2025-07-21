@@ -11,6 +11,8 @@ const { Text, Title } = Typography;
 
 interface InvitationInfo {
   image: string;
+  keyImage: string;
+  queryImage: number;
   tabName: string;
   brideName: string;
   groomName: string;
@@ -156,7 +158,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   );
 
   // Memoize invitation info calculation
-  const info = useMemo(() => {
+  const info: InvitationInfo[] | undefined[] = useMemo(() => {
     if (!homeData) return [undefined, undefined];
 
     const date = new Date(homeData.solarDate);
@@ -170,12 +172,14 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
       groomName: homeData.groomName,
       solarDate: { hour: homeData.weddingHours, day, month, year, dayOfWeek },
       lunarDate: homeData.lunarDate,
+      queryImage: Date.now(),
     };
 
     return [
       {
         ...baseInfo,
         image: "/groomFamily",
+        keyImage: "groom" + Date.now(),
         tabName: "Nhà Trai",
         guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
         address: homeData.groomAddress,
@@ -184,6 +188,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
       {
         ...baseInfo,
         image: "/brideFamily",
+        keyImage: "bride" + Date.now(),
         tabName: "Nhà Gái",
         guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
         address: homeData.brideAddress,
@@ -549,9 +554,9 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                   />
                   {homeData?.storageKey.urlEndpoint && item.image ? (
                     <Image
-                      key={`profile-${index}-${Date.now()}`}
-                      urlEndpoint={homeData.storageKey.urlEndpoint}
-                      queryParameters={{ date: Date.now() }}
+                      key={item.keyImage}
+                      urlEndpoint={"https://ik.imagekit.io/vuongninh"}
+                      queryParameters={{ date: item.queryImage }}
                       src={item.image}
                       alt={`Profile ${index + 1}`}
                       className="w-full h-full object-cover"
