@@ -64,7 +64,7 @@ const Story: React.FC = () => {
                     src={e.image}
                     alt=""
                     width={310}
-                    className="rounded-full inline-block max-w-full align-middle aspect-square"
+                    className="rounded-full inline-block max-w-full align-middle aspect-square object-cover"
                   />
                 ) : null}
                 <div className="absolute -bottom-[14%] left-1/2 -translate-x-1/2">
