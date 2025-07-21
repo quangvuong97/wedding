@@ -1,3 +1,4 @@
+import React, { useCallback, useMemo } from "react";
 import { Image } from "@imagekit/react";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import { Col, Row, Typography } from "antd";
@@ -7,7 +8,7 @@ const { Text } = Typography;
 const Couple: React.FC = () => {
   const homeData = useHomeData();
 
-  const couple = {
+  const couple = useMemo(() => ({
     groom: {
       name: homeData?.groomName,
       info: homeData?.groomIntroduction,
@@ -18,9 +19,9 @@ const Couple: React.FC = () => {
       info: homeData?.brideIntroduction,
       img: "/brideImage",
     },
-  };
+  }), [homeData?.groomName, homeData?.groomIntroduction, homeData?.brideName, homeData?.brideIntroduction]);
 
-  const genInfo = (object: "groom" | "bride") => {
+  const genInfo = useCallback((object: "groom" | "bride") => {
     return (
       <div
         className={`
@@ -61,7 +62,7 @@ const Couple: React.FC = () => {
         </Text>
       </div>
     );
-  };
+  }, [homeData?.storageKey?.urlEndpoint, couple]);
 
   return (
     <div className="container mx-auto px-3 w-full ssm:max-w-[540px] sm:max-w-[720px] md:max-w-[960px] lg:max-w-[1140px] xl:max-w-[1320px] xxl:max-w-[1170px]">

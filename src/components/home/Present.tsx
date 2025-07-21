@@ -22,22 +22,35 @@ const Present: React.FC<{
     () => Array.from({ length: count }, () => createRef<HTMLDivElement>()),
     [count]
   );
-  const qrData = [
-    {
-      title: "Chú Rể",
-      dataQR: homeData?.dataGroomQR,
-      accountNo: homeData?.groomAccountNumber,
-      accountName: homeData?.groomAccountName,
-      bankLog: homeData?.logoBankGroom,
-    },
-    {
-      title: "Cô Dâu",
-      dataQR: homeData?.dataBrideQR,
-      accountNo: homeData?.brideAccountNumber,
-      accountName: homeData?.brideAccountName,
-      bankLog: homeData?.logoBankBride,
-    },
-  ];
+
+  const qrData = useMemo(
+    () => [
+      {
+        title: "Chú Rể",
+        dataQR: homeData?.dataGroomQR,
+        accountNo: homeData?.groomAccountNumber,
+        accountName: homeData?.groomAccountName,
+        bankLog: homeData?.logoBankGroom,
+      },
+      {
+        title: "Cô Dâu",
+        dataQR: homeData?.dataBrideQR,
+        accountNo: homeData?.brideAccountNumber,
+        accountName: homeData?.brideAccountName,
+        bankLog: homeData?.logoBankBride,
+      },
+    ],
+    [
+      homeData?.dataGroomQR,
+      homeData?.groomAccountNumber,
+      homeData?.groomAccountName,
+      homeData?.logoBankGroom,
+      homeData?.dataBrideQR,
+      homeData?.brideAccountNumber,
+      homeData?.brideAccountName,
+      homeData?.logoBankBride,
+    ]
+  );
 
   const DESIGN_WIDTH = 576;
   const [scale, setScale] = useState(1);
@@ -126,9 +139,12 @@ const Present: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeData?.dataGroomQR, homeData?.dataBrideQR]);
 
-  const isIOS =
-    /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) &&
-    ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  const isIOS = useMemo(
+    () =>
+      /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) &&
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0),
+    []
+  );
 
   const downloadQR = async (index: number) => {
     const url = qrUrl[index];

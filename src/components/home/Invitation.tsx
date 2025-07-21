@@ -1,10 +1,11 @@
 import { Col, Row, Space, Typography, Modal, Button, Input } from "antd";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import { Image } from "@imagekit/react";
 import { WeddingPageApi } from "../../services/weddingPage.api";
+import { Gutter } from "antd/es/grid/row";
 
 const { Text, Title } = Typography;
 
@@ -50,127 +51,81 @@ type ButtonFamilyProps = {
   onClick: (isFamilyType: "groom" | "bride") => void;
 };
 
-const ButtonFamily: React.FC<ButtonFamilyProps> = ({
-  isFamilyType,
-  onClick,
-}) => {
-  const homeData = useHomeData();
-  return (
-    <div
-      style={{
+// Memoize ButtonFamily component
+const ButtonFamily: React.FC<ButtonFamilyProps> = memo(
+  ({ isFamilyType, onClick }) => {
+    const homeData = useHomeData();
+
+    // Memoize style objects
+    const containerStyle = useMemo(
+      () => ({
         marginBottom: 12,
         display: "flex",
         justifyContent: "center",
         gap: 12,
-      }}
-    >
-      {["groom", "bride"].map((familyType) => (
-        <Button
-          key={familyType}
-          type={
-            homeData?.guestOf === familyType ||
-            isFamilyType?.toString() === familyType
-              ? "primary"
-              : "default"
-          }
-          onClick={() =>
-            homeData?.guestOf ? null : onClick(familyType as "groom" | "bride")
-          }
-          className="bt-ov-bg-hv flex flex-col gap-0 px-[13px] pt-1 h-auto shadow-none"
-        >
-          <img
-            src={
-              familyType === "groom" ? "/images/groom.png" : "/images/bride.png"
+      }),
+      []
+    );
+
+    const imageStyle = useMemo(
+      () => ({
+        width: 126,
+        aspectRatio: 1,
+      }),
+      []
+    );
+
+    const familyTypes = useMemo(() => ["groom", "bride"], []);
+
+    const handleClick = useCallback(
+      (familyType: string) => {
+        if (!homeData?.guestOf) {
+          onClick(familyType as "groom" | "bride");
+        }
+      },
+      [homeData?.guestOf, onClick]
+    );
+
+    return (
+      <div style={containerStyle}>
+        {familyTypes.map((familyType) => (
+          <Button
+            key={familyType}
+            type={
+              homeData?.guestOf === familyType ||
+              isFamilyType?.toString() === familyType
+                ? "primary"
+                : "default"
             }
-            alt="icon"
-            style={{ width: 126, aspectRatio: 1 }}
-          />
-          {familyType === "groom" ? "Khách nhà trai" : "Khách nhà gái"}
-        </Button>
-      ))}
-    </div>
-  );
-};
+            onClick={() => handleClick(familyType)}
+            className="bt-ov-bg-hv flex flex-col gap-0 px-[13px] pt-1 h-auto shadow-none"
+          >
+            <img
+              src={
+                familyType === "groom"
+                  ? "/images/groom.png"
+                  : "/images/bride.png"
+              }
+              alt="icon"
+              style={imageStyle}
+            />
+            {familyType === "groom" ? "Khách nhà trai" : "Khách nhà gái"}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+);
 
 const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const homeData = useHomeData();
-  const [overlayStyles, setOverlayStyles] = useState<
-    CircularOverlayStyle | {}
-  >();
+  const [overlayStyles, setOverlayStyles] = useState<CircularOverlayStyle | {}>(
+    {}
+  );
   const [scaleFactor, setScaleFactor] = useState<number>(1);
-  const [info, setInfo] = useState<
-    [InvitationInfo | undefined, InvitationInfo | undefined]
-  >([undefined, undefined]);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const thankYouImgRef = useRef<HTMLImageElement | null>(null);
   const [thankYouScale, setThankYouScale] = useState<number>(1);
-  const BASE_IMAGE_WIDTH = 464;
-
-  useEffect(() => {
-    if (!homeData) return;
-    const date = new Date(homeData.solarDate);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    const weekdays = [
-      "Chủ Nhật",
-      "Thứ 2",
-      "Thứ 3",
-      "Thứ 4",
-      "Thứ 5",
-      "Thứ 6",
-      "Thứ 7",
-    ];
-
-    const dayOfWeek = weekdays[date.getDay()];
-
-    setInfo([
-      {
-        image: "/groomFamily",
-        tabName: "Nhà Trai",
-        brideName: homeData.brideName,
-        groomName: homeData.groomName,
-        guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
-        solarDate: {
-          hour: homeData.weddingHours,
-          day,
-          month,
-          year,
-          dayOfWeek,
-        },
-        lunarDate: homeData.lunarDate,
-        address: homeData.groomAddress,
-        ggMap: homeData.groomGgAddress,
-      },
-      {
-        image: "/brideFamily",
-        tabName: "Nhà Gái",
-        brideName: homeData.brideName,
-        groomName: homeData.groomName,
-        guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
-        solarDate: {
-          hour: homeData.weddingHours,
-          day,
-          month,
-          year,
-          dayOfWeek,
-        },
-        lunarDate: homeData.lunarDate,
-        address: homeData.brideAddress,
-        ggMap: homeData.brideGgAddress,
-      },
-    ]);
-  }, [homeData]);
-
-  const circularAreaConfig = useMemo(
-    () => ({
-      centerX: 49.8,
-      centerY: 26.25,
-      radiusPercent: 21.7,
-    }),
-    []
-  );
 
   const [showModal, setShowModal] = useState(false);
   const [isAttendance, setIsAttendance] = useState<
@@ -184,36 +139,169 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
   const { confirm, loading: confirmLoading } =
     WeddingPageApi.useConfirmAttendance();
 
-  const handleConfirmAttendance = (tabName: string) => {
-    setShowModal(true);
-    setIsAttendance(null);
-    if (homeData?.guestOf) {
-      setIsFamily(homeData?.guestOf);
-    } else {
-      if (tabName) {
-        setIsFamily(tabName === "Nhà Trai" ? "groom" : "bride");
+  // Memoize constants
+  const BASE_IMAGE_WIDTH = useMemo(() => 464, []);
+  const weekdays = useMemo(
+    () => ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
+    []
+  );
+
+  const circularAreaConfig = useMemo(
+    () => ({
+      centerX: 49.8,
+      centerY: 26.25,
+      radiusPercent: 21.7,
+    }),
+    []
+  );
+
+  // Memoize invitation info calculation
+  const info = useMemo(() => {
+    if (!homeData) return [undefined, undefined];
+
+    const date = new Date(homeData.solarDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const dayOfWeek = weekdays[date.getDay()];
+
+    const baseInfo = {
+      brideName: homeData.brideName,
+      groomName: homeData.groomName,
+      solarDate: { hour: homeData.weddingHours, day, month, year, dayOfWeek },
+      lunarDate: homeData.lunarDate,
+    };
+
+    return [
+      {
+        ...baseInfo,
+        image: "/groomFamily",
+        tabName: "Nhà Trai",
+        guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
+        address: homeData.groomAddress,
+        ggMap: homeData.groomGgAddress,
+      },
+      {
+        ...baseInfo,
+        image: "/brideFamily",
+        tabName: "Nhà Gái",
+        guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
+        address: homeData.brideAddress,
+        ggMap: homeData.brideGgAddress,
+      },
+    ];
+  }, [homeData, weekdays]);
+
+  // Memoize style objects
+  const modalContentStyle = useMemo(
+    () => ({
+      textAlign: "center" as const,
+    }),
+    []
+  );
+
+  const modalHeaderStyle = useMemo(
+    () => ({
+      fontWeight: 600,
+      fontSize: 18,
+      marginBottom: 12,
+    }),
+    []
+  );
+
+  const inputContainerStyle = useMemo(
+    () => ({
+      marginBottom: 12,
+    }),
+    []
+  );
+
+  const errorStyle = useMemo(
+    () => ({
+      color: "red",
+      marginBottom: 12,
+      fontSize: 13,
+    }),
+    []
+  );
+
+  const confirmButtonStyle = useMemo(
+    () => ({
+      width: 160,
+    }),
+    []
+  );
+
+  const thankYouModalStyles = useMemo(
+    () => ({
+      content: { padding: 0, margin: "0 12px" },
+      body: { position: "relative" as const },
+    }),
+    []
+  );
+
+  const thankYouContentStyle = useMemo(
+    () => ({
+      scale: thankYouScale,
+    }),
+    [thankYouScale]
+  );
+
+  const titleStyle = useMemo(
+    () => ({
+      fontFamily: "VVZOTWpSGuZyUVEY",
+      margin: 0,
+      color: "#1e8267",
+    }),
+    []
+  );
+
+  const imageDisplayStyle = useMemo(
+    () => ({
+      display: "block",
+    }),
+    []
+  );
+
+  const gutterConfig: Gutter | [Gutter, Gutter] = useMemo(
+    () => [
+      { xs: 0, sm: 16, md: 16 },
+      { xs: 40, sm: 16, md: 16 },
+    ],
+    []
+  );
+
+  // Memoize callbacks
+  const handleConfirmAttendance = useCallback(
+    (tabName: string) => {
+      setShowModal(true);
+      setIsAttendance(null);
+      if (homeData?.guestOf) {
+        setIsFamily(homeData.guestOf);
       } else {
-        setIsFamily(null);
+        setIsFamily(tabName === "Nhà Trai" ? "groom" : "bride");
       }
-    }
-    setName("");
-    setNameError("");
-  };
+      setName("");
+      setNameError("");
+    },
+    [homeData?.guestOf]
+  );
 
-  bind({ handleConfirmAttendance });
-
-  const handleModalCancel = () => {
+  const handleModalCancel = useCallback(() => {
     setShowModal(false);
     setIsFamily(null);
     setNameError("");
-  };
+  }, []);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-    if (e.target.value) setNameError("");
-  };
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setName(e.target.value);
+      if (e.target.value) setNameError("");
+    },
+    []
+  );
 
-  const handleSubmitConfirm = async () => {
+  const handleSubmitConfirm = useCallback(async () => {
     if (!isFamily) {
       setNameError("Bạn là khách bên nhà trai 👦🏻 hay nhà gái 👧🏻 vậy?");
       return;
@@ -228,20 +316,20 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
       );
       return;
     }
-    const body: any = {
-      isAttendance,
-    };
+
+    const body: any = { isAttendance };
     if (homeData?.guestSlug) {
       body.guestSlug = homeData.guestSlug;
     } else {
       body.guestOf = isFamily;
       body.name = name.trim();
     }
+
     await confirm(body);
     setShowModal(false);
     setShowThankYou(true);
     setTimeout(() => setShowThankYou(false), 5000);
-  };
+  }, [isFamily, homeData, name, isAttendance, confirm]);
 
   const getScaledStyles = useCallback(() => {
     const scale = scaleFactor;
@@ -253,14 +341,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         transformOrigin: "top left",
       },
     };
-  }, [scaleFactor]);
+  }, [scaleFactor, BASE_IMAGE_WIDTH]);
 
   const calculateOverlayStyle = useCallback((): CircularOverlayStyle | {} => {
     if (!imageRef.current) return {};
 
     const rect = imageRef.current.getBoundingClientRect();
-    const imageWidth = rect.width;
-    const imageHeight = rect.height;
+    const { width: imageWidth, height: imageHeight } = rect;
 
     if (imageWidth === 0 || imageHeight === 0) return {};
 
@@ -296,17 +383,25 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     }
   }, [calculateOverlayStyle, BASE_IMAGE_WIDTH]);
 
-  const handleImageLoad = () => {
-    requestAnimationFrame(() => {
-      updateOverlayPosition();
-    });
-  };
+  const handleImageLoad = useCallback(() => {
+    requestAnimationFrame(updateOverlayPosition);
+  }, [updateOverlayPosition]);
+
+  const handleThankYouImageLoad = useCallback(() => {
+    const width = thankYouImgRef.current?.getBoundingClientRect().width || 520;
+    setThankYouScale(width / 520);
+  }, []);
+
+  const handleMapClick = useCallback((ggMap: string) => {
+    window.open(ggMap, "_blank");
+  }, []);
+
+  // Bind the method for parent component
+  bind({ handleConfirmAttendance });
 
   useEffect(() => {
     const handleResize = () => {
-      requestAnimationFrame(() => {
-        updateOverlayPosition();
-      });
+      requestAnimationFrame(updateOverlayPosition);
     };
 
     window.addEventListener("resize", handleResize);
@@ -315,12 +410,14 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
 
   useEffect(() => {
     if (!showThankYou) return;
-    function handleResize() {
+
+    const handleResize = () => {
       const width =
         thankYouImgRef.current?.getBoundingClientRect().width || 520;
       setThankYouScale(width / 520);
-    }
-    handleResize(); // đo ngay khi mở modal
+    };
+
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [showThankYou]);
@@ -335,13 +432,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         destroyOnHidden
         width={372}
       >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>
+        <div style={modalContentStyle}>
+          <div style={modalHeaderStyle}>
             Cảm ơn bạn đã xác nhận giùm vợ chồng mình nhé
           </div>
           <ButtonFamily isFamilyType={isFamily} onClick={setIsFamily} />
           {!homeData?.guestSlug && (
-            <div style={{ marginBottom: 12 }}>
+            <div style={inputContainerStyle}>
               <Input
                 placeholder="Nhập tên của bạn"
                 value={name}
@@ -366,20 +463,17 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
               Xin lỗi, tôi bận mất rồi
             </Button>
           </div>
-          {nameError && (
-            <div style={{ color: "red", marginBottom: 12, fontSize: 13 }}>
-              {nameError}
-            </div>
-          )}
+          {nameError && <div style={errorStyle}>{nameError}</div>}
           <CustomButton
             loading={confirmLoading}
             onClick={handleSubmitConfirm}
-            style={{ width: 160 }}
+            style={confirmButtonStyle}
           >
             Xác nhận
           </CustomButton>
         </div>
       </Modal>
+
       <Modal
         open={showThankYou}
         footer={null}
@@ -388,24 +482,17 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         width={544}
         destroyOnHidden
         onCancel={() => setShowThankYou(false)}
-        styles={{
-          content: { padding: 0, margin: "0 12px" },
-          body: { position: "relative" },
-        }}
+        styles={thankYouModalStyles}
       >
         <img
           src="images/thankYou.jpg"
           alt=""
           ref={thankYouImgRef}
-          onLoad={() => {
-            const width =
-              thankYouImgRef.current?.getBoundingClientRect().width || 520;
-            setThankYouScale(width / 520);
-          }}
+          onLoad={handleThankYouImageLoad}
         />
         <div
           className="flex flex-col text-center items-center absolute top-[39%] left-1/2 -translate-x-1/2 w-[520px] gap-[12px] origin-top-left"
-          style={{ scale: thankYouScale }}
+          style={thankYouContentStyle}
         >
           <Text className="font-['Cormorant_Garamond',serif] font-normal italic text-[17px] text-[#3A5653] w-[72%]">
             Cảm ơn bạn đã phản hồi lời mời cưới của tụi mình! Tụi mình rất mong
@@ -428,18 +515,16 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
           </Text>
         </div>
       </Modal>
+
       <Row
         justify="center"
-        gutter={[
-          { xs: 0, sm: 16, md: 16 }, // horizontal gutter (giữa các cột)
-          { xs: 40, sm: 16, md: 16 }, // vertical gutter (giữa các hàng)
-        ]}
+        gutter={gutterConfig}
         className="px-3 mx-auto w-full"
       >
         {info.map((item, index) => {
           if (!item) return null;
           return (
-            <Col xs={24} md={12} key={index}>
+            <Col xs={24} md={12} key={`invitation-${index}`}>
               <Space
                 direction="vertical"
                 size="middle"
@@ -447,15 +532,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                 align="center"
               >
                 <Space>
-                  <Title
-                    style={{
-                      fontFamily: "VVZOTWpSGuZyUVEY",
-                      margin: 0,
-                      color: "#1e8267",
-                    }}
-                  >
-                    {item?.tabName}
-                  </Title>
+                  <Title style={titleStyle}>{item.tabName}</Title>
                 </Space>
                 <div className="w-full relative">
                   <img
@@ -467,18 +544,19 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                     src="images/thiep.png"
                     alt={`Invitation ${index + 1}`}
                     className="w-full h-auto object-contain"
-                    style={{ display: "block" }}
-                    onLoad={() => handleImageLoad()}
+                    style={imageDisplayStyle}
+                    onLoad={handleImageLoad}
                   />
                   {homeData?.storageKey.urlEndpoint && item.image ? (
                     <Image
-                      key={Date.now()}
-                      urlEndpoint={homeData?.storageKey.urlEndpoint}
+                      key={`profile-${index}-${Date.now()}`}
+                      urlEndpoint={homeData.storageKey.urlEndpoint}
                       queryParameters={{ date: Date.now() }}
                       src={item.image}
                       alt={`Profile ${index + 1}`}
                       className="w-full h-full object-cover"
                       style={overlayStyles}
+                      loading="lazy"
                     />
                   ) : null}
                   <Space
@@ -486,53 +564,49 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                     className="absolute"
                     style={{
                       display: "flex",
-                      top: getScaledStyles().container.top,
-                      width: getScaledStyles().container.width,
-                      transform: getScaledStyles().container.transform,
-                      transformOrigin:
-                        getScaledStyles().container.transformOrigin,
+                      ...getScaledStyles().container,
                     }}
                   >
                     <Space direction="vertical" size={0}>
                       <Text className="font-[VVRNIFZpYVyblKRidGY] text-[rgb(188,83,77)] text-[33px] leading-[1.63]">
-                        {item?.tabName === "Nhà Trai"
-                          ? item?.groomName
-                          : item?.brideName}{" "}
+                        {item.tabName === "Nhà Trai"
+                          ? item.groomName
+                          : item.brideName}{" "}
                         &amp;{" "}
-                        {item?.tabName === "Nhà Trai"
-                          ? item?.brideName
-                          : item?.groomName}
+                        {item.tabName === "Nhà Trai"
+                          ? item.brideName
+                          : item.groomName}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] text-[rgb(0, 0, 0)] text-[15px] leading-[1.6]">
                         TRÂN TRỌNG KÍNH MỜI
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.6] text-black text-[16px]">
-                        {item?.guestName || "Quý Khách"}
+                        {item.guestName || "Quý Khách"}
                       </Text>
                       <Text className="font-[Quicksand,sans-serif] leading-[1.6] text-black text-[14px]">
                         Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
                       </Text>
                       <div className="pt-[5px]">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
-                          {item?.solarDate?.hour?.toUpperCase()}
+                          {item.solarDate?.hour?.toUpperCase()}
                         </Text>
                       </div>
                       <Space size={8} align="center">
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                          {item?.solarDate?.dayOfWeek?.toUpperCase()}
+                          {item.solarDate?.dayOfWeek?.toUpperCase()}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
                         <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
-                          {item?.solarDate?.day?.toString().padStart(2, "0")}
+                          {item.solarDate?.day?.toString().padStart(2, "0")}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
-                          {item?.solarDate?.month?.toString().padStart(2, "0")}{" "}
-                          - {item?.solarDate.year}
+                          {item.solarDate?.month?.toString().padStart(2, "0")} -{" "}
+                          {item.solarDate.year}
                         </Text>
                       </Space>
                       <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
-                        (Tức {item?.lunarDate} )
+                        (Tức {item.lunarDate} )
                       </Text>
                     </Space>
                     <Space direction="vertical">
@@ -540,7 +614,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                         className="text-[15px] font-[Mulish,sans-serif] font-bold leading-[1.6] text-[rgb(150,31,31)]"
                         style={{ whiteSpace: "pre-line" }}
                       >
-                        Tại: {item?.address}
+                        Tại: {item.address}
                       </Text>
                       <Text
                         className="text-[21px] font-[VVZORGluaEhvbiUVEY] leading-[1] text-[rgb(0,0,0)]"
@@ -557,16 +631,14 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                   <CustomButton
                     text="Xác nhận tham dự"
                     icon={<i className="text-[#fff] fi fi-ss-user-trust"></i>}
-                    onClick={() => handleConfirmAttendance(item?.tabName || "")}
+                    onClick={() => handleConfirmAttendance(item.tabName)}
                   />
                   <CustomButton
                     text="Chỉ đường"
                     icon={
                       <i className="text-[#fff] fi fi-ss-land-layer-location"></i>
                     }
-                    onClick={() =>
-                      item?.ggMap && window.open(item?.ggMap, "_blank")
-                    }
+                    onClick={() => item.ggMap && handleMapClick(item.ggMap)}
                   />
                 </Space>
               </Space>

@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Col, Row } from "antd";
 import Section from "../../common/Section";
 import { WeddingPageApi } from "../../services/weddingPage.api";
@@ -7,16 +8,21 @@ import { Image } from "@imagekit/react";
 const Story: React.FC = () => {
   const { response: imageStoryResponse } = WeddingPageApi.useGetStory();
   const homeData = useHomeData();
-  const story = homeData?.story?.map((e, i) => {
-    return {
-      title: e.title,
-      date: e.date,
-      description: e.description,
-      image: imageStoryResponse && imageStoryResponse.data[i],
-    };
-  });
-  story?.push(undefined as any);
-  const storyIcons = [
+  
+  const story = useMemo(() => {
+    const storyData = homeData?.story?.map((e, i) => {
+      return {
+        title: e.title,
+        date: e.date,
+        description: e.description,
+        image: imageStoryResponse && imageStoryResponse.data[i],
+      };
+    });
+    storyData?.push(undefined as any);
+    return storyData;
+  }, [homeData?.story, imageStoryResponse]);
+
+  const storyIcons = useMemo(() => [
     "flaticon-heart",
     "flaticon-dove",
     "flaticon-calendar",
@@ -30,7 +36,8 @@ const Story: React.FC = () => {
     "flaticon-dove",
     "flaticon-calendar",
     "flaticon-wedding-rings",
-  ];
+  ], []);
+
   return (
     <Section title="Chuyện Tình Yêu">
       <div className="relative sm:[&::after]:content-[''] [&::after]:bg-[#1e8267] [&::after]:w-[2px] [&::after]:h-full [&::after]:absolute [&::after]:left-1/2 [&::after]:top-0 [&::after]:-translate-x-1/2">
