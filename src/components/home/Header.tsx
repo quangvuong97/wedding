@@ -8,16 +8,31 @@ import { Grid } from "antd";
 
 const { useBreakpoint } = Grid;
 
+function getNextIndex(input: number, arr: any[]) {
+  const len = arr.length;
+  return (input + len) % len;
+}
+
 const Header: React.FC<{
   childId: string;
   onReady: (childId: string) => void;
 }> = ({ childId, onReady }) => {
   const [index, setIndex] = useState(0);
+  const [preIndex, setPreIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const screens = useBreakpoint();
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const startAutoSlide = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % slides.length);
+      setPreIndex(-1);
+    }, 5000);
+  };
 
   const { response: carouselResponse, loading } =
     WeddingPageApi.useGetCarousel();
@@ -26,21 +41,22 @@ const Header: React.FC<{
     [carouselResponse?.data]
   );
   const homeData = useHomeData();
-  const solarDate = homeData?.solarDate && new Date(homeData.solarDate);
+  if (homeData && homeData.storageKey) {
+    homeData.storageKey.urlEndpoint = "https://ik.imagekit.io/vuongninh";
+  }
+  const solarDate = homeData?.solarDate
+    ? new Date(homeData.solarDate)
+    : undefined;
 
   useEffect(() => {
-    if (!screens.xs && slides.length > 1) {
-      intervalRef.current = setInterval(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % slides.length);
-      }, 5000);
+    if (slides.length > 1) {
+      startAutoSlide();
       return () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
       };
     }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [slides, screens.xs]);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, [slides]);
 
   useEffect(() => {
     if (slides.length <= 0) return;
@@ -56,27 +72,44 @@ const Header: React.FC<{
     touchEndX.current = e.touches[0].clientX;
   };
   const handleTouchEnd = () => {
+    if (isAnimating) return;
     if (
       touchStartX.current !== null &&
       touchEndX.current !== null &&
       Math.abs(touchStartX.current - touchEndX.current) > 50
     ) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 1200);
       if (touchStartX.current > touchEndX.current) {
-        // swipe left
         setIndex((prev) => (prev + 1) % slides.length);
+        setPreIndex(-1);
       } else {
-        // swipe right
         setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+        setPreIndex(1);
       }
+      startAutoSlide();
     }
     touchStartX.current = null;
     touchEndX.current = null;
   };
 
   // Navigation buttons for desktop
-  const goPrev = () =>
+  const goPrev = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 1200);
     setIndex((prev) => (prev - 1 + slides.length) % slides.length);
-  const goNext = () => setIndex((prev) => (prev + 1) % slides.length);
+    setPreIndex(+1);
+    startAutoSlide();
+  };
+  const goNext = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 1200);
+    setIndex((prev) => (prev + 1) % slides.length);
+    setPreIndex(-1);
+    startAutoSlide();
+  };
 
   return (
     <div
@@ -89,19 +122,28 @@ const Header: React.FC<{
       {slides.map((slide, i) => (
         <div
           key={i}
-          className={`absolute inset-0 w-full h-full flex items-center justify-center transition-transform duration-[1200ms] ease ${
-            i === index ? "opacity-100 z-10" : "opacity-0 z-0"
-          }  ${
+          className={`absolute inset-0 w-full h-full flex items-center justify-center transition-transform duration-[1200ms] ease overflow-hidden ${
+            i === index || i === getNextIndex(index + preIndex, slides)
+              ? "opacity-100"
+              : "opacity-0"
+          } ${
             i === index
-              ? "translate-x-0 opacity-100"
+              ? "translate-x-0"
               : i === (index + slides.length - 1) % slides.length
-              ? "-translate-x-1/2 opacity-50"
-              : "translate-x-full opacity-0"
+              ? "-translate-x-full"
+              : "translate-x-full"
           }`}
           style={{ background: "#ddd" }}
         >
           {homeData?.storageKey.urlEndpoint && slide ? (
             <Image
+              className={`transition-transform duration-[1200ms] ease ${
+                i === index
+                  ? "translate-x-0"
+                  : i === (index + slides.length - 1) % slides.length
+                  ? "translate-x-1/2"
+                  : "translate-x-0"
+              }`}
               style={{
                 position: "absolute",
                 height: "100%",
@@ -118,14 +160,24 @@ const Header: React.FC<{
               }}
             />
           ) : null}
-          <div className="w-full px-[var(--bs-gutter-x,.75rem)] mx-auto">
+          <div
+            className={`w-full px-[var(--bs-gutter-x,.75rem)] mx-auto transition-transform duration-[1200ms] ease ${
+              i === index
+                ? "translate-x-0"
+                : i === (index + slides.length - 1) % slides.length
+                ? "translate-x-1/2"
+                : "translate-x-0"
+            }`}
+          >
             <div className="max-w-[450px] sm:max-w-[650px] md:max-w-[760px] lg:max-w-[1090px] px-[50px] sm:px-[70px] py-[40px] sm:py-[80px] relative mx-auto text-center bg-[rgba(30,130,103,0.1)]">
               <div
                 style={{
                   transform:
                     i === index
                       ? `translate3d(0px, 0px, 0px)`
-                      : `translate3d(300px, 0px, 0px)`,
+                      : i === (index + slides.length - 1) % slides.length
+                      ? `translate3d(+300px, 0px, 0px)`
+                      : `translate3d(-300px, 0px, 0px)`,
                   transitionDuration: "1200ms",
                 }}
               >
@@ -152,7 +204,9 @@ const Header: React.FC<{
                   transform:
                     i === index
                       ? `translate3d(0px, 0px, 0px)`
-                      : `translate3d(400px, 0px, 0px)`,
+                      : i === (index + slides.length - 1) % slides.length
+                      ? `translate3d(400px, 0px, 0px)`
+                      : `translate3d(-400px, 0px, 0px)`,
                   transitionDuration: "1200ms",
                 }}
               >
@@ -187,7 +241,7 @@ const Header: React.FC<{
       {slides.length > 1 && (
         <div className="absolute left-1/2 bottom-8 -translate-x-1/2 flex gap-2 z-20">
           {slides.map((_, i) => (
-            <button
+            <div
               key={i}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 i === index
@@ -195,8 +249,6 @@ const Header: React.FC<{
                   : "opacity-100 bg-[rgba(255,255,255,0.2)]"
               }`}
               style={{ outline: "none" }}
-              onClick={() => setIndex(i)}
-              aria-label={`Chuyển đến ảnh ${i + 1}`}
             />
           ))}
         </div>
@@ -207,6 +259,7 @@ const Header: React.FC<{
             className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-[rgba(30,130,103,0.5)] hover:bg-[rgba(30,130,103,0.8)] text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition"
             onClick={goPrev}
             aria-label="Ảnh trước"
+            disabled={isAnimating}
           >
             <i className="flaticon-right-arrow rotate-[180deg] text-2xl"></i>
           </button>
@@ -214,6 +267,7 @@ const Header: React.FC<{
             className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-[rgba(30,130,103,0.5)] hover:bg-[rgba(30,130,103,0.8)] text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition"
             onClick={goNext}
             aria-label="Ảnh tiếp theo"
+            disabled={isAnimating}
           >
             <i className="flaticon-right-arrow text-2xl"></i>
           </button>
