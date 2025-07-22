@@ -9,7 +9,12 @@ import { FloatButton, Grid, Space } from "antd";
 import Present from "./Present";
 import WeddingFooter from "./WeddingFooter";
 import SVGSymbols from "../common/SVGSymbols";
+import LoadingOverlay from "../common/LoadingOverlay";
 import { HomeDataContext, useHomeData } from "../../contexts/HomeDataContext";
+import {
+  ImageLoaderProvider,
+  useImageLoaderContext,
+} from "../../contexts/ImageLoaderContext";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -32,7 +37,9 @@ const HomePage: React.FC = () => {
 
   return (
     <HomeDataContext.Provider value={response?.data}>
-      <HomeContent loading={loading} spaceSize={spaceSize} />
+      <ImageLoaderProvider>
+        <HomeContent loading={loading} spaceSize={spaceSize} />
+      </ImageLoaderProvider>
     </HomeDataContext.Provider>
   );
 };
@@ -44,14 +51,11 @@ const HomeContent = ({
   loading: boolean;
   spaceSize: number;
 }) => {
-  const [, setReadyStates] = useState({});
-  const [isAllReady, setIsAllReady] = useState(false);
   const [openTooltip, setOpenTooltip] = useState({
     audio: false,
     invitation: false,
     present: false,
   });
-  const childCount = 1;
   const homeData = useHomeData();
   const targetRef = useRef<HTMLDivElement | null>(null);
   const childMethodsRef = useRef<{
@@ -59,19 +63,9 @@ const HomeContent = ({
   }>(undefined);
   const [openFloatGroup, setOpenFloatGroup] = useState(false);
 
-  // Hàm callback để nhận thông báo từ component con
-  const handleChildReady = (childId: string) => {
-    setReadyStates((prev) => {
-      const newState = { ...prev, [childId]: true };
-      const allReady = Object.keys(newState).length === childCount;
-      setIsAllReady(allReady);
-      return newState;
-    });
-  };
-
-  // useEffect(() => {
-  //   console.log("isAllReady: ", isAllReady);
-  // }, [isAllReady]);
+  // Image loading context
+  const { isAllLoaded, loadingProgress, loadedImages, totalImages } =
+    useImageLoaderContext();
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -202,11 +196,14 @@ const HomeContent = ({
 
   return (
     <>
-      {/* {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
-          <div className="text-2xl font-bold text-blue-600">Loading...</div>
-        </div>
-      )} */}
+      {/* Loading overlay for images */}
+      <LoadingOverlay
+        isVisible={loading || !isAllLoaded}
+        progress={loadingProgress}
+        loadedCount={loadedImages.size}
+        totalCount={totalImages}
+      />
+
       <SVGSymbols />
       <FloatButton
         style={{ insetInlineStart: 16, insetBlockEnd: 24 }}
@@ -285,11 +282,8 @@ const HomeContent = ({
           justifyContent: "center",
           transitionDuration: "1500ms",
         }}
-        // className={`transition-opacity ${
-        //   isAllReady ? "opacity-100" : "opacity-0"
-        // }`}
       >
-        <Header childId="header" onReady={handleChildReady} />
+        <Header />
         {dayjs().isBefore(dayjs(homeData?.solarDate)) ? <CountDown /> : ""}
         <Couple />
         <Story />

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
-import { Image } from "@imagekit/react";
+import TrackedImage from "../common/TrackedImage";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { Gutter } from "antd/es/grid/row";
 
@@ -540,7 +540,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                   <Title style={titleStyle}>{item.tabName}</Title>
                 </Space>
                 <div className="w-full relative">
-                  <img
+                  <TrackedImage
                     ref={(el) => {
                       if (index === 0 && el) {
                         imageRef.current = el;
@@ -553,7 +553,8 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                     onLoad={handleImageLoad}
                   />
                   {homeData?.storageKey.urlEndpoint && item.image ? (
-                    <Image
+                    <TrackedImage
+                      imageId={`invitation-${item.keyImage}`}
                       key={item.keyImage}
                       urlEndpoint={homeData?.storageKey.urlEndpoint}
                       queryParameters={{ date: item.queryImage }}
@@ -561,7 +562,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                       alt={`Profile ${index + 1}`}
                       className="w-full h-full object-cover"
                       style={overlayStyles}
-                      loading="lazy"
                     />
                   ) : null}
                   <Space

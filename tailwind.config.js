@@ -7,7 +7,6 @@ module.exports = {
     extend: {
       fontFamily: {
         futura: ['"Futura PT"', "sans-serif"],
-        'dancing-script': ["'Dancing Script'", "sans-serif"]
       },
       colors: {
         primary: {

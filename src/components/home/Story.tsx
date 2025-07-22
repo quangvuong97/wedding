@@ -3,12 +3,12 @@ import { Col, Row } from "antd";
 import Section from "../../common/Section";
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useHomeData } from "../../contexts/HomeDataContext";
-import { Image } from "@imagekit/react";
+import TrackedImage from "../common/TrackedImage";
 
 const Story: React.FC = () => {
   const { response: imageStoryResponse } = WeddingPageApi.useGetStory();
   const homeData = useHomeData();
-  
+
   const story = useMemo(() => {
     const storyData = homeData?.story?.map((e, i) => {
       return {
@@ -22,21 +22,24 @@ const Story: React.FC = () => {
     return storyData;
   }, [homeData?.story, imageStoryResponse]);
 
-  const storyIcons = useMemo(() => [
-    "flaticon-heart",
-    "flaticon-dove",
-    "flaticon-calendar",
-    "flaticon-cake",
-    "flaticon-heart",
-    "flaticon-cake",
-    "flaticon-dove",
-    "flaticon-calendar",
-    "flaticon-heart",
-    "flaticon-cake",
-    "flaticon-dove",
-    "flaticon-calendar",
-    "flaticon-wedding-rings",
-  ], []);
+  const storyIcons = useMemo(
+    () => [
+      "flaticon-heart",
+      "flaticon-dove",
+      "flaticon-calendar",
+      "flaticon-cake",
+      "flaticon-heart",
+      "flaticon-cake",
+      "flaticon-dove",
+      "flaticon-calendar",
+      "flaticon-heart",
+      "flaticon-cake",
+      "flaticon-dove",
+      "flaticon-calendar",
+      "flaticon-wedding-rings",
+    ],
+    []
+  );
 
   return (
     <Section title="Chuyện Tình Yêu">
@@ -59,7 +62,7 @@ const Story: React.FC = () => {
                 }
               >
                 {e.image && homeData?.storageKey.urlEndpoint ? (
-                  <Image
+                  <TrackedImage
                     urlEndpoint={homeData?.storageKey.urlEndpoint}
                     src={e.image}
                     alt=""
@@ -68,11 +71,11 @@ const Story: React.FC = () => {
                   />
                 ) : null}
                 <div className="absolute -bottom-[14%] left-1/2 -translate-x-1/2">
-                  <img
+                  <TrackedImage
                     src="images/story.shape.png"
                     alt=""
                     className="rounded-full inline-block max-w-full align-middle"
-                  />
+                  />  
                 </div>
               </div>
             );

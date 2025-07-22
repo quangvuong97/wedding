@@ -109,7 +109,6 @@ const Present: React.FC<{
         } else {
           const svgElement = qrR.current.querySelector("svg");
           if (svgElement) {
-            console.log(svgElement);
             const svgData = new XMLSerializer().serializeToString(svgElement);
             const svgBlob = new Blob([svgData], {
               type: "image/svg+xml;charset=utf-8",

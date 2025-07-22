@@ -1,5 +1,5 @@
-import { Image } from "@imagekit/react";
 import React from "react";
+import TrackedImage from "./TrackedImage";
 
 interface MarkImagePreviewProps {
   urlEndpoint: string;
@@ -22,7 +22,7 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
       style={{ position: "relative", display: "inline-block" }}
       onClick={onClick}
     >
-      <Image
+      <TrackedImage
         urlEndpoint={urlEndpoint}
         src={src}
         imageBreakpoints={breakpoint ? [breakpoint] : undefined}

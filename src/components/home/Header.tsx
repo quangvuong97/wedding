@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "../../index.css";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { WeddingPageApi } from "../../services/weddingPage.api";
-import { Image } from "@imagekit/react";
+import TrackedImage from "../common/TrackedImage";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import { Grid } from "antd";
 
@@ -13,62 +13,49 @@ function getNextIndex(input: number, arr: any[]) {
   return (input + len) % len;
 }
 
-const Header: React.FC<{
-  childId: string;
-  onReady: (childId: string) => void;
-}> = ({ childId, onReady }) => {
+const Header: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [preIndex, setPreIndex] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const screens = useBreakpoint();
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const startAutoSlide = () => {
+  const { response: carouselResponse } = WeddingPageApi.useGetCarousel();
+  const slides = useMemo(
+    () => carouselResponse?.data || [],
+    [carouselResponse?.data]
+  );
+
+  const homeData = useHomeData();
+  const solarDate = useMemo(
+    () => (homeData?.solarDate ? new Date(homeData.solarDate) : undefined),
+    [homeData?.solarDate]
+  );
+
+  // Memoize startAutoSlide function để tránh tạo mới mỗi lần render
+  const startAutoSlide = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % slides.length);
       setPreIndex(-1);
     }, 5000);
-  };
+  }, [slides.length]);
 
-  const { response: carouselResponse, loading } =
-    WeddingPageApi.useGetCarousel();
-  const slides = useMemo(
-    () => carouselResponse?.data || [],
-    [carouselResponse?.data]
+  // Memoize touch handlers
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      touchStartX.current = e.touches[0].clientX;
+    },
+    []
   );
-  const homeData = useHomeData();
-  const solarDate = homeData?.solarDate
-    ? new Date(homeData.solarDate)
-    : undefined;
 
-  useEffect(() => {
-    if (slides.length > 1) {
-      startAutoSlide();
-      return () => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      };
-    }
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  }, [slides]);
-
-  useEffect(() => {
-    if (slides.length <= 0) return;
-    if (!loading && imagesLoaded) {
-      onReady(childId);
-    }
-  }, [loading, imagesLoaded]);
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     touchEndX.current = e.touches[0].clientX;
-  };
-  const handleTouchEnd = () => {
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
     if (isAnimating) return;
     if (
       touchStartX.current !== null &&
@@ -88,33 +75,66 @@ const Header: React.FC<{
     }
     touchStartX.current = null;
     touchEndX.current = null;
-  };
+  }, [isAnimating, slides.length, startAutoSlide]);
 
-  // Navigation buttons for desktop
-  const goPrev = () => {
+  // Memoize navigation functions
+  const goPrev = useCallback(() => {
     if (isAnimating) return;
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 1200);
     setIndex((prev) => (prev - 1 + slides.length) % slides.length);
     setPreIndex(+1);
     startAutoSlide();
-  };
-  const goNext = () => {
+  }, [isAnimating, slides.length, startAutoSlide]);
+
+  const goNext = useCallback(() => {
     if (isAnimating) return;
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 1200);
     setIndex((prev) => (prev + 1) % slides.length);
     setPreIndex(-1);
     startAutoSlide();
-  };
+  }, [isAnimating, slides.length, startAutoSlide]);
+
+  // Optimize useEffect với dependencies chính xác
+  useEffect(() => {
+    if (slides.length > 1) {
+      startAutoSlide();
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    }
+  }, [slides.length]);
+
+  // Memoize formatted date string
+  const formattedDate = useMemo(() => {
+    if (!solarDate || typeof solarDate === "string") return "";
+    return `${solarDate.getDate().toString().padStart(2, "0")} Tháng ${(
+      solarDate.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")} Năm ${solarDate.getFullYear()}`;
+  }, [solarDate]);
+
+  // Memoize touch event handlers based on screen size
+  const touchHandlers = useMemo(() => {
+    if (screens.xs) {
+      return {
+        onTouchStart: handleTouchStart,
+        onTouchMove: handleTouchMove,
+        onTouchEnd: handleTouchEnd,
+      };
+    }
+    return {};
+  }, [screens.xs, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   return (
     <div
       className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[500px] sm:h-[600px] md:h-[680px] lg:h-[900px]"
       style={{ width: "100%", height: "100vh" }}
-      onTouchStart={screens.xs ? handleTouchStart : undefined}
-      onTouchMove={screens.xs ? handleTouchMove : undefined}
-      onTouchEnd={screens.xs ? handleTouchEnd : undefined}
+      {...touchHandlers}
     >
       {slides.map((slide, i) => (
         <div
@@ -133,7 +153,7 @@ const Header: React.FC<{
           style={{ background: "#ddd" }}
         >
           {homeData?.storageKey.urlEndpoint && slide ? (
-            <Image
+            <TrackedImage
               className={`transition-transform duration-[1200ms] ease ${
                 i === index
                   ? "translate-x-0"
@@ -152,9 +172,6 @@ const Header: React.FC<{
               lqip={{ active: true }}
               urlEndpoint={homeData?.storageKey.urlEndpoint}
               src={slide}
-              onLoad={() => {
-                i === 0 && setImagesLoaded(true);
-              }}
             />
           ) : null}
           <div
@@ -211,14 +228,7 @@ const Header: React.FC<{
                   className="text-[1.06667rem] sm:text-[1.2rem] md:text-[30px] leading-[22px] sm:leading-[30px] md:leading-[45px] max-w-[780px] text-white mx-auto mb-[0px] font-muli"
                   style={{ fontWeight: 600 }}
                 >
-                  {solarDate && typeof solarDate !== "string"
-                    ? `${solarDate
-                        .getDate()
-                        .toString()
-                        .padStart(2, "0")} Tháng ${(solarDate.getMonth() + 1)
-                        .toString()
-                        .padStart(2, "0")} Năm ${solarDate.getFullYear()}`
-                    : ""}
+                  {formattedDate}
                 </p>
               </div>
               <div className="absolute left-0 top-0 h-[1px] bg-white w-[15%] xxxs:w-[30%] xxs:w-[36%] xs:w-[44%] sm:w-[67%] lg:w-[76.7%]"></div>
