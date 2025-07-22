@@ -12,16 +12,37 @@
     />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=block"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet';window.greatVibesLoaded=true;window.dispatchEvent(new Event('greatVibesLoaded'));"
+      id="great-vibes-font"
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=block"
+    /></noscript>
+
+    <link
+      rel="preload"
+      href="/fonts/FUTURA_VH/SFUFuturaRegular.TTF"
+      as="font"
+      type="font/truetype"
+      crossorigin
+    />
+
     <!-- Meta Open Graph cho Facebook, Zalo, v.v. -->
     <meta property="og:title" content="Đám cưới Vương & Ninh" />
     <meta
       property="og:description"
       content="Hân hoan chào đón bạn đến chung vui ngày trọng đại cùng tụi mình."
     />
-    <meta
-      property="og:image"
-      content="%PUBLIC_URL%/favicon.ico"
-    />
+    <meta property="og:image" content="%PUBLIC_URL%/favicon.ico" />
     <meta property="og:type" content="website" />
   </head>
   <body>

@@ -281,6 +281,11 @@ const HomeContent = ({
           width: "100%",
           justifyContent: "center",
           transitionDuration: "1500ms",
+          opacity: loading || !isAllLoaded ? 0 : 1,
+          transform:
+            loading || !isAllLoaded ? "translateY(20px)" : "translateY(0)",
+          transition:
+            "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <Header />
