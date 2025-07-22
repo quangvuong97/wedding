@@ -555,7 +555,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                   {homeData?.storageKey.urlEndpoint && item.image ? (
                     <Image
                       key={item.keyImage}
-                      urlEndpoint={"https://ik.imagekit.io/vuongninh"}
+                      urlEndpoint={homeData?.storageKey.urlEndpoint}
                       queryParameters={{ date: item.queryImage }}
                       src={item.image}
                       alt={`Profile ${index + 1}`}
@@ -601,7 +601,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                           {item.solarDate?.dayOfWeek?.toUpperCase()}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
-                        <Text className="text-[45px] font-dancing-script font-bold leading-[0.4] text-[rgb(205,99,99)]">
+                        <Text className="text-[45px] font-['Dancing_Script',cursive] font-bold leading-[0.4] text-[rgb(205,99,99)]">
                           {item.solarDate?.day?.toString().padStart(2, "0")}
                         </Text>
                         <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>

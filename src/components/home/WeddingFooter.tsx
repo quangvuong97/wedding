@@ -56,7 +56,7 @@ const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
         Thank You!
       </h1>
       <p
-        className={`font-dancing-script text-[#fff]`}
+        className={`font-['Dancing_Script',cursive] text-[#fff]`}
         style={{
           fontSize: screens.md ? "35px" : "25px",
         }}
