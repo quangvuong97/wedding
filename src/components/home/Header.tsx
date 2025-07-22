@@ -41,9 +41,6 @@ const Header: React.FC<{
     [carouselResponse?.data]
   );
   const homeData = useHomeData();
-  if (homeData && homeData.storageKey) {
-    homeData.storageKey.urlEndpoint = "https://ik.imagekit.io/vuongninh";
-  }
   const solarDate = homeData?.solarDate
     ? new Date(homeData.solarDate)
     : undefined;

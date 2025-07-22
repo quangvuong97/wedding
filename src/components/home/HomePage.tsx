@@ -109,6 +109,7 @@ const HomeContent = ({
       if (!audio) return;
 
       try {
+        await waitForLoad(audio);
         await audio.play();
         setIsPlaying(true);
         // console.log("✅ Nhạc đã phát sau tương tác");
