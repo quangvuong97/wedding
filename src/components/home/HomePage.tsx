@@ -18,6 +18,7 @@ import {
 import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
+import Invite from "./Invite";
 
 const { useBreakpoint } = Grid;
 
@@ -274,7 +275,7 @@ const HomeContent = ({
       <audio ref={audioRef} src={homeData?.audio} loop preload="auto" />
       <Space
         direction="vertical"
-        size={spaceSize}
+        size={0}
         style={{
           display: "flex",
           textAlign: "center",
@@ -287,9 +288,17 @@ const HomeContent = ({
           transition:
             "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
+        styles={{ item: { marginBottom: spaceSize } }}
+        className="home-space"
       >
         <Header />
-        {dayjs().isBefore(dayjs(homeData?.solarDate)) ? <CountDown /> : ""}
+        {homeData?.guestSlug ? (
+          <Invite />
+        ) : dayjs().isBefore(dayjs(homeData?.solarDate)) ? (
+          <CountDown />
+        ) : (
+          ""
+        )}
         <Couple />
         <Story />
         <Invitation bind={(methods) => (childMethodsRef.current = methods)} />

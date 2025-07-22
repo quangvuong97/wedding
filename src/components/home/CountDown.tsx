@@ -42,10 +42,10 @@ const CountDown: React.FC = () => {
     px-[var(--bs-gutter-x,0.75rem)] mx-auto justify-around flex flex-wrap"
     >
       {[
-        { title: "Day", value: day },
-        { title: "Hour", value: hour },
-        { title: "Minute", value: minute },
-        { title: "Second", value: second },
+        { title: "Ngày", value: day },
+        { title: "Giờ", value: hour },
+        { title: "Phút", value: minute },
+        { title: "Giây", value: second },
       ].map((e, i) => (
         <div
           key={i}

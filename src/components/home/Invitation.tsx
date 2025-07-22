@@ -610,7 +610,7 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
                           {item.solarDate.year}
                         </Text>
                       </Space>
-                      <Text className="text-[13px] font-[Open_Sans,sans-serif] leading-[1.4] text-black">
+                      <Text className="text-[13px] font-['Open_Sans',sans-serif] leading-[1.4] text-black">
                         (Tức {item.lunarDate} )
                       </Text>
                     </Space>

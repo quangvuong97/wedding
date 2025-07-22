@@ -91,7 +91,7 @@ const Story: React.FC = () => {
                 <h3 className="text-[22px] font-medium text-[#002642] mb-[0.5em] uppercase font-futura mt-0 leading-[1.2] maxSsm:text-[18px] maxLg:text-[20px]">
                   {e.title}
                 </h3>
-                <span className="text-[14px] font-medium block mb-[15px] text-[#1e8267]">
+                <span className="text-[16px] font-medium block mb-[15px] text-[#1e8267]">
                   {e.date}
                 </span>
                 <p className="text-[16px] text-[#848892] leading-[1.8em] mt-0 mb-0">
