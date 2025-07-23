@@ -207,3 +207,16 @@ body {
 .home-space > .ant-space-item:last-child {
   margin-bottom: 0px !important;
 }
+
+html.qr-view-html, html.qr-view-html > body, html.qr-view-html body #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  gap: 20px;
+}

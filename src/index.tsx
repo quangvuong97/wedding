@@ -11,6 +11,7 @@ import reportWebVitals from "./reportWebVitals";
 
 import "@flaticon/flaticon-uicons/css/all/all.css"; // Import tất cả icon
 import { ConfigProvider } from "antd";
+import QrViewPage from "./components/home/QrViewPage";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -28,6 +29,7 @@ root.render(
         <Router>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/qr-view" element={<QrViewPage />} />
             <Route
               path="/admin"
               element={

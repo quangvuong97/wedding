@@ -149,50 +149,11 @@ const Present: React.FC<{
     const url = qrUrl[index];
     if (!url) return;
     if (isIOS) {
-      const newWindow = window.open();
-
-      if (newWindow) {
-        newWindow.document.body.insertAdjacentHTML(
-          "beforeend",
-          `
-        <html>
-          <head>
-            <title>QR Code</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-            <style>
-              html, body {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                flex-direction: column;
-                align-items: center;
-                background: #fff; /* hoặc trắng nếu bạn muốn */
-              }
-              img {
-                max-width: 80%;
-                max-height: 80%;
-                object-fit: contain;
-              }
-              h1 {
-                text-align: center;
-                max-width: 90%;
-              }
-            </style>
-          </head>
-          <body>
-          <h1>Nhấn giữ vào ảnh để sao chép hoặc tải về nhé!</h1>
-            <img src="${url}" alt="QR Code" />
-          </body>
-        </html>
-      `
-        );
-        newWindow.document.close();
-      } else {
-        alert("Không thể mở ảnh. Hãy kiểm tra popup blocker.");
-      }
+      const qrPageUrl = `${window.location.origin}/qr-view?img=${qrData[index].dataQR}`;
+      window.location.href = qrPageUrl;
+      message.info(
+        "Trang đã được mở ra trình duyệt ngoài, bạn có thể lưu ảnh tại đó."
+      );
     } else {
       const link = document.createElement("a");
       link.href = url;
