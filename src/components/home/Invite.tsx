@@ -83,7 +83,7 @@ const Invite: React.FC = () => {
           : homeData?.lunarDate}{" "}
         )
       </Text>
-      <Text className="text-[20px] font-[Quicksand,sans-serif] font-normal leading-[1.6rem] underline">
+      <Text className="text-[20px] font-[Quicksand,sans-serif] font-normal leading-[1rem] border-b border-black">
         {"Rất hân hạnh được đón tiếp"}
       </Text>
     </div>

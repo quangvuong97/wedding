@@ -193,7 +193,7 @@ const Present: React.FC<{
   return (
     <div ref={targetRef}>
       <Section titleStyle={{ marginBottom: "30px" }} title="Mừng Cưới">
-        <Text className="font-muli">
+        <Text className="font-muli text-[#848892]">
           Mình rất muốn được chụp chung với bạn những tấm hình kỷ niệm vì vậy
           hãy đến sớm hơn một chút bạn yêu nhé! Đám cưới của chúng mình sẽ trọn
           vẹn hơn khi có thêm lời chúc phúc và sự hiện diện của các bạn.
