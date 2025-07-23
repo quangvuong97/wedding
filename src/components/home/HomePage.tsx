@@ -70,6 +70,7 @@ const HomeContent = ({
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false);
 
   const waitForLoad = (audio: HTMLAudioElement) =>
     new Promise<void>((resolve) => {
@@ -78,11 +79,34 @@ const HomeContent = ({
       audio.load();
     });
 
+  const initializeAudio = async () => {
+    const audio = audioRef.current;
+    if (!audio || audioInitialized) return;
+
+    try {
+      // Set volume to 0 first for silent initialization
+      audio.volume = 0;
+      await waitForLoad(audio);
+      await audio.play();
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1;
+      setAudioInitialized(true);
+      console.log("✅ Audio initialized successfully");
+    } catch (err) {
+      console.warn("⚠️ Audio initialization failed:", err);
+    }
+  };
+
   const toggleAudio = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     try {
+      if (!audioInitialized) {
+        await initializeAudio();
+      }
+
       if (isPlaying) {
         audio.pause();
         setIsPlaying(false);
@@ -104,16 +128,25 @@ const HomeContent = ({
       if (!audio) return;
 
       try {
+        // Initialize audio first on any interaction
+        if (!audioInitialized) {
+          await initializeAudio();
+        }
+
+        // Then try to play
         await waitForLoad(audio);
         await audio.play();
         setIsPlaying(true);
-        // console.log("✅ Nhạc đã phát sau tương tác");
+        console.log("✅ Nhạc đã phát sau tương tác");
       } catch (err) {
         console.error("❌ Không thể phát nhạc:", err);
       }
 
+      // Remove listeners after first successful interaction
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener("touchend", handleInteraction);
+      document.removeEventListener("touchmove", handleInteraction);
     };
 
     let wasPlaying = false;
@@ -126,7 +159,7 @@ const HomeContent = ({
           audio.pause();
         }
       } else {
-        if (wasPlaying) {
+        if (wasPlaying && audioInitialized) {
           audio.play().catch((e) => {
             console.warn("Không thể phát audio:", e);
           });
@@ -134,8 +167,11 @@ const HomeContent = ({
       }
     };
 
-    document.addEventListener("click", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
+    // Add multiple touch events for better Android compatibility
+    document.addEventListener("click", handleInteraction, { passive: true });
+    document.addEventListener("touchstart", handleInteraction, { passive: true });
+    document.addEventListener("touchend", handleInteraction, { passive: true });
+    document.addEventListener("touchmove", handleInteraction, { passive: true });
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
@@ -154,10 +190,11 @@ const HomeContent = ({
     return () => {
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
-
+      document.removeEventListener("touchend", handleInteraction);
+      document.removeEventListener("touchmove", handleInteraction);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [audioInitialized]);
 
   const scrollToTarget = () => {
     targetRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -272,7 +309,16 @@ const HomeContent = ({
           icon={<i className="fi fi-tr-freemium"></i>}
         />
       </FloatButton.Group>
-      <audio ref={audioRef} src={homeData?.audio} loop preload="auto" />
+      <audio 
+        ref={audioRef} 
+        src={homeData?.audio} 
+        loop 
+        preload="auto"
+        playsInline
+        muted={false}
+        controls={false}
+        style={{ display: 'none' }}
+      />
       <Space
         direction="vertical"
         size={0}
