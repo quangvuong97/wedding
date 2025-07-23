@@ -10,7 +10,14 @@ const Invite: React.FC = () => {
     () => ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
     []
   );
-  const date = homeData?.solarDate ? new Date(homeData.solarDate) : null;
+  const date =
+    homeData?.solarDate || homeData?.brideSolarDate
+      ? new Date(
+          homeData.guestOf === "bride"
+            ? homeData.brideSolarDate
+            : homeData.solarDate
+        )
+      : null;
   const day = date ? date.getDate() : undefined;
   const month = date ? date.getMonth() + 1 : undefined;
   const year = date ? date.getFullYear() : undefined;
@@ -54,7 +61,9 @@ const Invite: React.FC = () => {
         HÔN LỄ ĐƯỢC TỔ CHỨC VÀO HỒI
       </Text>
       <Text className="mb-0 font-[Quicksand,sans-serif] text-[28px] font-bold text-[#1e8267]">
-        {homeData?.weddingHours.toUpperCase()}
+        {homeData?.guestOf === "bride"
+          ? homeData?.brideWeddingHours.toUpperCase()
+          : homeData?.weddingHours.toUpperCase()}
       </Text>
       <div className="flex gap-[8px] w-[300px] mb-2">
         <Text className="text-[22px] font-bold flex-1 border-t-[1.5px] border-b-[1.5px] font-[Quicksand,sans-serif] text-[28px] leading-[35px] h-[35px] border-[#1e8267] text-[#1e8267]">
@@ -68,7 +77,11 @@ const Invite: React.FC = () => {
         </Text>
       </div>
       <Text className="mb-5 font-['Open_Sans',sans-serif] text-[16px]">
-        (Tức {homeData?.lunarDate} )
+        (Tức{" "}
+        {homeData?.guestOf === "bride"
+          ? homeData?.brideLunarDate
+          : homeData?.lunarDate}{" "}
+        )
       </Text>
       <Text className="text-[20px] font-[Quicksand,sans-serif] font-normal leading-[1.6rem] underline">
         {"Rất hân hạnh được đón tiếp"}

@@ -58,6 +58,12 @@ export interface UserConfig {
   }[];
 
   audio: string;
+
+  brideSolarDate: Date;
+
+  brideLunarDate: string;
+
+  brideWeddingHours: string;
 }
 
 export interface ConfirmAttendanceRequest {

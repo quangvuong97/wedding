@@ -151,9 +151,6 @@ const Present: React.FC<{
     if (isIOS) {
       const qrPageUrl = `${window.location.origin}/qr-view?img=${qrData[index].dataQR}`;
       window.location.href = qrPageUrl;
-      message.info(
-        "Trang đã được mở ra trình duyệt ngoài, bạn có thể lưu ảnh tại đó."
-      );
     } else {
       const link = document.createElement("a");
       link.href = url;
@@ -161,6 +158,14 @@ const Present: React.FC<{
       link.click();
     }
   };
+
+  function isMessengerOnAndroid(): boolean {
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isMessenger = /(FBAN|FBAV|Messenger)/i.test(ua);
+
+    return isAndroid && isMessenger;
+  }
 
   const handleCopy = async (text: string) => {
     try {
@@ -329,13 +334,15 @@ const Present: React.FC<{
                       </Text>
                     </Space>
                     <Space>
-                      <Button
-                        className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
-                        onClick={() => downloadQR(index)}
-                        icon={<i className="fi fi-br-download"></i>}
-                      >
-                        Tải QR
-                      </Button>
+                      {!isMessengerOnAndroid() ? (
+                        <Button
+                          className="!bg-[#1e8267] !text-white !border-none !rounded-none shadow-none font-muli font-semibold"
+                          onClick={() => downloadQR(index)}
+                          icon={<i className="fi fi-br-download"></i>}
+                        >
+                          Tải QR
+                        </Button>
+                      ) : null}
                       <Button
                         onClick={() => handleCopy(item.accountNo || "")}
                         icon={<i className="fi fi-rr-duplicate"></i>}

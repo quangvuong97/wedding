@@ -54,6 +54,9 @@ export interface UserProfile {
     storageKey: StorageKeyResponse[];
     story: StoryResponse[];
     audios: string[];
+    brideLunarDate: string;
+    brideSolarDate: Date;
+    brideWeddingHours: string;
   };
 }
 
@@ -91,6 +94,9 @@ export interface UpdateConfigRequest {
   storageKey?: StorageKeyRequest[];
   story?: StoryRequest[];
   audios?: string[];
+  brideSolarDate?: string;
+  brideLunarDate?: string;
+  brideWeddingHours?: string;
 }
 
 export interface UpdateProfileRequest {

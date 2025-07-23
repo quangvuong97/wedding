@@ -82,6 +82,11 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
           : null,
         lunarDate: profile.config.lunarDate,
         weddingHours: profile.config.weddingHours,
+        brideSolarDate: profile.config.brideSolarDate
+          ? dayjs(profile.config.brideSolarDate)
+          : null,
+        brideLunarDate: profile.config.brideLunarDate,
+        brideWeddingHours: profile.config.brideWeddingHours,
       });
     }
   }, [profile, form]);
@@ -127,6 +132,9 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
           lunarDate: values.lunarDate,
           solarDate: values.solarDate ? values.solarDate.toDate() : undefined,
           weddingHours: values.weddingHours,
+          brideLunarDate: values.brideLunarDate,
+          brideSolarDate: values.brideSolarDate ? values.brideSolarDate.toDate() : undefined,
+          brideWeddingHours: values.brideWeddingHours,
         },
       };
 
@@ -266,35 +274,95 @@ const WeddingConfigTab: React.FC<WeddingConfigTabProps> = ({
           style={{ marginBottom: 24 }}
         >
           <Row gutter={[24, 0]}>
-            <Col xs={24} lg={6}>
-              <Form.Item label="Giờ" name="weddingHours" style={{ margin: 0 }}>
-                <Input
-                  placeholder="Nhập giờ tổ chức"
-                  suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={6}>
-              <Form.Item
-                label="Dương lịch"
-                name="solarDate"
-                style={{ margin: 0 }}
-              >
-                <DatePicker
-                  placeholder="Chọn ngày cưới"
-                  style={{ width: "100%" }}
-                  format="DD/MM/YYYY"
-                  suffixIcon={<CalendarOutlined style={{ color: "#1e8267" }} />}
-                />
-              </Form.Item>
+            <Col xs={24} lg={12}>
+              <Title level={5}>Nhà Trai</Title>
+              <Row gutter={[24, 0]}>
+                <Col xs={24} lg={6}>
+                  <Form.Item
+                    label="Giờ"
+                    name="weddingHours"
+                    style={{ margin: 0 }}
+                  >
+                    <Input
+                      placeholder="Nhập giờ tổ chức"
+                      suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={6}>
+                  <Form.Item
+                    label="Dương lịch"
+                    name="solarDate"
+                    style={{ margin: 0 }}
+                  >
+                    <DatePicker
+                      placeholder="Chọn ngày cưới"
+                      style={{ width: "100%" }}
+                      format="DD/MM/YYYY"
+                      suffixIcon={
+                        <CalendarOutlined style={{ color: "#1e8267" }} />
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label="Âm lịch"
+                    name="lunarDate"
+                    style={{ margin: 0 }}
+                  >
+                    <Input
+                      placeholder="Nhập lịch âm"
+                      suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item label="Âm lịch" name="lunarDate" style={{ margin: 0 }}>
-                <Input
-                  placeholder="Nhập lịch âm"
-                  suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
-                />
-              </Form.Item>
+              <Title level={5}>Nhà Gái</Title>
+              <Row gutter={[24, 0]}>
+                <Col xs={24} lg={6}>
+                  <Form.Item
+                    label="Giờ"
+                    name="brideWeddingHours"
+                    style={{ margin: 0 }}
+                  >
+                    <Input
+                      placeholder="Nhập giờ tổ chức"
+                      suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={6}>
+                  <Form.Item
+                    label="Dương lịch"
+                    name="brideSolarDate"
+                    style={{ margin: 0 }}
+                  >
+                    <DatePicker
+                      placeholder="Chọn ngày cưới"
+                      style={{ width: "100%" }}
+                      format="DD/MM/YYYY"
+                      suffixIcon={
+                        <CalendarOutlined style={{ color: "#1e8267" }} />
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label="Âm lịch"
+                    name="brideLunarDate"
+                    style={{ margin: 0 }}
+                  >
+                    <Input
+                      placeholder="Nhập lịch âm"
+                      suffix={<CalendarOutlined style={{ color: "#1e8267" }} />}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Card>

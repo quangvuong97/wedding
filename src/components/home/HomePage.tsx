@@ -139,18 +139,6 @@ const HomeContent = ({
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    setOpenFloatGroup(true);
-    setTimeout(
-      () =>
-        setOpenTooltip({
-          audio: true,
-          invitation: true,
-          present: true,
-        }),
-      400
-    );
-    setTimeout(() => setOpenFloatGroup(false), 2200);
-
     return () => {
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
@@ -175,6 +163,22 @@ const HomeContent = ({
   };
 
   const timeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
+  useEffect(() => {
+    if (loading || !isAllLoaded) return;
+
+    setOpenFloatGroup(true);
+    setTimeout(
+      () =>
+        setOpenTooltip({
+          audio: true,
+          invitation: true,
+          present: true,
+        }),
+      400
+    );
+    setTimeout(() => setOpenFloatGroup(false), 2200);
+  }, [isAllLoaded, loading]);
+
   useEffect(() => {
     Object.entries(openTooltip).forEach(([key, value]) => {
       if (value) {
