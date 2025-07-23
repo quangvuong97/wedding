@@ -168,7 +168,6 @@ const Header: React.FC = () => {
                 objectFit: "cover",
               }}
               transformation={[{ format: "auto" }]}
-              loading="lazy"
               lqip={{ active: true }}
               urlEndpoint={homeData?.storageKey.urlEndpoint}
               src={slide}

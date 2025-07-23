@@ -162,15 +162,11 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     if (!homeData) return [undefined, undefined];
 
     const date = new Date(homeData.solarDate);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const dayOfWeek = weekdays[date.getDay()];
+    const brideDate = new Date(homeData.brideSolarDate);
 
     const baseInfo = {
       brideName: homeData.brideName,
       groomName: homeData.groomName,
-      solarDate: { hour: homeData.weddingHours, day, month, year, dayOfWeek },
       lunarDate: homeData.lunarDate,
       queryImage: Date.now(),
     };
@@ -184,6 +180,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
         address: homeData.groomAddress,
         ggMap: homeData.groomGgAddress,
+        solarDate: {
+          hour: homeData.weddingHours,
+          day: date.getDate(),
+          month: date.getMonth() + 1,
+          year: date.getFullYear(),
+          dayOfWeek: weekdays[date.getDay()],
+        },
       },
       {
         ...baseInfo,
@@ -193,6 +196,13 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
         guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
         address: homeData.brideAddress,
         ggMap: homeData.brideGgAddress,
+        solarDate: {
+          hour: homeData.brideWeddingHours,
+          day: brideDate.getDate(),
+          month: brideDate.getMonth() + 1,
+          year: brideDate.getFullYear(),
+          dayOfWeek: weekdays[brideDate.getDay()],
+        },
       },
     ];
   }, [homeData, weekdays]);
