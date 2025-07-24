@@ -82,7 +82,7 @@ const Story: React.FC = () => {
             const text = e && (
               <div
                 className={
-                  "text-center mr-0 maxLg:pb-0 maxLg:p-[15px_25px]" +
+                  "text-center mr-0 maxLg:pb-0 maxLg:p-[25px_25px]" +
                   (check
                     ? " sm:text-left sm:ml-[70px]"
                     : " sm:text-right sm:mr-[70px]")

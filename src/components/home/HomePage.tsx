@@ -1,11 +1,26 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Header from "./Header";
 import CountDown from "./CountDown";
 import Couple from "./Couple";
 import Story from "./Story";
 import Gallery from "./Gallery";
 import Invitation from "./Invitation";
-import { FloatButton, Grid, Space } from "antd";
+import {
+  Button,
+  FloatButton,
+  Grid,
+  Input,
+  Modal,
+  Space,
+  Typography,
+} from "antd";
 import Present from "./Present";
 import WeddingFooter from "./WeddingFooter";
 import SVGSymbols from "../common/SVGSymbols";
@@ -19,8 +34,81 @@ import { WeddingPageApi } from "../../services/weddingPage.api";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import Invite from "./Invite";
+import { CustomButton } from "../../common";
 
 const { useBreakpoint } = Grid;
+const { Text } = Typography;
+
+type ButtonFamilyProps = {
+  isFamilyType: "groom" | "bride" | null;
+  onClick: (isFamilyType: "groom" | "bride") => void;
+};
+
+// Memoize ButtonFamily component
+const ButtonFamily: React.FC<ButtonFamilyProps> = memo(
+  ({ isFamilyType, onClick }) => {
+    const homeData = useHomeData();
+
+    // Memoize style objects
+    const containerStyle = useMemo(
+      () => ({
+        marginBottom: 12,
+        display: "flex",
+        justifyContent: "center",
+        gap: 12,
+      }),
+      []
+    );
+
+    const imageStyle = useMemo(
+      () => ({
+        width: 126,
+        aspectRatio: 1,
+      }),
+      []
+    );
+
+    const familyTypes = useMemo(() => ["groom", "bride"], []);
+
+    const handleClick = useCallback(
+      (familyType: string) => {
+        if (!homeData?.guestOf) {
+          onClick(familyType as "groom" | "bride");
+        }
+      },
+      [homeData?.guestOf, onClick]
+    );
+
+    return (
+      <div style={containerStyle}>
+        {familyTypes.map((familyType) => (
+          <Button
+            key={familyType}
+            type={
+              homeData?.guestOf === familyType ||
+              isFamilyType?.toString() === familyType
+                ? "primary"
+                : "default"
+            }
+            onClick={() => handleClick(familyType)}
+            className="bt-ov-bg-hv flex flex-col gap-0 px-[13px] pt-1 h-auto shadow-none"
+          >
+            <img
+              src={
+                familyType === "groom"
+                  ? "/images/groom.png"
+                  : "/images/bride.png"
+              }
+              alt="icon"
+              style={imageStyle}
+            />
+            {familyType === "groom" ? "Khách nhà trai" : "Khách nhà gái"}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+);
 
 const HomePage: React.FC = () => {
   const screens = useBreakpoint();
@@ -59,9 +147,6 @@ const HomeContent = ({
   });
   const homeData = useHomeData();
   const targetRef = useRef<HTMLDivElement | null>(null);
-  const childMethodsRef = useRef<{
-    handleConfirmAttendance: (tabName: string) => void;
-  }>(undefined);
   const [openFloatGroup, setOpenFloatGroup] = useState(false);
 
   // Image loading context
@@ -70,6 +155,42 @@ const HomeContent = ({
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [name, setName] = useState("");
+  const [isFamily, setIsFamily] = useState<"groom" | "bride" | null>(null);
+  const [isAttendance, setIsAttendance] = useState<
+    "attendance" | "not_attendance" | null
+  >(null);
+  const [nameError, setNameError] = useState("");
+  const [thankYouScale, setThankYouScale] = useState<number>(1);
+
+  const info = useMemo(() => {
+    if (!homeData) return {};
+
+    const date = new Date(homeData.solarDate);
+    const brideDate = new Date(homeData.brideSolarDate);
+
+    return {
+      groom: {
+        hour: homeData.weddingHours,
+        day: date.getDate(),
+        month: date.getMonth() + 1,
+        year: date.getFullYear(),
+      },
+      bride: {
+        hour: homeData.brideWeddingHours,
+        day: brideDate.getDate(),
+        month: brideDate.getMonth() + 1,
+        year: brideDate.getFullYear(),
+      },
+    };
+  }, [homeData]);
+
+  const { confirm, loading: confirmLoading } =
+    WeddingPageApi.useConfirmAttendance();
+  const thankYouImgRef = useRef<HTMLImageElement | null>(null);
 
   const waitForLoad = (audio: HTMLAudioElement) =>
     new Promise<void>((resolve) => {
@@ -151,10 +272,6 @@ const HomeContent = ({
     targetRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleConfirmAttendance = () => {
-    childMethodsRef.current?.handleConfirmAttendance("");
-  };
-
   const onOpenChangeFloatButton = (
     type: "audio" | "invitation" | "present",
     visible: boolean
@@ -198,6 +315,92 @@ const HomeContent = ({
       Object.values(timeoutRef.current).forEach(clearTimeout);
     };
   }, [openTooltip]);
+
+  const handleModalCancel = useCallback(() => {
+    setShowModal(false);
+    setIsFamily(null);
+    setNameError("");
+  }, []);
+
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setName(e.target.value);
+      if (e.target.value) setNameError("");
+    },
+    []
+  );
+
+  const handleSubmitConfirm = useCallback(async () => {
+    if (!isFamily) {
+      setNameError("Bạn là khách bên nhà trai 👦🏻 hay nhà gái 👧🏻 vậy?");
+      return;
+    }
+    if (!homeData?.guestSlug && !name.trim()) {
+      setNameError("Bạn ơi cho tụi mình xin tên dễ thương với nha 📝🧸");
+      return;
+    }
+    if (!isAttendance) {
+      setNameError(
+        "Nhớ bấm chọn có đến được không nhaaaa, tụi mình mong chờ lắm đó 🥹💌"
+      );
+      return;
+    }
+
+    const body: any = { isAttendance };
+    if (homeData?.guestSlug) {
+      body.guestSlug = homeData.guestSlug;
+    } else {
+      body.guestOf = isFamily;
+      body.name = name.trim();
+    }
+
+    await confirm(body);
+    setShowModal(false);
+    setShowThankYou(true);
+    setTimeout(() => setShowThankYou(false), 5000);
+  }, [isFamily, homeData, name, isAttendance, confirm]);
+
+  const handleThankYouImageLoad = useCallback(() => {
+    const width = thankYouImgRef.current?.getBoundingClientRect().width || 520;
+    setThankYouScale(width / 520);
+  }, []);
+
+  const thankYouContentStyle = useMemo(
+    () => ({
+      scale: thankYouScale,
+    }),
+    [thankYouScale]
+  );
+
+  useEffect(() => {
+    if (!showThankYou) return;
+
+    const handleResize = () => {
+      const width =
+        thankYouImgRef.current?.getBoundingClientRect().width || 520;
+      setThankYouScale(width / 520);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [showThankYou]);
+
+  const handleConfirmAttendance = useCallback(
+    (tabName: string | null) => {
+      setShowModal(true);
+      setIsAttendance(null);
+      if (homeData?.guestOf) {
+        setIsFamily(homeData.guestOf);
+      } else if (!tabName) {
+        setIsFamily(null);
+      } else setIsFamily(tabName === "Nhà Trai" ? "groom" : "bride");
+
+      setName("");
+      setNameError("");
+    },
+    [homeData?.guestOf]
+  );
 
   return (
     <>
@@ -250,7 +453,7 @@ const HomeContent = ({
         }}
       >
         <FloatButton
-          onClick={() => handleConfirmAttendance()}
+          onClick={() => handleConfirmAttendance("")}
           tooltip={{
             title: "Xác nhận tham dự",
             placement: "left",
@@ -277,6 +480,116 @@ const HomeContent = ({
         />
       </FloatButton.Group>
       <audio ref={audioRef} src={homeData?.audio} loop preload="auto" />
+      <Modal
+        open={showModal}
+        onCancel={handleModalCancel}
+        footer={null}
+        centered
+        destroyOnHidden
+        width={372}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: 18,
+              marginBottom: 12,
+            }}
+          >
+            Cảm ơn bạn đã xác nhận giùm vợ chồng mình nhé
+          </div>
+          <ButtonFamily isFamilyType={isFamily} onClick={setIsFamily} />
+          {!homeData?.guestSlug && (
+            <div style={{ marginBottom: 12 }}>
+              <Input
+                placeholder="Nhập tên của bạn"
+                value={name}
+                className="text-[16px]"
+                onChange={handleNameChange}
+              />
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3 mb-[12px]">
+            <Button
+              type={isAttendance === "attendance" ? "primary" : "default"}
+              onClick={() => setIsAttendance("attendance")}
+              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
+            >
+              Có, tôi sẽ đến
+            </Button>
+            <Button
+              type={isAttendance === "not_attendance" ? "primary" : "default"}
+              onClick={() => setIsAttendance("not_attendance")}
+              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
+            >
+              Xin lỗi, tôi bận mất rồi
+            </Button>
+          </div>
+          {nameError && (
+            <div
+              style={{
+                color: "red",
+                marginBottom: 12,
+                fontSize: 13,
+              }}
+            >
+              {nameError}
+            </div>
+          )}
+          <CustomButton
+            loading={confirmLoading}
+            onClick={handleSubmitConfirm}
+            style={{ width: 160 }}
+          >
+            Xác nhận
+          </CustomButton>
+        </div>
+      </Modal>
+
+      <Modal
+        open={showThankYou}
+        footer={null}
+        closable={false}
+        centered
+        width={544}
+        destroyOnHidden
+        onCancel={() => setShowThankYou(false)}
+        styles={{
+          content: { padding: 0, margin: "0 12px" },
+          body: { position: "relative" as const },
+        }}
+      >
+        <img
+          src="images/thankYou.jpg"
+          alt=""
+          ref={thankYouImgRef}
+          onLoad={handleThankYouImageLoad}
+        />
+        <div
+          className="flex flex-col text-center items-center absolute top-[39%] left-1/2 -translate-x-1/2 w-[520px] gap-[12px] origin-top-left"
+          style={thankYouContentStyle}
+        >
+          <Text className="font-['Cormorant_Garamond',serif] font-normal italic text-[17px] text-[#3A5653] w-[72%]">
+            Cảm ơn bạn đã phản hồi lời mời cưới của tụi mình! Tụi mình rất mong
+            được gặp bạn trong ngày đặc biệt ấy.
+          </Text>
+          <div className="flex w-[38%] gap-[8px] ">
+            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
+              {"THÁNG " + (isFamily && info[isFamily]?.month)}
+            </Text>
+            <Text className="font-['Cormorant_Infant',serif] text-[32px] leading-[24px] h-[24px] font-normal text-[#3A5653]">
+              {isFamily && info[isFamily]?.day}
+            </Text>
+            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
+              {isFamily && info[isFamily]?.year}
+            </Text>
+          </div>
+          <Text className="font-['Cormorant_Garamond',serif] font-medium italic text-[15px] text-[#3A5653] w-[49%]">
+            Chúc bạn luôn được bao quanh bởi những điều dịu dàng, an lành và ấm
+            áp.
+          </Text>
+        </div>
+      </Modal>
       <Space
         direction="vertical"
         size={0}
@@ -297,7 +610,7 @@ const HomeContent = ({
       >
         <Header />
         {homeData?.guestSlug ? (
-          <Invite />
+          <Invite handleConfirmAttendance={handleConfirmAttendance} />
         ) : dayjs().isBefore(dayjs(homeData?.solarDate)) ? (
           <CountDown />
         ) : (
@@ -305,7 +618,7 @@ const HomeContent = ({
         )}
         <Couple />
         <Story />
-        <Invitation bind={(methods) => (childMethodsRef.current = methods)} />
+        <Invitation handleConfirmAttendance={handleConfirmAttendance} />
         <Present targetRef={targetRef} />
         <Gallery />
         <WeddingFooter brideGroom="Quang Vương & Phương Ninh" />

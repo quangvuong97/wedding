@@ -195,6 +195,12 @@ body {
   transform: translateX(0%);
 }
 
+.bt-ov-bg-hv2.ant-btn-primary:hover,
+.bt-ov-bg-hv2.ant-btn-primary:focus {
+  background-color: #1e8267 !important;
+  border-color: #1e8267 !important;
+}
+
 .bt-ov-bg-hv.ant-btn-primary:hover,
 .bt-ov-bg-hv.ant-btn-primary:focus {
   background-color: #388f75 !important;
@@ -208,7 +214,9 @@ body {
   margin-bottom: 0px !important;
 }
 
-html.qr-view-html, html.qr-view-html > body, html.qr-view-html body #root {
+html.qr-view-html,
+html.qr-view-html > body,
+html.qr-view-html body #root {
   margin: 0;
   padding: 0;
   height: 100%;

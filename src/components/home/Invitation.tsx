@@ -1,10 +1,9 @@
-import { Col, Row, Space, Typography, Modal, Button, Input } from "antd";
-import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
+import { Col, Row, Space, Typography } from "antd";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CustomButton } from "../../common";
 import Section from "../../common/Section";
 import { useHomeData } from "../../contexts/HomeDataContext";
 import TrackedImage from "../common/TrackedImage";
-import { WeddingPageApi } from "../../services/weddingPage.api";
 import { Gutter } from "antd/es/grid/row";
 
 const { Text, Title } = Typography;
@@ -43,103 +42,16 @@ interface CircularOverlayStyle {
 }
 
 type InvitationProps = {
-  bind: (methods: {
-    handleConfirmAttendance: (tabName: string) => void;
-  }) => void;
+  handleConfirmAttendance: (tabName: string) => void;
 };
 
-type ButtonFamilyProps = {
-  isFamilyType: "groom" | "bride" | null;
-  onClick: (isFamilyType: "groom" | "bride") => void;
-};
-
-// Memoize ButtonFamily component
-const ButtonFamily: React.FC<ButtonFamilyProps> = memo(
-  ({ isFamilyType, onClick }) => {
-    const homeData = useHomeData();
-
-    // Memoize style objects
-    const containerStyle = useMemo(
-      () => ({
-        marginBottom: 12,
-        display: "flex",
-        justifyContent: "center",
-        gap: 12,
-      }),
-      []
-    );
-
-    const imageStyle = useMemo(
-      () => ({
-        width: 126,
-        aspectRatio: 1,
-      }),
-      []
-    );
-
-    const familyTypes = useMemo(() => ["groom", "bride"], []);
-
-    const handleClick = useCallback(
-      (familyType: string) => {
-        if (!homeData?.guestOf) {
-          onClick(familyType as "groom" | "bride");
-        }
-      },
-      [homeData?.guestOf, onClick]
-    );
-
-    return (
-      <div style={containerStyle}>
-        {familyTypes.map((familyType) => (
-          <Button
-            key={familyType}
-            type={
-              homeData?.guestOf === familyType ||
-              isFamilyType?.toString() === familyType
-                ? "primary"
-                : "default"
-            }
-            onClick={() => handleClick(familyType)}
-            className="bt-ov-bg-hv flex flex-col gap-0 px-[13px] pt-1 h-auto shadow-none"
-          >
-            <img
-              src={
-                familyType === "groom"
-                  ? "/images/groom.png"
-                  : "/images/bride.png"
-              }
-              alt="icon"
-              style={imageStyle}
-            />
-            {familyType === "groom" ? "Khách nhà trai" : "Khách nhà gái"}
-          </Button>
-        ))}
-      </div>
-    );
-  }
-);
-
-const Invitation: React.FC<InvitationProps> = ({ bind }) => {
+const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
   const homeData = useHomeData();
   const [overlayStyles, setOverlayStyles] = useState<CircularOverlayStyle | {}>(
     {}
   );
   const [scaleFactor, setScaleFactor] = useState<number>(1);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const thankYouImgRef = useRef<HTMLImageElement | null>(null);
-  const [thankYouScale, setThankYouScale] = useState<number>(1);
-
-  const [showModal, setShowModal] = useState(false);
-  const [isAttendance, setIsAttendance] = useState<
-    "attendance" | "not_attendance" | null
-  >(null);
-  const [isFamily, setIsFamily] = useState<"groom" | "bride" | null>(null);
-  const [name, setName] = useState("");
-  const [nameError, setNameError] = useState("");
-  const [showThankYou, setShowThankYou] = useState(false);
-
-  const { confirm, loading: confirmLoading } =
-    WeddingPageApi.useConfirmAttendance();
 
   // Memoize constants
   const BASE_IMAGE_WIDTH = useMemo(() => 464, []);
@@ -207,61 +119,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     ];
   }, [homeData, weekdays]);
 
-  // Memoize style objects
-  const modalContentStyle = useMemo(
-    () => ({
-      textAlign: "center" as const,
-    }),
-    []
-  );
-
-  const modalHeaderStyle = useMemo(
-    () => ({
-      fontWeight: 600,
-      fontSize: 18,
-      marginBottom: 12,
-    }),
-    []
-  );
-
-  const inputContainerStyle = useMemo(
-    () => ({
-      marginBottom: 12,
-    }),
-    []
-  );
-
-  const errorStyle = useMemo(
-    () => ({
-      color: "red",
-      marginBottom: 12,
-      fontSize: 13,
-    }),
-    []
-  );
-
-  const confirmButtonStyle = useMemo(
-    () => ({
-      width: 160,
-    }),
-    []
-  );
-
-  const thankYouModalStyles = useMemo(
-    () => ({
-      content: { padding: 0, margin: "0 12px" },
-      body: { position: "relative" as const },
-    }),
-    []
-  );
-
-  const thankYouContentStyle = useMemo(
-    () => ({
-      scale: thankYouScale,
-    }),
-    [thankYouScale]
-  );
-
   const titleStyle = useMemo(
     () => ({
       fontFamily: "VVZOTWpSGuZyUVEY",
@@ -285,66 +142,6 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     ],
     []
   );
-
-  // Memoize callbacks
-  const handleConfirmAttendance = useCallback(
-    (tabName: string) => {
-      setShowModal(true);
-      setIsAttendance(null);
-      if (homeData?.guestOf) {
-        setIsFamily(homeData.guestOf);
-      } else {
-        setIsFamily(tabName === "Nhà Trai" ? "groom" : "bride");
-      }
-      setName("");
-      setNameError("");
-    },
-    [homeData?.guestOf]
-  );
-
-  const handleModalCancel = useCallback(() => {
-    setShowModal(false);
-    setIsFamily(null);
-    setNameError("");
-  }, []);
-
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setName(e.target.value);
-      if (e.target.value) setNameError("");
-    },
-    []
-  );
-
-  const handleSubmitConfirm = useCallback(async () => {
-    if (!isFamily) {
-      setNameError("Bạn là khách bên nhà trai 👦🏻 hay nhà gái 👧🏻 vậy?");
-      return;
-    }
-    if (!homeData?.guestSlug && !name.trim()) {
-      setNameError("Bạn ơi cho tụi mình xin tên dễ thương với nha 📝🧸");
-      return;
-    }
-    if (!isAttendance) {
-      setNameError(
-        "Nhớ bấm chọn có đến được không nhaaaa, tụi mình mong chờ lắm đó 🥹💌"
-      );
-      return;
-    }
-
-    const body: any = { isAttendance };
-    if (homeData?.guestSlug) {
-      body.guestSlug = homeData.guestSlug;
-    } else {
-      body.guestOf = isFamily;
-      body.name = name.trim();
-    }
-
-    await confirm(body);
-    setShowModal(false);
-    setShowThankYou(true);
-    setTimeout(() => setShowThankYou(false), 5000);
-  }, [isFamily, homeData, name, isAttendance, confirm]);
 
   const getScaledStyles = useCallback(() => {
     const scale = scaleFactor;
@@ -402,17 +199,9 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     requestAnimationFrame(updateOverlayPosition);
   }, [updateOverlayPosition]);
 
-  const handleThankYouImageLoad = useCallback(() => {
-    const width = thankYouImgRef.current?.getBoundingClientRect().width || 520;
-    setThankYouScale(width / 520);
-  }, []);
-
   const handleMapClick = useCallback((ggMap: string) => {
     window.open(ggMap, "_blank");
   }, []);
-
-  // Bind the method for parent component
-  bind({ handleConfirmAttendance });
 
   useEffect(() => {
     const handleResize = () => {
@@ -423,114 +212,8 @@ const Invitation: React.FC<InvitationProps> = ({ bind }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [updateOverlayPosition]);
 
-  useEffect(() => {
-    if (!showThankYou) return;
-
-    const handleResize = () => {
-      const width =
-        thankYouImgRef.current?.getBoundingClientRect().width || 520;
-      setThankYouScale(width / 520);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [showThankYou]);
-
   return (
     <Section title="Thiệp Mời">
-      <Modal
-        open={showModal}
-        onCancel={handleModalCancel}
-        footer={null}
-        centered
-        destroyOnHidden
-        width={372}
-      >
-        <div style={modalContentStyle}>
-          <div style={modalHeaderStyle}>
-            Cảm ơn bạn đã xác nhận giùm vợ chồng mình nhé
-          </div>
-          <ButtonFamily isFamilyType={isFamily} onClick={setIsFamily} />
-          {!homeData?.guestSlug && (
-            <div style={inputContainerStyle}>
-              <Input
-                placeholder="Nhập tên của bạn"
-                value={name}
-                className="text-[16px]"
-                onChange={handleNameChange}
-              />
-            </div>
-          )}
-          <div className="flex flex-wrap gap-3 mb-[12px]">
-            <Button
-              type={isAttendance === "attendance" ? "primary" : "default"}
-              onClick={() => setIsAttendance("attendance")}
-              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
-            >
-              Có, tôi sẽ đến
-            </Button>
-            <Button
-              type={isAttendance === "not_attendance" ? "primary" : "default"}
-              onClick={() => setIsAttendance("not_attendance")}
-              className="bt-ov-bg-hv shadow-none flex-1 text-[12px]"
-            >
-              Xin lỗi, tôi bận mất rồi
-            </Button>
-          </div>
-          {nameError && <div style={errorStyle}>{nameError}</div>}
-          <CustomButton
-            loading={confirmLoading}
-            onClick={handleSubmitConfirm}
-            style={confirmButtonStyle}
-          >
-            Xác nhận
-          </CustomButton>
-        </div>
-      </Modal>
-
-      <Modal
-        open={showThankYou}
-        footer={null}
-        closable={false}
-        centered
-        width={544}
-        destroyOnHidden
-        onCancel={() => setShowThankYou(false)}
-        styles={thankYouModalStyles}
-      >
-        <img
-          src="images/thankYou.jpg"
-          alt=""
-          ref={thankYouImgRef}
-          onLoad={handleThankYouImageLoad}
-        />
-        <div
-          className="flex flex-col text-center items-center absolute top-[39%] left-1/2 -translate-x-1/2 w-[520px] gap-[12px] origin-top-left"
-          style={thankYouContentStyle}
-        >
-          <Text className="font-['Cormorant_Garamond',serif] font-normal italic text-[17px] text-[#3A5653] w-[72%]">
-            Cảm ơn bạn đã phản hồi lời mời cưới của tụi mình! Tụi mình rất mong
-            được gặp bạn trong ngày đặc biệt ấy.
-          </Text>
-          <div className="flex w-[38%] gap-[8px] ">
-            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
-              {"THÁNG " + info[0]?.solarDate.month}
-            </Text>
-            <Text className="font-['Cormorant_Infant',serif] text-[32px] leading-[24px] h-[24px] font-normal text-[#3A5653]">
-              {info[0]?.solarDate.day}
-            </Text>
-            <Text className="flex-1 border-t border-b font-['Cormorant_Infant',serif] text-[17px] leading-[24px] h-[24px] font-normal text-[#3A5653] border-[#3A5653]">
-              {info[0]?.solarDate.year}
-            </Text>
-          </div>
-          <Text className="font-['Cormorant_Garamond',serif] font-medium italic text-[15px] text-[#3A5653] w-[49%]">
-            Chúc bạn luôn được bao quanh bởi những điều dịu dàng, an lành và ấm
-            áp.
-          </Text>
-        </div>
-      </Modal>
-
       <Row
         justify="center"
         gutter={gutterConfig}
