@@ -66,8 +66,9 @@ const Invite: React.FC<InviteProps> = ({ handleConfirmAttendance }) => {
           : homeData?.brideAddress}
       </Text>
       <Button
-        type="default"
-        className="bt-ov-bg-hv shadow-none rounded-none mb-6"
+        color="primary"
+        variant="outlined"
+        className="bt-ov-bg-hv2 shadow-none rounded-none mb-6"
         icon={<i className="fi fi-ss-land-layer-location"></i>}
         onClick={() =>
           handleMapClick(
@@ -110,7 +111,10 @@ const Invite: React.FC<InviteProps> = ({ handleConfirmAttendance }) => {
       </Text>
       <Button
         className="bt-ov-bg-hv2 shadow-none rounded-none"
-        type="primary"
+        // type="primary"
+        size="large"
+        color="danger"
+        variant="outlined"
         icon={<i className="fi fi-ss-user-trust"></i>}
         onClick={() => handleConfirmAttendance("confirm")}
       >

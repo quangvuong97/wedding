@@ -195,10 +195,21 @@ body {
   transform: translateX(0%);
 }
 
-.bt-ov-bg-hv2.ant-btn-primary:hover,
-.bt-ov-bg-hv2.ant-btn-primary:focus {
+.bt-ov-bg-hv2.ant-btn-color-primary:hover,
+.bt-ov-bg-hv2.ant-btn-color-primary:focus,
+.bt-ov-bg-hv2.ant-btn-color-primary:active {
   background-color: #1e8267 !important;
   border-color: #1e8267 !important;
+  color: #fff !important;
+}
+
+/* .bt-ov-bg-hv2.ant-btn-color-dangerous,  */
+.bt-ov-bg-hv2.ant-btn-color-dangerous:focus,
+.bt-ov-bg-hv2.ant-btn-color-dangerous:hover,
+.bt-ov-bg-hv2.ant-btn-color-dangerous:active {
+  background-color: #d9534f !important;
+  border-color: #d9534f !important;
+  color: #fff !important;
 }
 
 .bt-ov-bg-hv.ant-btn-primary:hover,
