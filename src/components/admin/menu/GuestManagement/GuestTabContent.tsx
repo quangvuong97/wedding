@@ -8,6 +8,7 @@ import {
   Modal,
   Popconfirm,
   Row,
+  Select,
   Space,
   Table,
   Typography,
@@ -21,6 +22,7 @@ import {
 } from "@ant-design/icons";
 import {
   CreateGuestRequest,
+  EConfirmAttended,
   EGuestOfType,
   GetGuestResponse,
   guestAPI,
@@ -31,7 +33,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 const { Text } = Typography;
-const { Search, TextArea } = Input;
+const { TextArea } = Input;
 
 interface EditingGuest {
   id: string;
@@ -49,11 +51,40 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
   const [guests, setGuests] = useState<GetGuestResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectInvite, setSelectInvite] = useState<boolean | null>(null);
+  const [selectAttended, setSelectAttended] = useState<boolean | null>(null);
+  const [selectConfirmAttended, setSelectConfirmAttended] = useState("");
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const guestFilter = guests.filter((guest) => {
+    const matchText =
+      guest.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      guest.phoneNumber.includes(searchKeyword);
+
+    const matchConfirmAttended =
+      selectConfirmAttended === "" ||
+      (selectConfirmAttended === EConfirmAttended.ATTENDANCE &&
+        guest.confirmAttended === "attendance") ||
+      (selectConfirmAttended === EConfirmAttended.NOT_ATTENDANCE &&
+        guest.confirmAttended === "not_attendance") ||
+      (selectConfirmAttended === "_" && !guest.confirmAttended);
+
+    const matchInvite =
+      selectInvite === null ||
+      (selectInvite === true && guest.isInvite) ||
+      (selectInvite === false && !guest.isInvite);
+
+    const matchAttended =
+      selectAttended === null ||
+      (selectAttended === true && guest.isAttended) ||
+      (selectAttended === false && !guest.isAttended);
+
+    return matchText && matchConfirmAttended && matchInvite && matchAttended;
+  });
 
   // ok
   const updateGuest = (response: GetGuestResponse) => {
@@ -93,7 +124,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
   // Handle search
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
-    fetchGuests();
   };
 
   // ok
@@ -249,20 +279,18 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     );
   };
 
+  // ok
   const handleCreateGuest = async (values: any) => {
     if (!accessToken) return;
 
     try {
-      const guestData: CreateGuestRequest = {
-        ...values,
-        guestOf: guestOf,
-      };
+      const guestData: CreateGuestRequest = { ...values, guestOf };
 
-      await guestAPI.createGuest(accessToken, guestData);
+      const response = await guestAPI.createGuest(accessToken, guestData);
       message.success("Thêm khách mời thành công");
       setIsModalVisible(false);
       form.resetFields();
-      // fetchGuests();
+      setGuests((prevGuests) => [response, ...prevGuests]);
     } catch (error: any) {
       message.error("Không thể thêm khách mời");
     }
@@ -347,7 +375,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       },
     },
     {
-      title: "Có đi",
+      title: "Có đến",
       dataIndex: "isAttended",
       key: "isAttended",
       width: 65,
@@ -396,14 +424,77 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
           <Col flex="auto">
-            <Search
-              placeholder="Tìm kiếm khách mời..."
-              allowClear
-              enterButton={<SearchOutlined />}
-              size="large"
-              onSearch={handleSearch}
-              style={{ maxWidth: 400 }}
-            />
+            <Space>
+              <Input
+                value={searchKeyword}
+                placeholder="Tìm kiếm khách mời..."
+                allowClear
+                size="large"
+                onChange={(event) => handleSearch(event.target.value)}
+                prefix={<SearchOutlined />}
+                style={{ maxWidth: 400 }}
+              />
+              <Space size={0}>
+                <Button size="large" type="text">
+                  Đã mời
+                </Button>
+                <Select
+                  defaultValue={null}
+                  style={{ width: 120 }}
+                  size="large"
+                  onChange={setSelectInvite}
+                  options={[
+                    { value: null, label: "Tất cả" },
+                    { value: true, label: "Đã mời" },
+                    { value: false, label: "Chưa mời" },
+                  ]}
+                />
+              </Space>
+              <Space size={0}>
+                <Button size="large" type="text" variant="outlined">
+                  Xác nhận
+                </Button>
+                <Select
+                  defaultValue=""
+                  style={{ width: 120 }}
+                  size="large"
+                  onChange={setSelectConfirmAttended}
+                  options={[
+                    { value: "", label: "Tất cả" },
+                    { value: EConfirmAttended.ATTENDANCE, label: "Yes" },
+                    { value: EConfirmAttended.NOT_ATTENDANCE, label: "No" },
+                    { value: "_", label: "Chưa xác nhận" },
+                  ]}
+                />
+              </Space>
+              <Space size={0}>
+                <Button size="large" type="text">
+                  Có đến
+                </Button>
+                <Select
+                  defaultValue={null}
+                  style={{ width: 120 }}
+                  size="large"
+                  onChange={setSelectAttended}
+                  options={[
+                    { value: null, label: "Tất cả" },
+                    { value: true, label: "Có đến" },
+                    { value: false, label: "Không đến" },
+                  ]}
+                />
+              </Space>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setSearchKeyword("");
+                  setSelectConfirmAttended("");
+                  setSelectInvite(null);
+                  setSelectAttended(null);
+                }}
+              >
+                Xóa lọc
+              </Button>
+            </Space>
           </Col>
           <Col>
             <Space>
@@ -411,7 +502,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 type="primary"
                 icon={<PlusOutlined />}
                 size="large"
-                // onClick={() => setIsModalVisible(true)}
+                onClick={() => setIsModalVisible(true)}
                 style={{
                   background: "#1e8267",
                   borderColor: "#1e8267",
@@ -435,11 +526,15 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
           </Col>
         </Row>
 
+        <Text style={{ marginTop: 8 }}>
+          {guestFilter ? guestFilter.length : 0}/{guests.length} tổng số khách
+          mời
+        </Text>
         {/* Table */}
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={guests || []}
+          dataSource={guestFilter || []}
           rowKey="id"
           loading={loading}
           pagination={false}
