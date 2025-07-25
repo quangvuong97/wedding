@@ -11,6 +11,10 @@ interface ApiResponse<T> {
   statusCode: number;
   message: string;
   data: T;
+  total?: number;
+  page?: number;
+  size?: number;
+  totalPages?: number;
 }
 
 export interface LoginResponse {
@@ -134,6 +138,7 @@ export interface CreateGuestRequest {
   slug: string;
   phoneNumber?: string;
   relation?: string;
+  invitationText?: string;
   facebook?: string;
   note?: string;
   isInvite?: boolean;
@@ -155,14 +160,6 @@ export interface UpdateGuestRequest {
 
 export interface DeleteGuestRequest {
   guestIds: string[];
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  size: number;
-  totalPages: number;
 }
 
 export interface Banks {
@@ -341,7 +338,7 @@ export const guestAPI = {
   getGuests: async (
     token: string,
     params: GetGuestsRequest
-  ): Promise<PaginatedResponse<GetGuestResponse>> => {
+  ): Promise<GetGuestResponse[]> => {
     if (!token) {
       throw new Error("No token provided");
     }
@@ -374,8 +371,7 @@ export const guestAPI = {
         }
       }
 
-      const apiResponse: ApiResponse<PaginatedResponse<GetGuestResponse>> =
-        await response.json();
+      const apiResponse: ApiResponse<GetGuestResponse[]> = await response.json();
 
       console.log("API: getGuests raw response:", apiResponse);
 
