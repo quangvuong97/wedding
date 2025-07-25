@@ -112,6 +112,12 @@ export enum EGuestOfType {
   BRIDE = "bride",
 }
 
+export enum EConfirmAttended {
+  ATTENDANCE = "attendance",
+  NOT_ATTENDANCE = "not_attendance",
+  NOT_CONFIRM = "not_confirm",
+}
+
 export interface GetGuestResponse {
   id: string;
   name: string;
@@ -120,6 +126,7 @@ export interface GetGuestResponse {
   relation: string;
   facebook: string;
   isInvite: boolean;
+  confirmAttended: EConfirmAttended,
   isAttended: boolean;
   giftAmount: string;
   note: string;

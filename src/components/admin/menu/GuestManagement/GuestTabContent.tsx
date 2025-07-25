@@ -10,6 +10,7 @@ import {
   Row,
   Space,
   Table,
+  Typography,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,6 +29,8 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
+
+const { Text } = Typography;
 const { Search, TextArea } = Input;
 
 interface EditingGuest {
@@ -313,8 +316,15 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       width: 80,
       minWidth: 80,
       align: "center" as const,
-      render: (text: boolean, record: GetGuestResponse) =>
-        renderEditableCell(text, record, "confirmAttended", "checkbox"),
+      render: (text: boolean, record: GetGuestResponse) => {
+        if (record.confirmAttended === "attendance") {
+          return <Text type="success">Yes</Text>;
+        }
+        if (record.confirmAttended === "not_attendance") {
+          return <Text type="danger">No</Text>;
+        }
+        return <Text>-</Text>;
+      },
     },
     {
       title: "Có đi",
