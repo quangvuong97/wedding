@@ -54,6 +54,16 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  // ok
+  const updateGuest = (response: GetGuestResponse) => {
+    // Update the guest in the state
+    setGuests((prevGuests) =>
+      prevGuests.map((guest) =>
+        guest.id === response.id ? { ...guest, ...response } : guest
+      )
+    );
+  };
   // Fetch guests data
   const fetchGuests = async () => {
     if (!accessToken) return;
@@ -86,6 +96,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     fetchGuests();
   };
 
+  // ok
   const handleEdit = (record: GetGuestResponse, field: string) => {
     setEditingGuest({
       id: record.id,
@@ -94,6 +105,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     });
   };
 
+  // ok
   const handleSaveEdit = async () => {
     if (!editingGuest || !accessToken) return;
 
@@ -102,20 +114,25 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         [editingGuest.field]: editingGuest.value,
       };
 
-      await guestAPI.updateGuest(accessToken, editingGuest.id, updateData);
+      const response = await guestAPI.updateGuest(
+        accessToken,
+        editingGuest.id,
+        updateData
+      );
       message.success("Cập nhật thành công");
       setEditingGuest(null);
-      fetchGuests();
+      updateGuest(response);
     } catch (error: any) {
       message.error("Không thể cập nhật thông tin");
     }
   };
 
+  // ok
   const handleCancelEdit = () => {
     setEditingGuest(null);
   };
 
-  // Handle delete guests
+  // ok
   const handleDeleteGuests = async (guestIds: string[]) => {
     if (!accessToken) return;
 
@@ -123,13 +140,15 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       await guestAPI.deleteGuests(accessToken, guestIds);
       message.success("Xóa khách mời thành công");
       setSelectedRowKeys([]);
-      fetchGuests();
+      setGuests((prevGuests) =>
+        prevGuests.filter((guest) => !guestIds.includes(guest.id))
+      );
     } catch (error: any) {
       message.error("Không thể xóa khách mời");
     }
   };
 
-  // Row selection
+  // ok
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedKeys: React.Key[]) => {
@@ -137,6 +156,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     },
   };
 
+  // ok
   const renderEditableCell = (
     text: any,
     record: GetGuestResponse,
@@ -303,8 +323,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       title: "Đã mời",
       dataIndex: "isInvite",
       key: "isInvite",
-      width: 80,
-      minWidth: 80,
+      width: 65,
+      minWidth: 65,
       align: "center" as const,
       render: (text: boolean, record: GetGuestResponse) =>
         renderEditableCell(text, record, "isInvite", "checkbox"),
@@ -313,8 +333,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       title: "Xác nhận",
       dataIndex: "confirmAttended",
       key: "confirmAttended",
-      width: 80,
-      minWidth: 80,
+      width: 65,
+      minWidth: 65,
       align: "center" as const,
       render: (text: boolean, record: GetGuestResponse) => {
         if (record.confirmAttended === "attendance") {
@@ -330,8 +350,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       title: "Có đi",
       dataIndex: "isAttended",
       key: "isAttended",
-      width: 80,
-      minWidth: 80,
+      width: 65,
+      minWidth: 65,
       align: "center" as const,
       render: (text: boolean, record: GetGuestResponse) =>
         renderEditableCell(text, record, "isAttended", "checkbox"),
@@ -340,7 +360,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       title: "Mừng cưới",
       dataIndex: "giftAmount",
       key: "giftAmount",
-      width: 120,
+      width: 180,
       render: (text: string, record: GetGuestResponse) =>
         renderEditableCell(text, record, "giftAmount"),
     },
@@ -355,7 +375,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     {
       title: "Thao tác",
       key: "action",
-      width: 80,
+      width: 50,
       align: "center" as const,
       render: (_: any, record: GetGuestResponse) => (
         <Popconfirm
