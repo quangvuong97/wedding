@@ -344,7 +344,7 @@ const Statistics: React.FC = () => {
           marginBottom: "24px",
         }}
       >
-        <Title level={2} style={{ margin: 0, color: "#1e8267" }}>
+        <Title level={3} style={{ margin: 0, color: "#1e8267" }}>
           📊 Thống kê khách mời
         </Title>
         <Space>

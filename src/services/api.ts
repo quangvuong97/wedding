@@ -126,6 +126,7 @@ export interface GetGuestResponse {
   relation: string;
   facebook: string;
   isInvite: boolean;
+  invitationText: string;
   confirmAttended: EConfirmAttended,
   isAttended: boolean;
   giftAmount: string;

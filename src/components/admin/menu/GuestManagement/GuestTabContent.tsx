@@ -29,13 +29,15 @@ import {
   UpdateGuestRequest,
 } from "../../../../services/api";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
+import InputPresent from "../../../common/InputPresent";
+import { TextAreaRef } from "antd/es/input/TextArea";
 
 const { Text } = Typography;
 const { TextArea } = Input;
 
-interface EditingGuest {
+export interface EditingGuest {
   id: string;
   field: string;
   value: any;
@@ -86,7 +88,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     return matchText && matchConfirmAttended && matchInvite && matchAttended;
   });
 
-  // ok
   const updateGuest = (response: GetGuestResponse) => {
     // Update the guest in the state
     setGuests((prevGuests) =>
@@ -95,7 +96,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       )
     );
   };
-  // Fetch guests data
+
   const fetchGuests = async () => {
     if (!accessToken) return;
 
@@ -109,7 +110,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
       setGuests(response);
     } catch (error: any) {
-      console.error("GuestManagement: Error fetching guests:", error);
       message.error("Không thể tải danh sách khách mời");
     } finally {
       setLoading(false);
@@ -121,24 +121,27 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle search
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
   };
 
-  // ok
-  const handleEdit = (record: GetGuestResponse, field: string) => {
+  const handleEdit = (
+    record: GetGuestResponse,
+    field: keyof GetGuestResponse
+  ) => {
+    let currentValue = record[field];
+    if (typeof currentValue === "boolean") {
+      currentValue = !currentValue;
+    }
     setEditingGuest({
       id: record.id,
       field,
-      value: record[field as keyof GetGuestResponse],
+      value: currentValue,
     });
   };
 
-  // ok
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (editingGuest: EditingGuest) => {
     if (!editingGuest || !accessToken) return;
-
     try {
       const updateData: UpdateGuestRequest = {
         [editingGuest.field]: editingGuest.value,
@@ -157,12 +160,12 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     }
   };
 
-  // ok
-  const handleCancelEdit = () => {
-    setEditingGuest(null);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Escape") {
+      setEditingGuest(null);
+    }
   };
 
-  // ok
   const handleDeleteGuests = async (guestIds: string[]) => {
     if (!accessToken) return;
 
@@ -178,7 +181,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     }
   };
 
-  // ok
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedKeys: React.Key[]) => {
@@ -186,11 +188,29 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     },
   };
 
-  // ok
+  const textAreaRef = useRef<TextAreaRef | null>(null);
+
+  useEffect(() => {
+    if (editingGuest) {
+      if (textAreaRef.current) {
+        const domTextarea = textAreaRef.current.resizableTextArea?.textArea;
+
+        if (domTextarea) {
+          domTextarea.focus();
+          const len = domTextarea.value.length;
+
+          setTimeout(() => {
+            domTextarea.setSelectionRange(len, len);
+          }, 0);
+        }
+      }
+    }
+  }, [editingGuest]);
+
   const renderEditableCell = (
     text: any,
     record: GetGuestResponse,
-    field: string,
+    field: keyof GetGuestResponse,
     type: "text" | "checkbox" = "text",
     style?: React.CSSProperties
   ) => {
@@ -213,13 +233,13 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
               type="link"
               size="small"
               icon={<SaveOutlined />}
-              onClick={handleSaveEdit}
+              onClick={() => handleSaveEdit(editingGuest)}
             />
             <Button
               type="link"
               size="small"
               icon={<CloseOutlined />}
-              onClick={handleCancelEdit}
+              onClick={() => setEditingGuest(null)}
             />
           </Space>
         );
@@ -228,6 +248,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       return (
         <Space size={0}>
           <TextArea
+            ref={textAreaRef}
             size="small"
             value={editingGuest.value}
             onChange={(e) =>
@@ -235,20 +256,9 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 prev ? { ...prev, value: e.target.value } : null
               )
             }
-            onPressEnter={handleSaveEdit}
+            onPressEnter={() => handleSaveEdit(editingGuest)}
+            onKeyDown={handleKeyDown}
             autoSize
-          />
-          <Button
-            type="link"
-            size="small"
-            icon={<SaveOutlined />}
-            onClick={handleSaveEdit}
-          />
-          <Button
-            type="link"
-            size="small"
-            icon={<CloseOutlined />}
-            onClick={handleCancelEdit}
           />
         </Space>
       );
@@ -279,7 +289,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
     );
   };
 
-  // ok
   const handleCreateGuest = async (values: any) => {
     if (!accessToken) return;
 
@@ -313,8 +322,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       title: "SĐT",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      width: 110,
-      minWidth: 110,
+      width: 130,
+      minWidth: 130,
       render: (text: string, record: GetGuestResponse) =>
         renderEditableCell(text, record, "phoneNumber", "text", {
           overflow: "hidden",
@@ -389,8 +398,16 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       dataIndex: "giftAmount",
       key: "giftAmount",
       width: 180,
-      render: (text: string, record: GetGuestResponse) =>
-        renderEditableCell(text, record, "giftAmount"),
+      render: (text: string, record: GetGuestResponse) => (
+        <InputPresent
+          text={text}
+          editingGuest={editingGuest}
+          setEditingGuest={setEditingGuest}
+          record={record}
+          field="giftAmount"
+          handleSaveEdit={handleSaveEdit}
+        />
+      ),
     },
     {
       title: "Ghi chú",
