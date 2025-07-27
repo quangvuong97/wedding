@@ -169,6 +169,9 @@ export interface GetStatisticResponse {
     totalGiftMoney: number;
     totalGiftGold: string;
   };
+  husbandSpend: number;
+  wifeSpend: number;
+  allSpend: number;
 }
 
 export interface GetGuestsRequest {

@@ -58,7 +58,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
 
   const StatCard: React.FC<{
     title: string;
-    type: keyof GetStatisticResponse;
+    type: "groom" | "bride" | "all";
     color: string;
     icon: React.ReactNode;
   }> = ({ title, type, color, icon }) =>
@@ -76,7 +76,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
         <Row gutter={[16, 16]}>
           <Col span={12}>
             <Statistic
-              title="Số lượng khách đã mời"
+              title="Số lượng khách"
               value={statistics[type].invitedCount}
               prefix={<UserOutlined style={{ color }} />}
               valueStyle={{ color }}
@@ -252,7 +252,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
             style={{ height: "100%" }}
           >
             <Statistic
-              // value={formatCurrency(expenseStats.groomExpenses)}
+              value={formatNumber(String(statistics?.husbandSpend) || "")}
               valueStyle={{ color: "#1890ff", fontSize: "24px" }}
               prefix={<DollarOutlined />}
             />
@@ -271,7 +271,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
             style={{ height: "100%" }}
           >
             <Statistic
-              // value={formatCurrency(expenseStats.brideExpenses)}
+              value={formatNumber(String(statistics?.wifeSpend) || "")}
               valueStyle={{ color: "#eb2f96", fontSize: "24px" }}
               prefix={<HeartOutlined />}
             />
@@ -290,7 +290,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
             style={{ height: "100%" }}
           >
             <Statistic
-              // value={formatCurrency(expenseStats.totalExpenses)}
+              value={formatNumber(String(statistics?.allSpend) || "")}
               valueStyle={{ color: "#1e8267", fontSize: "24px" }}
               prefix={<TeamOutlined />}
             />
@@ -299,7 +299,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
       </Row>
 
       {/* Summary Cards */}
-      {/* <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
+      <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
         <Col xs={12} sm={6}>
           <Card
             size="small"
@@ -307,7 +307,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
           >
             <Statistic
               title="Tổng thu"
-              value={formatCurrency(allStats.totalMoneyGift)}
+              value={formatNumber(String(statistics?.all.totalGiftMoney) || "")}
               valueStyle={{ color: "#52c41a", fontSize: "16px" }}
               prefix={<GiftOutlined />}
             />
@@ -320,7 +320,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
           >
             <Statistic
               title="Tổng chi"
-              value={formatCurrency(expenseStats.totalExpenses)}
+              value={formatNumber(String(statistics?.allSpend) || "")}
               valueStyle={{ color: "#fa541c", fontSize: "16px" }}
               prefix={<DollarOutlined />}
             />
@@ -332,25 +332,31 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
             style={{
               textAlign: "center",
               backgroundColor:
-                allStats.totalMoneyGift >= expenseStats.totalExpenses
+                (statistics?.all.totalGiftMoney || 0) >=
+                (statistics?.allSpend || 0)
                   ? "#f6ffed"
                   : "#fff2f0",
             }}
           >
             <Statistic
               title="Chênh lệch"
-              value={formatCurrency(
-                allStats.totalMoneyGift - expenseStats.totalExpenses
+              value={formatNumber(
+                String(
+                  (statistics?.all.totalGiftMoney || 0) -
+                    (statistics?.allSpend || 0)
+                )
               )}
               valueStyle={{
                 color:
-                  allStats.totalMoneyGift >= expenseStats.totalExpenses
+                  (statistics?.all.totalGiftMoney || 0) >=
+                  (statistics?.allSpend || 0)
                     ? "#52c41a"
                     : "#ff4d4f",
                 fontSize: "16px",
               }}
               prefix={
-                allStats.totalMoneyGift >= expenseStats.totalExpenses ? (
+                (statistics?.all.totalGiftMoney || 0) >=
+                (statistics?.allSpend || 0) ? (
                   <CheckCircleOutlined />
                 ) : (
                   <CloseCircleOutlined />
@@ -375,12 +381,12 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
                   color: "#fa8c16",
                 }}
               >
-                {allStats.totalGoldGift}
+                {statistics?.all.totalGiftGold || "0 chỉ"}
               </div>
             </div>
           </Card>
         </Col>
-      </Row> */}
+      </Row>
     </div>
   );
 };
