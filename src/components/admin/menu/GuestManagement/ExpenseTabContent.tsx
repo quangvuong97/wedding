@@ -32,6 +32,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { TextAreaRef } from "antd/es/input/TextArea";
 import { formatNumber } from "../../../common/InputPresent";
+import { useStyle } from "../../styles";
+import useScrollTable from "../../../../common/useScollTable";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -44,6 +46,8 @@ export interface EditingField {
 
 const ExpenseTabContent: React.FC = () => {
   const { accessToken } = useAuth();
+  const { styles } = useStyle();
+  const scrollY = useScrollTable(312);
 
   const [expenses, setExpenses] = useState<GetExpenseResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -351,7 +355,7 @@ const ExpenseTabContent: React.FC = () => {
 
   return (
     <>
-      <Space direction="vertical" style={{ width: "100%" }} size="large">
+      <Space direction="vertical" style={{ width: "100%" }} size={16}>
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
           <Col flex="auto">
@@ -360,19 +364,15 @@ const ExpenseTabContent: React.FC = () => {
                 value={searchKeyword}
                 placeholder="Tìm kiếm chi phí..."
                 allowClear
-                size="large"
                 onChange={(event) => handleSearch(event.target.value)}
                 prefix={<SearchOutlined />}
                 style={{ maxWidth: 400 }}
               />
               <Space size={0}>
-                <Button size="large" type="text">
-                  Ai chi
-                </Button>
+                <Button type="text">Ai chi</Button>
                 <Select
                   style={{ width: 120 }}
                   value={selectSpender}
-                  size="large"
                   onChange={setSelectSpender}
                   options={[
                     { value: "", label: "Tất cả" },
@@ -383,7 +383,6 @@ const ExpenseTabContent: React.FC = () => {
               </Space>
               <Button
                 type="primary"
-                size="large"
                 className="shadow-none"
                 onClick={() => {
                   setSearchKeyword("");
@@ -399,7 +398,6 @@ const ExpenseTabContent: React.FC = () => {
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                size="large"
                 className="shadow-none"
                 onClick={() => setIsModalVisible(true)}
                 style={{
@@ -416,7 +414,7 @@ const ExpenseTabContent: React.FC = () => {
                   okText="Xóa"
                   cancelText="Hủy"
                 >
-                  <Button danger icon={<DeleteOutlined />} size="large">
+                  <Button danger icon={<DeleteOutlined />}>
                     Xóa đã chọn ({selectedRowKeys.length})
                   </Button>
                 </Popconfirm>
@@ -432,7 +430,7 @@ const ExpenseTabContent: React.FC = () => {
           </Text>
           <Text>|</Text>
           <Text style={{ marginTop: 8 }} type="success">
-            TỔNG CHI:{" "}
+            Tổng chi:{" "}
             {formatNumber(
               String(expenseFilter.reduce((pre, cur) => pre + cur.amount, 0))
             )}
@@ -440,7 +438,7 @@ const ExpenseTabContent: React.FC = () => {
           </Text>
           <Text>|</Text>
           <Text style={{ marginTop: 8 }} type="danger">
-            ANH CHI:{" "}
+            Anh chi:{" "}
             {formatNumber(
               String(
                 expenseFilter
@@ -452,7 +450,7 @@ const ExpenseTabContent: React.FC = () => {
           </Text>
           <Text>|</Text>
           <Text style={{ marginTop: 8 }} type="warning">
-            EM CHI:{" "}
+            Em chi:{" "}
             {formatNumber(
               String(
                 expenseFilter
@@ -465,13 +463,14 @@ const ExpenseTabContent: React.FC = () => {
         </Space>
         {/* Table */}
         <Table
+          className={styles.customTable}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={expenseFilter || []}
           rowKey="id"
           loading={loading}
           pagination={false}
-          scroll={{ x: 500 }}
+          scroll={{ x: 500, y: scrollY }}
           size="middle"
           rowClassName={(_, index) =>
             index % 2 === 0 ? "table-row-light" : "table-row-dark"

@@ -71,7 +71,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
           </div>
         }
         style={{ height: "100%" }}
-        bodyStyle={{ padding: "16px" }}
+        styles={{ body: { padding: "16px" } }}
       >
         <Row gutter={[16, 16]}>
           <Col span={12}>
@@ -191,22 +191,22 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
   }
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div>
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "24px",
+          marginBottom: "16px",
         }}
       >
-        <Title level={3} style={{ margin: 0, color: "#1e8267" }}>
+        <Title level={4} style={{ margin: 0, color: "#1e8267" }}>
           📊 Thống kê khách mời
         </Title>
       </div>
 
       {/* Guest Statistics */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: "16px" }}>
         <Col xs={24} lg={8}>
           <StatCard
             title="Nhà Trai"
@@ -234,11 +234,11 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
       </Row>
 
       {/* Expense Statistics */}
-      <Title level={3} style={{ marginBottom: "16px", color: "#1e8267" }}>
+      <Title level={4} style={{ marginBottom: "16px", color: "#1e8267" }}>
         💰 Thống kê chi tiêu
       </Title>
 
-      <Row gutter={[24, 24]}>
+      <Row gutter={[16, 16]}>
         <Col xs={24} lg={8}>
           <Card
             title={

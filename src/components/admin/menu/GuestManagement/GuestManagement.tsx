@@ -48,8 +48,9 @@ const GuestManagement: React.FC = () => {
       style={{
         borderRadius: "0.25rem",
       }}
+      styles={{ body: { padding: 12 } }}
     >
-      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
+      <Title level={3} style={{ color: "#1e8267", marginBottom: "12px" }}>
         Quản lý khách mời
       </Title>
 

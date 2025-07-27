@@ -110,8 +110,11 @@ const SettingsManagement: React.FC = () => {
   };
 
   return (
-    <Card style={{ borderRadius: "0.25rem", background: "#fff" }}>
-      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
+    <Card
+      style={{ borderRadius: "0.25rem", background: "#fff" }}
+      styles={{ body: { padding: 12 } }}
+    >
+      <Title level={3} style={{ color: "#1e8267", marginBottom: "12px" }}>
         Cài Đặt Trang
       </Title>
 

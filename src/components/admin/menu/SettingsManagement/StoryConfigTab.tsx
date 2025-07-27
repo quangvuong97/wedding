@@ -4,7 +4,6 @@ import {
   Button,
   message,
   Typography,
-  Divider,
   Space,
   Popconfirm,
   List,
@@ -100,9 +99,28 @@ const StoryConfigTab: React.FC<StoryConfigTabProps> = ({
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
+      <Space
+        style={{
+          marginBottom: 4,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Text type="secondary">Cấu hình thông tin Câu chuyện tình iu</Text>
-      </div>
+        <Button
+          type="primary"
+          onClick={handleSave}
+          loading={loading}
+          icon={<SaveOutlined />}
+          style={{
+            background: "#1e8267",
+            borderColor: "#1e8267",
+            minWidth: "120px",
+          }}
+        >
+          Lưu Cấu Hình
+        </Button>
+      </Space>
       <List
         dataSource={story}
         renderItem={(item, index) => (
@@ -167,29 +185,8 @@ const StoryConfigTab: React.FC<StoryConfigTabProps> = ({
           </List.Item>
         )}
       />
-      <Button
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-        style={{ marginBottom: 24 }}
-        type="dashed"
-        block
-      >
+      <Button icon={<PlusOutlined />} onClick={handleAdd} type="dashed" block>
         Thêm câu chuyện
-      </Button>
-      <Divider />
-      <Button
-        type="primary"
-        onClick={handleSave}
-        loading={loading}
-        icon={<SaveOutlined />}
-        size="large"
-        style={{
-          background: "#1e8267",
-          borderColor: "#1e8267",
-          minWidth: "120px",
-        }}
-      >
-        Lưu Cấu Hình
       </Button>
     </div>
   );

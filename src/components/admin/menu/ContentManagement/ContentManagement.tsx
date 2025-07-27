@@ -5,7 +5,7 @@ import ImageGalleryTab from "./ImageGalleryTab";
 import InvitationTab from "./InvitationTab";
 import CoupleTab from "./CoupleTab";
 
-const { Title , Text} = Typography;
+const { Title, Text } = Typography;
 
 const ContentManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(EImageStoreType.CAROUSEL);
@@ -34,7 +34,11 @@ const ContentManagement: React.FC = () => {
         <ImageGalleryTab
           type={EImageStoreType.STORY}
           title={"story"}
-          customTitle={<Text className="block mb-2" type="warning">Hãy tải lên ảnh tỉ lệ vuông để lên web được đẹp nhé</Text>}
+          customTitle={
+            <Text className="block mb-2" type="warning">
+              Hãy tải lên ảnh tỉ lệ vuông để lên web được đẹp nhé
+            </Text>
+          }
         />
       ),
     },
@@ -63,8 +67,11 @@ const ContentManagement: React.FC = () => {
   ];
 
   return (
-    <Card style={{ borderRadius: "0.25rem", background: "#fff" }}>
-      <Title level={3} style={{ color: "#1e8267", marginBottom: "24px" }}>
+    <Card
+      style={{ borderRadius: "0.25rem", background: "#fff" }}
+      styles={{ body: { padding: 12 } }}
+      >
+      <Title level={3} style={{ color: "#1e8267", marginBottom: "12px" }}>
         Quản Lý Ảnh
       </Title>
 

@@ -33,6 +33,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import InputPresent from "../../../common/InputPresent";
 import { TextAreaRef } from "antd/es/input/TextArea";
+import { useStyle } from "../../styles";
+import useScrollTable from "../../../../common/useScollTable";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -49,6 +51,8 @@ interface GuestTabContentProps {
 
 const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
   const { accessToken } = useAuth();
+  const { styles } = useStyle();
+  const scrollY = useScrollTable(312);
 
   const [guests, setGuests] = useState<GetGuestResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -443,7 +447,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
   return (
     <>
-      <Space direction="vertical" style={{ width: "100%" }} size="large">
+      <Space direction="vertical" style={{ width: "100%" }} size={16}>
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
           <Col flex="auto">
@@ -452,19 +456,15 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 value={searchKeyword}
                 placeholder="Tìm kiếm khách mời..."
                 allowClear
-                size="large"
                 onChange={(event) => handleSearch(event.target.value)}
                 prefix={<SearchOutlined />}
                 style={{ maxWidth: 400 }}
               />
               <Space size={0}>
-                <Button size="large" type="text">
-                  Đã mời
-                </Button>
+                <Button type="text">Đã mời</Button>
                 <Select
                   defaultValue={null}
                   style={{ width: 120 }}
-                  size="large"
                   onChange={setSelectInvite}
                   options={[
                     { value: null, label: "Tất cả" },
@@ -474,13 +474,12 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 />
               </Space>
               <Space size={0}>
-                <Button size="large" type="text" variant="outlined">
+                <Button type="text" variant="outlined">
                   Xác nhận
                 </Button>
                 <Select
                   defaultValue=""
                   style={{ width: 120 }}
-                  size="large"
                   onChange={setSelectConfirmAttended}
                   options={[
                     { value: "", label: "Tất cả" },
@@ -491,13 +490,10 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 />
               </Space>
               <Space size={0}>
-                <Button size="large" type="text">
-                  Có đến
-                </Button>
+                <Button type="text">Có đến</Button>
                 <Select
                   defaultValue={null}
                   style={{ width: 120 }}
-                  size="large"
                   onChange={setSelectAttended}
                   options={[
                     { value: null, label: "Tất cả" },
@@ -508,7 +504,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
               </Space>
               <Button
                 type="primary"
-                size="large"
                 className="shadow-none"
                 onClick={() => {
                   setSearchKeyword("");
@@ -526,7 +521,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                size="large"
                 className="shadow-none"
                 onClick={() => setIsModalVisible(true)}
                 style={{
@@ -546,7 +540,6 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                   <Button
                     danger
                     icon={<DeleteOutlined />}
-                    size="large"
                     className="shadow-none"
                   >
                     Xóa đã chọn ({selectedRowKeys.length})
@@ -563,13 +556,14 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         </Text>
         {/* Table */}
         <Table
+          className={styles.customTable}
           rowSelection={rowSelection}
           columns={columns}
           dataSource={guestFilter || []}
           rowKey="id"
           loading={loading}
           pagination={false}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1200, y: scrollY }}
           size="middle"
           rowClassName={(_, index) =>
             index % 2 === 0 ? "table-row-light" : "table-row-dark"

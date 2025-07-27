@@ -4,7 +4,6 @@ import {
   Button,
   message,
   Typography,
-  Divider,
   Table,
   Space,
   Popconfirm,
@@ -16,6 +15,8 @@ import {
   UserProfile,
   UpdateProfileRequest,
 } from "../../../../services/api";
+import { useStyle } from "../../styles";
+import useScrollTable from "../../../../common/useScollTable";
 
 const { Text } = Typography;
 
@@ -29,6 +30,9 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
   onUpdate,
 }) => {
   const { accessToken } = useAuth();
+  const { styles } = useStyle();
+  const scrollY = useScrollTable(310);
+
   const [loading, setLoading] = useState(false);
   const [audios, setAudios] = useState<{ id: string; url: string }[]>([]);
 
@@ -94,16 +98,38 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
+      <Space
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Text type="secondary">
-          Cấu hình danh sách bài hát phát trên web. Mỗi lần vào web sẽ lấy ngẫu nhiên một bài để phát
+          Cấu hình danh sách bài hát phát trên web. Mỗi lần vào web sẽ lấy ngẫu
+          nhiên một bài để phát
         </Text>
-      </div>
+        <Button
+          type="primary"
+          onClick={handleSave}
+          loading={loading}
+          icon={<SaveOutlined />}
+          style={{
+            background: "#1e8267",
+            borderColor: "#1e8267",
+            minWidth: "120px",
+          }}
+        >
+          Lưu Cấu Hình
+        </Button>
+      </Space>
       <Table
+        className={styles.customTable}
         dataSource={audios}
         rowKey={(audio) => audio.id.toString()}
         pagination={false}
         bordered
+        scroll={{ y: scrollY }}
         style={{ marginBottom: 16 }}
       >
         <Table.Column
@@ -144,29 +170,8 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
           )}
         />
       </Table>
-      <Button
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-        style={{ marginBottom: 24 }}
-        type="dashed"
-        block
-      >
+      <Button icon={<PlusOutlined />} onClick={handleAdd} type="dashed" block>
         Thêm audio
-      </Button>
-      <Divider />
-      <Button
-        type="primary"
-        onClick={handleSave}
-        loading={loading}
-        icon={<SaveOutlined />}
-        size="large"
-        style={{
-          background: "#1e8267",
-          borderColor: "#1e8267",
-          minWidth: "120px",
-        }}
-      >
-        Lưu Cấu Hình
       </Button>
     </div>
   );

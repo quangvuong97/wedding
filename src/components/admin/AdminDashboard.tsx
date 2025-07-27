@@ -84,16 +84,6 @@ const AdminDashboard: React.FC = () => {
   };
 
   const renderContent = () => {
-    const cardStyle = {
-      borderRadius: "0.25rem",
-      background: "#fff",
-    };
-
-    const titleStyle = {
-      color: "#1e8267",
-      marginBottom: "16px",
-    };
-
     switch (selectedKey) {
       case "settings":
         return <SettingsManagement />;
@@ -125,13 +115,21 @@ const AdminDashboard: React.FC = () => {
     <AdminDataContext.Provider
       value={{ adminData: profile, setAdminData: setProfile }}
     >
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ minHeight: "100vh" }} hasSider>
         <Layout>
           <Sider
-            width={280}
+            width={220}
             style={{
               background: "#fff",
               borderRight: "1px solid #e6ebf1",
+              overflow: "auto",
+              height: "100vh",
+              position: "sticky",
+              insetInlineStart: 0,
+              top: 0,
+              bottom: 0,
+              scrollbarWidth: "thin",
+              scrollbarGutter: "stable",
             }}
           >
             {/* Wedding Info Header */}
@@ -212,16 +210,20 @@ const AdminDashboard: React.FC = () => {
               </Button>
             </div>
           </Sider>
-
-          <Content
-            style={{
-              padding: "24px",
-              background: "linear-gradient(135deg, #f8fffe 0%, #f0faf8 100%)",
-              minHeight: "100vh",
-            }}
-          >
-            {renderContent()}
-          </Content>
+          <Layout>
+            <Content
+              style={{
+                overflowY: "auto",
+                padding: "12px",
+                background: "linear-gradient(135deg, #f8fffe 0%, #f0faf8 100%)",
+                height: "100vh",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#eaeaea transparent",
+              }}
+            >
+              {renderContent()}
+            </Content>
+          </Layout>
         </Layout>
       </Layout>
     </AdminDataContext.Provider>

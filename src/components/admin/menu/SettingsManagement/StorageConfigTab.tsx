@@ -4,7 +4,6 @@ import {
   Button,
   message,
   Typography,
-  Divider,
   Table,
   Space,
   Popconfirm,
@@ -23,6 +22,8 @@ import {
   UpdateProfileRequest,
   StorageKeyRequest,
 } from "../../../../services/api";
+import { useStyle } from "../../styles";
+import useScrollTable from "../../../../common/useScollTable";
 
 const { Text } = Typography;
 
@@ -43,6 +44,9 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
   onUpdate,
 }) => {
   const { accessToken } = useAuth();
+  const { styles } = useStyle();
+  const scrollY = useScrollTable(310);
+
   const [loading, setLoading] = useState(false);
   const [storageKeys, setStorageKeys] = useState<StorageKeyRequest[]>([]);
 
@@ -134,16 +138,37 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
+      <Space
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Text type="secondary">
           Cấu hình thông tin kết nối với dịch vụ lưu trữ ảnh và tệp tin
         </Text>
-      </div>
+        <Button
+          type="primary"
+          onClick={handleSave}
+          loading={loading}
+          icon={<SaveOutlined />}
+          style={{
+            background: "#1e8267",
+            borderColor: "#1e8267",
+            minWidth: "120px",
+          }}
+        >
+          Lưu Cấu Hình
+        </Button>
+      </Space>
       <Table
+        className={styles.customTable}
         dataSource={storageKeys}
         rowKey={(storageRequest) => storageRequest.urlEndpoint}
         pagination={false}
         bordered
+        scroll={{ y: scrollY }}
         style={{ marginBottom: 16 }}
       >
         <Table.Column
@@ -235,29 +260,8 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
           )}
         />
       </Table>
-      <Button
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-        style={{ marginBottom: 24 }}
-        type="dashed"
-        block
-      >
+      <Button icon={<PlusOutlined />} onClick={handleAdd} type="dashed" block>
         Thêm kho lưu trữ
-      </Button>
-      <Divider />
-      <Button
-        type="primary"
-        onClick={handleSave}
-        loading={loading}
-        icon={<SaveOutlined />}
-        size="large"
-        style={{
-          background: "#1e8267",
-          borderColor: "#1e8267",
-          minWidth: "120px",
-        }}
-      >
-        Lưu Cấu Hình
       </Button>
     </div>
   );
