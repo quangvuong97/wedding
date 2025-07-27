@@ -8,8 +8,6 @@ import {
   Typography,
   Spin,
   message,
-  Button,
-  Space,
 } from "antd";
 import {
   UserOutlined,
@@ -19,305 +17,163 @@ import {
   HeartOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  ReloadOutlined,
 } from "@ant-design/icons";
-import {
-  guestAPI,
-  GetGuestResponse,
-  EGuestOfType,
-} from "../../../../services/api";
+import { statisticAPI, GetStatisticResponse } from "../../../../services/api";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { formatNumber } from "../../../common/InputPresent";
 
 const { Title, Text } = Typography;
 
-interface GuestStats {
-  totalInvited: number;
-  totalAttended: number;
-  totalNotAttended: number;
-  totalWithGift: number;
-  totalWithoutGift: number;
-  totalNotAttendedButWithGift: number;
-  totalMoneyGift: number;
-  totalGoldGift: string;
+interface StatisticProps {
+  activeTab: string;
 }
 
-interface ExpenseStats {
-  groomExpenses: number;
-  brideExpenses: number;
-  totalExpenses: number;
-}
-
-const Statistics: React.FC = () => {
+const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
+  const { accessToken } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [groomStats, setGroomStats] = useState<GuestStats>({
-    totalInvited: 0,
-    totalAttended: 0,
-    totalNotAttended: 0,
-    totalWithGift: 0,
-    totalWithoutGift: 0,
-    totalNotAttendedButWithGift: 0,
-    totalMoneyGift: 0,
-    totalGoldGift: "0 cây 0 chỉ",
-  });
-  const [brideStats, setBrideStats] = useState<GuestStats>({
-    totalInvited: 0,
-    totalAttended: 0,
-    totalNotAttended: 0,
-    totalWithGift: 0,
-    totalWithoutGift: 0,
-    totalNotAttendedButWithGift: 0,
-    totalMoneyGift: 0,
-    totalGoldGift: "0 cây 0 chỉ",
-  });
-  const [allStats, setAllStats] = useState<GuestStats>({
-    totalInvited: 0,
-    totalAttended: 0,
-    totalNotAttended: 0,
-    totalWithGift: 0,
-    totalWithoutGift: 0,
-    totalNotAttendedButWithGift: 0,
-    totalMoneyGift: 0,
-    totalGoldGift: "0 cây 0 chỉ",
-  });
-  const [expenseStats] = useState<ExpenseStats>({
-    groomExpenses: 50000000, // Example data - should be fetched from API
-    brideExpenses: 30000000, // Example data - should be fetched from API
-    totalExpenses: 80000000, // Example data - should be fetched from API
-  });
+  const [statistics, setStatistics] = useState<GetStatisticResponse>();
 
-  const calculateStats = (guests: GetGuestResponse[]): GuestStats => {
-    const stats: GuestStats = {
-      totalInvited: guests.filter((g) => g.isInvite).length,
-      totalAttended: guests.filter((g) => g.isAttended).length,
-      totalNotAttended: guests.filter((g) => g.isInvite && !g.isAttended)
-        .length,
-      totalWithGift: 0,
-      totalWithoutGift: 0,
-      totalNotAttendedButWithGift: 0,
-      totalMoneyGift: 0,
-      totalGoldGift: "0 cây 0 chỉ",
-    };
-
-    let totalMoney = 0;
-    let totalGoldCay = 0;
-    let totalGoldChi = 0;
-
-    guests.forEach((guest) => {
-      if (guest.giftAmount && guest.giftAmount.trim() !== "") {
-        stats.totalWithGift++;
-
-        // Parse gift amount
-        const giftAmount = guest.giftAmount.toLowerCase();
-
-        // Check for money (contains 'đ' or numbers only)
-        if (
-          giftAmount.includes("đ") ||
-          /^\d+$/.test(giftAmount.replace(/[,\.]/g, ""))
-        ) {
-          const moneyMatch = giftAmount.match(/[\d,\.]+/);
-          if (moneyMatch) {
-            const amount = parseInt(moneyMatch[0].replace(/[,\.]/g, ""));
-            if (!isNaN(amount)) {
-              totalMoney += amount;
-            }
-          }
-        }
-
-        // Check for gold (contains 'cây' or 'chỉ')
-        if (giftAmount.includes("cây") || giftAmount.includes("chỉ")) {
-          const cayMatch = giftAmount.match(/(\d+)\s*cây/);
-          const chiMatch = giftAmount.match(/(\d+)\s*chỉ/);
-
-          if (cayMatch) {
-            totalGoldCay += parseInt(cayMatch[1]);
-          }
-          if (chiMatch) {
-            totalGoldChi += parseInt(chiMatch[1]);
-          }
-        }
-
-        // Check if not attended but has gift
-        if (!guest.isAttended) {
-          stats.totalNotAttendedButWithGift++;
-        }
-      } else {
-        stats.totalWithoutGift++;
-      }
-    });
-
-    stats.totalMoneyGift = totalMoney;
-    stats.totalGoldGift = `${totalGoldCay} cây ${totalGoldChi} chỉ`;
-
-    return stats;
-  };
-
-  const fetchAllGuests = async (showSuccessMessage = false) => {
+  const fetchStatistic = async (showSuccessMessage = false) => {
+    if (!accessToken) return;
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("Không tìm thấy token xác thực");
-        return;
-      }
 
-      // Fetch groom guests
-      const groomGuests = await guestAPI.getGuests(token, {
-        guestOf: EGuestOfType.GROOM,
-        size: 1000, // Get all guests
-      });
+      const statisticsRes = await statisticAPI.get(accessToken);
 
-      // Fetch bride guests
-      const brideGuests = await guestAPI.getGuests(token, {
-        guestOf: EGuestOfType.BRIDE,
-        size: 1000, // Get all guests
-      });
-
-      const allGuests = [...groomGuests, ...brideGuests];
-
-      // Calculate statistics
-      const groomStatsData = calculateStats(groomGuests);
-      const brideStatsData = calculateStats(brideGuests);
-      const allStatsData = calculateStats(allGuests);
-
-      setGroomStats(groomStatsData);
-      setBrideStats(brideStatsData);
-      setAllStats(allStatsData);
-
+      setStatistics(statisticsRes);
       if (showSuccessMessage) {
         message.success("Đã cập nhật thống kê thành công!");
       }
     } catch (error) {
-      console.error("Error fetching guests:", error);
       message.error("Không thể tải dữ liệu thống kê");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRefreshStats = () => {
-    fetchAllGuests(true);
-  };
-
   useEffect(() => {
-    fetchAllGuests();
-  }, []);
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+    if (activeTab === "statistics") fetchStatistic();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const StatCard: React.FC<{
     title: string;
-    stats: GuestStats;
+    type: keyof GetStatisticResponse;
     color: string;
     icon: React.ReactNode;
-  }> = ({ title, stats, color, icon }) => (
-    <Card
-      title={
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {icon}
-          <span style={{ color }}>{title}</span>
-        </div>
-      }
-      style={{ height: "100%" }}
-      bodyStyle={{ padding: "16px" }}
-    >
-      <Row gutter={[16, 16]}>
-        <Col span={12}>
-          <Statistic
-            title="Số lượng khách đã mời"
-            value={stats.totalInvited}
-            prefix={<UserOutlined style={{ color }} />}
-            valueStyle={{ color }}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            title="Số lượng khách có tham dự"
-            value={stats.totalAttended}
-            prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-            valueStyle={{ color: "#52c41a" }}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            title="Số lượng khách không tham dự"
-            value={stats.totalNotAttended}
-            prefix={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
-            valueStyle={{ color: "#ff4d4f" }}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            title="Số lượng khách mừng cưới"
-            value={stats.totalWithGift}
-            prefix={<GiftOutlined style={{ color: "#fa8c16" }} />}
-            valueStyle={{ color: "#fa8c16" }}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            title="Số lượng khách không mừng cưới"
-            value={stats.totalWithoutGift}
-            prefix={<CloseCircleOutlined style={{ color: "#8c8c8c" }} />}
-            valueStyle={{ color: "#8c8c8c" }}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            title="Không tham dự nhưng có mừng cưới"
-            value={stats.totalNotAttendedButWithGift}
-            prefix={<HeartOutlined style={{ color: "#eb2f96" }} />}
-            valueStyle={{ color: "#eb2f96" }}
-          />
-        </Col>
-      </Row>
-
-      <Divider orientation="left">
-        <Text strong style={{ color }}>
-          Quà cưới
-        </Text>
-      </Divider>
-
-      <Row gutter={[16, 8]}>
-        <Col span={24}>
-          <Card
-            size="small"
-            style={{ backgroundColor: "#f6ffed", border: "1px solid #b7eb8f" }}
-          >
+  }> = ({ title, type, color, icon }) =>
+    !statistics ? null : (
+      <Card
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {icon}
+            <span style={{ color }}>{title}</span>
+          </div>
+        }
+        style={{ height: "100%" }}
+        bodyStyle={{ padding: "16px" }}
+      >
+        <Row gutter={[16, 16]}>
+          <Col span={12}>
             <Statistic
-              title="Tổng số tiền mừng"
-              value={formatCurrency(stats.totalMoneyGift)}
-              prefix={<DollarOutlined style={{ color: "#52c41a" }} />}
-              valueStyle={{ color: "#52c41a", fontSize: "18px" }}
+              title="Số lượng khách đã mời"
+              value={statistics[type].invitedCount}
+              prefix={<UserOutlined style={{ color }} />}
+              valueStyle={{ color }}
             />
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card
-            size="small"
-            style={{ backgroundColor: "#fff7e6", border: "1px solid #ffd591" }}
-          >
-            <div style={{ textAlign: "center" }}>
-              <Text type="secondary">Tổng số vàng</Text>
-              <div
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  color: "#fa8c16",
-                  marginTop: "4px",
-                }}
-              >
-                {stats.totalGoldGift}
+          </Col>
+          <Col span={12}>
+            <Statistic
+              title="Số lượng khách có tham dự"
+              value={statistics[type].attendingCount}
+              prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+              valueStyle={{ color: "#52c41a" }}
+            />
+          </Col>
+          <Col span={12}>
+            <Statistic
+              title="Số lượng khách không tham dự"
+              value={statistics[type].notAttendingCount}
+              prefix={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
+              valueStyle={{ color: "#ff4d4f" }}
+            />
+          </Col>
+          <Col span={12}>
+            <Statistic
+              title="Số lượng khách mừng cưới"
+              value={statistics[type].weddingGiftCount}
+              prefix={<GiftOutlined style={{ color: "#fa8c16" }} />}
+              valueStyle={{ color: "#fa8c16" }}
+            />
+          </Col>
+          <Col span={12}>
+            <Statistic
+              title="Số lượng khách không mừng cưới"
+              value={statistics[type].noGiftCount}
+              prefix={<CloseCircleOutlined style={{ color: "#8c8c8c" }} />}
+              valueStyle={{ color: "#8c8c8c" }}
+            />
+          </Col>
+          <Col span={12}>
+            <Statistic
+              title="Không tham dự nhưng có mừng cưới"
+              value={statistics[type].noShowButGiftCount}
+              prefix={<HeartOutlined style={{ color: "#eb2f96" }} />}
+              valueStyle={{ color: "#eb2f96" }}
+            />
+          </Col>
+        </Row>
+
+        <Divider orientation="left">
+          <Text strong style={{ color }}>
+            Quà cưới
+          </Text>
+        </Divider>
+
+        <Row gutter={[16, 8]}>
+          <Col span={24}>
+            <Card
+              size="small"
+              style={{
+                backgroundColor: "#f6ffed",
+                border: "1px solid #b7eb8f",
+              }}
+            >
+              <Statistic
+                title="Tổng số tiền mừng"
+                value={formatNumber(String(statistics[type].totalGiftMoney))}
+                prefix={<DollarOutlined style={{ color: "#52c41a" }} />}
+                suffix={"₫"}
+                valueStyle={{ color: "#52c41a", fontSize: "18px" }}
+              />
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card
+              size="small"
+              style={{
+                backgroundColor: "#fff7e6",
+                border: "1px solid #ffd591",
+              }}
+            >
+              <div style={{ textAlign: "center" }}>
+                <Text type="secondary">Tổng số vàng</Text>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    color: "#fa8c16",
+                    marginTop: "4px",
+                  }}
+                >
+                  {statistics[type].totalGiftGold}
+                </div>
               </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-    </Card>
-  );
+            </Card>
+          </Col>
+        </Row>
+      </Card>
+    );
 
   if (loading) {
     return (
@@ -347,24 +203,6 @@ const Statistics: React.FC = () => {
         <Title level={3} style={{ margin: 0, color: "#1e8267" }}>
           📊 Thống kê khách mời
         </Title>
-        <Space>
-          <Button
-            type="primary"
-            icon={<ReloadOutlined />}
-            onClick={handleRefreshStats}
-            loading={loading}
-            style={{
-              backgroundColor: "#1e8267",
-              borderColor: "#1e8267",
-              borderRadius: "6px",
-              height: "40px",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
-          >
-            Cập nhật thống kê
-          </Button>
-        </Space>
       </div>
 
       {/* Guest Statistics */}
@@ -372,7 +210,7 @@ const Statistics: React.FC = () => {
         <Col xs={24} lg={8}>
           <StatCard
             title="Nhà Trai"
-            stats={groomStats}
+            type="groom"
             color="#1890ff"
             icon={<UserOutlined />}
           />
@@ -380,7 +218,7 @@ const Statistics: React.FC = () => {
         <Col xs={24} lg={8}>
           <StatCard
             title="Nhà Gái"
-            stats={brideStats}
+            type="bride"
             color="#eb2f96"
             icon={<HeartOutlined />}
           />
@@ -388,7 +226,7 @@ const Statistics: React.FC = () => {
         <Col xs={24} lg={8}>
           <StatCard
             title="Tất Cả"
-            stats={allStats}
+            type="all"
             color="#1e8267"
             icon={<TeamOutlined />}
           />
@@ -414,7 +252,7 @@ const Statistics: React.FC = () => {
             style={{ height: "100%" }}
           >
             <Statistic
-              value={formatCurrency(expenseStats.groomExpenses)}
+              // value={formatCurrency(expenseStats.groomExpenses)}
               valueStyle={{ color: "#1890ff", fontSize: "24px" }}
               prefix={<DollarOutlined />}
             />
@@ -433,7 +271,7 @@ const Statistics: React.FC = () => {
             style={{ height: "100%" }}
           >
             <Statistic
-              value={formatCurrency(expenseStats.brideExpenses)}
+              // value={formatCurrency(expenseStats.brideExpenses)}
               valueStyle={{ color: "#eb2f96", fontSize: "24px" }}
               prefix={<HeartOutlined />}
             />
@@ -452,7 +290,7 @@ const Statistics: React.FC = () => {
             style={{ height: "100%" }}
           >
             <Statistic
-              value={formatCurrency(expenseStats.totalExpenses)}
+              // value={formatCurrency(expenseStats.totalExpenses)}
               valueStyle={{ color: "#1e8267", fontSize: "24px" }}
               prefix={<TeamOutlined />}
             />
@@ -461,7 +299,7 @@ const Statistics: React.FC = () => {
       </Row>
 
       {/* Summary Cards */}
-      <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
+      {/* <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
         <Col xs={12} sm={6}>
           <Card
             size="small"
@@ -542,7 +380,7 @@ const Statistics: React.FC = () => {
             </div>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 };

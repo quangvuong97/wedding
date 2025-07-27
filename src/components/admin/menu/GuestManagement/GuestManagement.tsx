@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, Typography, Card } from "antd";
 import { BarChartOutlined } from "@ant-design/icons";
-import {
-  EGuestOfType,
-} from "../../../../services/api";
+import { EGuestOfType } from "../../../../services/api";
 import Statistics from "./Statistics";
 import GuestTabContent from "./GuestTabContent";
 import ExpenseTabContent from "./ExpenseTabContent";
@@ -11,10 +9,10 @@ import ExpenseTabContent from "./ExpenseTabContent";
 const { Title } = Typography;
 
 const GuestManagement: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<EGuestOfType>(EGuestOfType.GROOM);
-  
+  const [activeTab, setActiveTab] = useState<string>(EGuestOfType.GROOM);
+
   const handleTabChange = (key: string) => {
-    setActiveTab(key as EGuestOfType);
+    setActiveTab(key);
   };
 
   const tabItems = [
@@ -41,7 +39,7 @@ const GuestManagement: React.FC = () => {
           Thống kê
         </span>
       ),
-      children: <Statistics />,
+      children: <Statistics activeTab={activeTab} />,
     },
   ];
 

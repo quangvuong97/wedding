@@ -138,6 +138,39 @@ export interface GetGuestResponse {
   note: string;
 }
 
+export interface GetStatisticResponse {
+  groom: {
+    invitedCount: number;
+    attendingCount: number;
+    notAttendingCount: number;
+    weddingGiftCount: number;
+    noGiftCount: number;
+    noShowButGiftCount: number;
+    totalGiftMoney: number;
+    totalGiftGold: string;
+  };
+  bride: {
+    invitedCount: number;
+    attendingCount: number;
+    notAttendingCount: number;
+    weddingGiftCount: number;
+    noGiftCount: number;
+    noShowButGiftCount: number;
+    totalGiftMoney: number;
+    totalGiftGold: string;
+  };
+  all: {
+    invitedCount: number;
+    attendingCount: number;
+    notAttendingCount: number;
+    weddingGiftCount: number;
+    noGiftCount: number;
+    noShowButGiftCount: number;
+    totalGiftMoney: number;
+    totalGiftGold: string;
+  };
+}
+
 export interface GetGuestsRequest {
   size?: number;
   page?: number;
@@ -560,6 +593,49 @@ export const guestAPI = {
   },
 };
 
+export const statisticAPI = {
+  get: async (token: string): Promise<GetStatisticResponse> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/statistics`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to fetch statistics");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetStatisticResponse> =
+        await response.json();
+      console.log(apiResponse);
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to fetch statistics");
+      }
+
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+};
+
 export const expenseAPI = {
   getExpenses: async (
     token: string,
@@ -643,7 +719,8 @@ export const expenseAPI = {
         }
       }
 
-      const apiResponse: ApiResponse<GetExpenseResponse> = await response.json();
+      const apiResponse: ApiResponse<GetExpenseResponse> =
+        await response.json();
 
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to create expense");
@@ -668,14 +745,17 @@ export const expenseAPI = {
     }
 
     try {
-      const response = await fetch(`${API_URL}/v1/users/expenses/${expenseId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(expenseData),
-      });
+      const response = await fetch(
+        `${API_URL}/v1/users/expenses/${expenseId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(expenseData),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -687,7 +767,8 @@ export const expenseAPI = {
         }
       }
 
-      const apiResponse: ApiResponse<GetExpenseResponse> = await response.json();
+      const apiResponse: ApiResponse<GetExpenseResponse> =
+        await response.json();
 
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to update expense");

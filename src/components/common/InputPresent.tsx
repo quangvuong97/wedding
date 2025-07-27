@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { Input, message, Space } from "antd";
+import { Input, message } from "antd";
 import { EditingGuest } from "../admin/menu/GuestManagement/GuestTabContent";
 import { GetGuestResponse } from "../../services/api";
 
-function formatNumber(n: string) {
+export function formatNumber(n: string) {
   return n && n !== undefined
     ? String(n)
         .replace(/,/g, "")

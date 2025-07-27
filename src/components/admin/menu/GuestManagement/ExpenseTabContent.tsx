@@ -31,6 +31,7 @@ import { ColumnsType } from "antd/es/table";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { TextAreaRef } from "antd/es/input/TextArea";
+import { formatNumber } from "../../../common/InputPresent";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -423,10 +424,44 @@ const ExpenseTabContent: React.FC = () => {
           </Col>
         </Row>
 
-        <Text style={{ marginTop: 8 }}>
-          {expenseFilter ? expenseFilter.length : 0}/{expenses.length} tổng số
-          chi phí
-        </Text>
+        <Space>
+          <Text style={{ marginTop: 8 }}>
+            {expenseFilter ? expenseFilter.length : 0}/{expenses.length} tổng số
+            chi phí
+          </Text>
+          <Text>|</Text>
+          <Text style={{ marginTop: 8 }} type="success">
+            TỔNG CHI:{" "}
+            {formatNumber(
+              String(expenseFilter.reduce((pre, cur) => pre + cur.amount, 0))
+            )}
+            ₫
+          </Text>
+          <Text>|</Text>
+          <Text style={{ marginTop: 8 }} type="danger">
+            ANH CHI:{" "}
+            {formatNumber(
+              String(
+                expenseFilter
+                  .filter((e) => e.spender === ESpender.HUSBAND)
+                  .reduce((pre, cur) => pre + cur.amount, 0)
+              )
+            )}
+            ₫
+          </Text>
+          <Text>|</Text>
+          <Text style={{ marginTop: 8 }} type="warning">
+            EM CHI:{" "}
+            {formatNumber(
+              String(
+                expenseFilter
+                  .filter((e) => e.spender === ESpender.WIFE)
+                  .reduce((pre, cur) => pre + cur.amount, 0)
+              )
+            )}
+            ₫
+          </Text>
+        </Space>
         {/* Table */}
         <Table
           rowSelection={rowSelection}
