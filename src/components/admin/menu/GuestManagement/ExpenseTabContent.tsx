@@ -223,7 +223,6 @@ const ExpenseTabContent: React.FC = () => {
             <Select
               value={editingField.value}
               style={{ width: 120 }}
-              size="large"
               onChange={(value) =>
                 setEditingField((prev) => (prev ? { ...prev, value } : null))
               }
@@ -385,6 +384,7 @@ const ExpenseTabContent: React.FC = () => {
               <Button
                 type="primary"
                 size="large"
+                className="shadow-none"
                 onClick={() => {
                   setSearchKeyword("");
                   setSelectSpender("");
@@ -400,6 +400,7 @@ const ExpenseTabContent: React.FC = () => {
                 type="primary"
                 icon={<PlusOutlined />}
                 size="large"
+                className="shadow-none"
                 onClick={() => setIsModalVisible(true)}
                 style={{
                   background: "#1e8267",
@@ -549,6 +550,7 @@ const ExpenseTabContent: React.FC = () => {
               <Button
                 type="primary"
                 htmlType="submit"
+                className="shadow-none"
                 style={{
                   background: "#1e8267",
                   borderColor: "#1e8267",

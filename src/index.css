@@ -239,3 +239,7 @@ html.qr-view-html body #root {
   background: #fff;
   gap: 20px;
 }
+
+.ant-btn {
+  box-shadow: none;
+}

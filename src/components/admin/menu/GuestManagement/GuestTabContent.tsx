@@ -429,7 +429,13 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
           okText="Xóa"
           cancelText="Hủy"
         >
-          <Button type="link" danger size="small" icon={<DeleteOutlined />} />
+          <Button
+            type="link"
+            className="shadow-none"
+            danger
+            size="small"
+            icon={<DeleteOutlined />}
+          />
         </Popconfirm>
       ),
     },
@@ -503,6 +509,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
               <Button
                 type="primary"
                 size="large"
+                className="shadow-none"
                 onClick={() => {
                   setSearchKeyword("");
                   setSelectConfirmAttended("");
@@ -520,6 +527,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                 type="primary"
                 icon={<PlusOutlined />}
                 size="large"
+                className="shadow-none"
                 onClick={() => setIsModalVisible(true)}
                 style={{
                   background: "#1e8267",
@@ -535,7 +543,12 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                   okText="Xóa"
                   cancelText="Hủy"
                 >
-                  <Button danger icon={<DeleteOutlined />} size="large">
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    size="large"
+                    className="shadow-none"
+                  >
                     Xóa đã chọn ({selectedRowKeys.length})
                   </Button>
                 </Popconfirm>
@@ -621,10 +634,16 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
           <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
             <Space>
-              <Button onClick={() => setIsModalVisible(false)}>Hủy</Button>
+              <Button
+                onClick={() => setIsModalVisible(false)}
+                className="shadow-none"
+              >
+                Hủy
+              </Button>
               <Button
                 type="primary"
                 htmlType="submit"
+                className="shadow-none"
                 style={{
                   background: "#1e8267",
                   borderColor: "#1e8267",
