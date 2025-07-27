@@ -118,6 +118,11 @@ export enum EConfirmAttended {
   NOT_CONFIRM = "not_confirm",
 }
 
+export enum ESpender {
+  HUSBAND = "husband",
+  WIFE = "wife",
+}
+
 export interface GetGuestResponse {
   id: string;
   name: string;
@@ -127,7 +132,7 @@ export interface GetGuestResponse {
   facebook: string;
   isInvite: boolean;
   invitationText: string;
-  confirmAttended: EConfirmAttended,
+  confirmAttended: EConfirmAttended;
   isAttended: boolean;
   giftAmount: string;
   note: string;
@@ -168,6 +173,35 @@ export interface UpdateGuestRequest {
 
 export interface DeleteGuestRequest {
   guestIds: string[];
+}
+
+export interface GetExpensesRequest {
+  size?: number;
+  page?: number;
+  keyword?: string;
+}
+
+export interface CreateExpenseRequest {
+  name: string;
+  amount: number;
+  spender: ESpender;
+}
+
+export interface UpdateExpenseRequest {
+  name?: string;
+  amount?: number;
+  spender?: ESpender;
+}
+
+export interface DeleteExpenseRequest {
+  expenseIds: string[];
+}
+
+export interface GetExpenseResponse {
+  id: string;
+  name: string;
+  amount: number;
+  spender: ESpender;
 }
 
 export interface Banks {
@@ -379,7 +413,8 @@ export const guestAPI = {
         }
       }
 
-      const apiResponse: ApiResponse<GetGuestResponse[]> = await response.json();
+      const apiResponse: ApiResponse<GetGuestResponse[]> =
+        await response.json();
 
       console.log("API: getGuests raw response:", apiResponse);
 
@@ -513,6 +548,192 @@ export const guestAPI = {
 
       if (apiResponse.code !== 200) {
         throw new Error("Failed to delete guests");
+      }
+
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+};
+
+export const expenseAPI = {
+  getExpenses: async (
+    token: string,
+    params: GetExpensesRequest
+  ): Promise<GetExpenseResponse[]> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.size) queryParams.append("size", params.size.toString());
+      if (params.page) queryParams.append("page", params.page.toString());
+      if (params.keyword) queryParams.append("keyword", params.keyword);
+
+      const response = await fetch(
+        `${API_URL}/v1/users/expenses?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to fetch guests");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetExpenseResponse[]> =
+        await response.json();
+
+      console.log("API: getExpenses raw response:", apiResponse);
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to fetch expenses");
+      }
+
+      console.log("API: getExpenses returning data:", apiResponse.data);
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+
+  createExpense: async (
+    token: string,
+    expenseData: CreateExpenseRequest
+  ): Promise<GetExpenseResponse> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/expenses`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(expenseData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to create expense");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetExpenseResponse> = await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to create expense");
+      }
+
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+
+  updateExpense: async (
+    token: string,
+    expenseId: string,
+    expenseData: UpdateExpenseRequest
+  ): Promise<GetExpenseResponse> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/expenses/${expenseId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(expenseData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to update expense");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetExpenseResponse> = await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to update expense");
+      }
+
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+
+  deleteExpenses: async (
+    token: string,
+    expenseIds: string[]
+  ): Promise<boolean> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/expenses/delete-bulk`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expenseIds }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to delete expenses");
+        }
+      }
+
+      const apiResponse: ApiResponse<boolean> = await response.json();
+
+      if (apiResponse.code !== 200) {
+        throw new Error("Failed to delete expenses");
       }
 
       return apiResponse.data;

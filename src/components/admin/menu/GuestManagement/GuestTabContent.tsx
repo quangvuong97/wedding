@@ -502,6 +502,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
               </Space>
               <Button
                 type="primary"
+                size="large"
                 onClick={() => {
                   setSearchKeyword("");
                   setSelectConfirmAttended("");

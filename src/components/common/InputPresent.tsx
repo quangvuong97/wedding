@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Input, message, Space } from "antd";
 import { EditingGuest } from "../admin/menu/GuestManagement/GuestTabContent";
 import { GetGuestResponse } from "../../services/api";
+
+function formatNumber(n: string) {
+  return n && n !== undefined
+    ? String(n)
+        .replace(/,/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    : "";
+}
 
 interface InputPresentProps {
   editingGuest: EditingGuest | null;
@@ -18,12 +26,13 @@ function normalizeInput(str: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ")
+    .replace(/,/g, "")
     .trim();
 }
 
 function checkValid(str: string) {
   const txt = normalizeInput(str);
-  if (txt === "") return 0;
+  if (txt === "") return "";
   if (/^\d{6,}$/.test(txt)) {
     return parseFloat(txt);
   }
@@ -60,19 +69,55 @@ const InputPresent: React.FC<InputPresentProps> = ({
   const isEditing =
     editingGuest?.id === record.id && editingGuest?.field === field;
 
-  const handleSave = () => {
-    if (!editingGuest) {
-      console.log("hmm");
-      return;
+  const [inputText, setInputText] = useState("");
+  const inputRef = useRef<any>(null);
+  const caretPosRef = useRef<number>(0);
+
+  // Gán giá trị gốc khi bắt đầu edit
+  useEffect(() => {
+    if (isEditing) {
+      const input = formatNumber(
+        record[field as keyof GetGuestResponse]?.toString() || ""
+      );
+      caretPosRef.current = input.length;
+      setInputText(input);
     }
-    if (editingGuest && !editingGuest.value)
-      setEditingGuest((pre) => ({ ...pre!, value: "0" }));
-    const result = checkValid(editingGuest.value);
+  }, [isEditing, field, record]);
+
+  // Cập nhật con trỏ sau khi value mới ghi ra input
+  useLayoutEffect(() => {
+    if (isEditing && inputRef.current) {
+      console.log("hmmmm", caretPosRef.current);
+      inputRef.current.setSelectionRange(
+        caretPosRef.current,
+        caretPosRef.current
+      );
+    }
+  }, [inputText, isEditing]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const caretPos = e.target.selectionStart || 0;
+    const oldLength = e.target.value.length;
+
+    const newInput = formatNumber(e.target.value);
+
+    const newLength = newInput.length;
+
+    if (inputRef.current) {
+      caretPosRef.current = caretPos + (newLength - oldLength);
+    }
+
+    setInputText(newInput);
+  };
+
+  const handleSave = () => {
+    if (!editingGuest) return;
+
+    const result = checkValid(inputText);
     if (result === false) {
       message.error("Không đúng định dạng tiền/vàng");
       return;
     }
-    setEditingGuest((prev) => (prev ? { ...prev, value: result } : null));
     handleSaveEdit({ ...editingGuest, value: result });
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -83,20 +128,15 @@ const InputPresent: React.FC<InputPresentProps> = ({
 
   if (isEditing) {
     return (
-      <Space size={0}>
-        <Input
-          autoFocus
-          size="small"
-          value={editingGuest.value}
-          onChange={(e) =>
-            setEditingGuest((prev) =>
-              prev ? { ...prev, value: e.target.value } : null
-            )
-          }
-          onPressEnter={handleSave}
-          onKeyDown={handleKeyDown}
-        />
-      </Space>
+      <Input
+        ref={inputRef}
+        autoFocus
+        size="small"
+        value={inputText}
+        onChange={handleChange}
+        onPressEnter={handleSave}
+        onKeyDown={handleKeyDown}
+      />
     );
   }
 
@@ -116,11 +156,14 @@ const InputPresent: React.FC<InputPresentProps> = ({
         minHeight: "22px",
         wordWrap: "break-word",
         whiteSpace: "pre-wrap",
-        // ...style,
       }}
       className="editable-cell"
     >
-      {text}
+      {!text
+        ? "-"
+        : /^[0-9]+$/.test(String(text).trim())
+        ? `${String(text).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₫`
+        : text}
     </div>
   );
 };

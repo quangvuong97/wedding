@@ -6,6 +6,7 @@ import {
 } from "../../../../services/api";
 import Statistics from "./Statistics";
 import GuestTabContent from "./GuestTabContent";
+import ExpenseTabContent from "./ExpenseTabContent";
 
 const { Title } = Typography;
 
@@ -26,6 +27,11 @@ const GuestManagement: React.FC = () => {
       key: EGuestOfType.BRIDE,
       label: "Nhà gái",
       children: <GuestTabContent guestOf={EGuestOfType.BRIDE} />,
+    },
+    {
+      key: "expense",
+      label: "Chi phí",
+      children: <ExpenseTabContent />,
     },
     {
       key: "statistics",
