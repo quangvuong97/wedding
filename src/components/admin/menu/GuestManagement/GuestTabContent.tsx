@@ -323,6 +323,18 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         }),
     },
     {
+      title: "Link",
+      dataIndex: "slug",
+      key: "slug",
+      width: 90,
+      align: "center" as const,
+      render: (text: string, _: GetGuestResponse) => {
+        const url = new URL(window.location.origin);
+        url.searchParams.set("guest", text);
+        return <Text copyable={{ text: url.href }}>{text}</Text>;
+      },
+    },
+    {
       title: "SĐT",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
