@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Tabs, Typography, Card } from "antd";
-import { BarChartOutlined } from "@ant-design/icons";
+import { BarChartOutlined, LineChartOutlined } from "@ant-design/icons";
 import { EGuestOfType } from "../../../../services/api";
 import Statistics from "./Statistics";
 import GuestTabContent from "./GuestTabContent";
 import ExpenseTabContent from "./ExpenseTabContent";
+import Traffics from "./Traffics";
 
 const { Title } = Typography;
 
@@ -40,6 +41,16 @@ const GuestManagement: React.FC = () => {
         </span>
       ),
       children: <Statistics activeTab={activeTab} />,
+    },
+    {
+      key: "traffics",
+      label: (
+        <span>
+          <LineChartOutlined />
+          Lượt truy cập
+        </span>
+      ),
+      children: <Traffics activeTab={activeTab} />,
     },
   ];
 

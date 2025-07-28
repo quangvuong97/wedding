@@ -138,6 +138,26 @@ export interface GetGuestResponse {
   note: string;
 }
 
+export interface GetTrafficResponse {
+  id: string;
+
+  name: string;
+
+  guestOf: string;
+
+  sessionDuration: number;
+
+  ipAddress: string;
+
+  deviceType: string;
+
+  source: string;
+
+  isOnline: boolean;
+
+  createdAt: Date;
+}
+
 export interface GetStatisticResponse {
   groom: {
     invitedCount: number;
@@ -179,6 +199,12 @@ export interface GetGuestsRequest {
   page?: number;
   keyword?: string;
   guestOf: EGuestOfType;
+}
+
+export interface GetTrafficsRequest {
+  size?: number;
+  page?: number;
+  // keyword?: string;
 }
 
 export interface CreateGuestRequest {
@@ -587,6 +613,58 @@ export const guestAPI = {
       }
 
       return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+};
+
+export const trafficAPI = {
+  getTraffics: async (
+    token: string,
+    params: GetTrafficsRequest
+  ): Promise<ApiResponse<GetTrafficResponse[]>> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.size) queryParams.append("size", params.size.toString());
+      if (params.page) queryParams.append("page", params.page.toString());
+
+      const response = await fetch(
+        `${API_URL}/v1/users/traffics?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to fetch guests");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetTrafficResponse[]> =
+        await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to fetch guests");
+      }
+
+      return apiResponse;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error("Network error");

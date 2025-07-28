@@ -311,22 +311,6 @@ const ExpenseTabContent: React.FC = () => {
 
   const columns: ColumnsType<GetExpenseResponse> = [
     {
-      title: "Thao tác",
-      key: "action",
-      width: 50,
-      align: "center" as const,
-      render: (_: any, record: GetExpenseResponse) => (
-        <Popconfirm
-          title="Bạn có chắc muốn xóa chi phí này?"
-          onConfirm={() => handleDeleteExpenses([record.id])}
-          okText="Xóa"
-          cancelText="Hủy"
-        >
-          <Button type="link" danger size="small" icon={<DeleteOutlined />} />
-        </Popconfirm>
-      ),
-    },
-    {
       title: "Tên",
       dataIndex: "name",
       key: "name",
@@ -350,6 +334,22 @@ const ExpenseTabContent: React.FC = () => {
       width: 150,
       render: (text: string, record: GetExpenseResponse) =>
         renderEditableCell(text, record, "spender"),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      width: 50,
+      align: "center" as const,
+      render: (_: any, record: GetExpenseResponse) => (
+        <Popconfirm
+          title="Bạn có chắc muốn xóa chi phí này?"
+          onConfirm={() => handleDeleteExpenses([record.id])}
+          okText="Xóa"
+          cancelText="Hủy"
+        >
+          <Button type="link" danger size="small" icon={<DeleteOutlined />} />
+        </Popconfirm>
+      ),
     },
   ];
 
