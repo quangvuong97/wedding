@@ -56,6 +56,13 @@ const ExpenseTabContent: React.FC = () => {
   const [editingField, setEditingField] = useState<EditingField | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
+  const divRefs = useRef<{
+    [key: string]: HTMLDivElement | null;
+  }>({});
+  const setDivRef = (id: string) => (el: HTMLDivElement | null) => {
+    divRefs.current[id] = el;
+  };
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -103,6 +110,23 @@ const ExpenseTabContent: React.FC = () => {
   useEffect(() => {
     fetchExpenses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const clickedInside = Object.values(divRefs.current).some((el) => {
+        if (!el) return false;
+        if (el instanceof HTMLDivElement) {
+          return el.contains(event.target as Node);
+        }
+        return false;
+      });
+      if (!clickedInside) {
+        setEditingField(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSearch = (value: string) => {
@@ -271,6 +295,7 @@ const ExpenseTabContent: React.FC = () => {
     return (
       <div
         onClick={() => handleEdit(record, field)}
+        ref={setDivRef(`${record.id}_${field}`)}
         style={{
           cursor: "pointer",
           padding: "4px",

@@ -478,13 +478,10 @@ export const guestAPI = {
       const apiResponse: ApiResponse<GetGuestResponse[]> =
         await response.json();
 
-      console.log("API: getGuests raw response:", apiResponse);
-
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to fetch guests");
       }
 
-      console.log("API: getGuests returning data:", apiResponse.data);
       return apiResponse.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes("fetch")) {
@@ -701,7 +698,6 @@ export const statisticAPI = {
 
       const apiResponse: ApiResponse<GetStatisticResponse> =
         await response.json();
-      console.log(apiResponse);
 
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to fetch statistics");
@@ -756,13 +752,10 @@ export const expenseAPI = {
       const apiResponse: ApiResponse<GetExpenseResponse[]> =
         await response.json();
 
-      console.log("API: getExpenses raw response:", apiResponse);
-
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to fetch expenses");
       }
 
-      console.log("API: getExpenses returning data:", apiResponse.data);
       return apiResponse.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes("fetch")) {

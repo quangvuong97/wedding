@@ -20,12 +20,12 @@ const GuestManagement: React.FC = () => {
     {
       key: EGuestOfType.GROOM,
       label: "Nhà trai",
-      children: <GuestTabContent guestOf={EGuestOfType.GROOM} />,
+      children: <GuestTabContent activeTab={activeTab} guestOf={EGuestOfType.GROOM} />,
     },
     {
       key: EGuestOfType.BRIDE,
       label: "Nhà gái",
-      children: <GuestTabContent guestOf={EGuestOfType.BRIDE} />,
+      children: <GuestTabContent activeTab={activeTab} guestOf={EGuestOfType.BRIDE} />,
     },
     {
       key: "expense",

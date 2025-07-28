@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  CheckboxRef,
   Col,
   Form,
   Input,
@@ -47,9 +48,13 @@ export interface EditingGuest {
 
 interface GuestTabContentProps {
   guestOf: EGuestOfType;
+  activeTab: string;
 }
 
-const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
+const GuestTabContent: React.FC<GuestTabContentProps> = ({
+  activeTab,
+  guestOf,
+}) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(312);
@@ -63,13 +68,21 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
+  const divRefs = useRef<{
+    [key: string]: HTMLDivElement | CheckboxRef | null;
+  }>({});
+  const setDivRef =
+    (id: string) => (el: HTMLDivElement | CheckboxRef | null) => {
+      divRefs.current[id] = el;
+    };
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   const guestFilter = guests.filter((guest) => {
     const matchText =
-      guest.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      guest.phoneNumber.includes(searchKeyword);
+      guest.name.toLowerCase().includes(searchKeyword.trim().toLowerCase()) ||
+      guest.phoneNumber.includes(searchKeyword.trim());
 
     const matchConfirmAttended =
       selectConfirmAttended === "" ||
@@ -77,7 +90,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         guest.confirmAttended === "attendance") ||
       (selectConfirmAttended === EConfirmAttended.NOT_ATTENDANCE &&
         guest.confirmAttended === "not_attendance") ||
-      (selectConfirmAttended === "_" && !guest.confirmAttended);
+      (selectConfirmAttended === "_" && guest.confirmAttended) ===
+        EConfirmAttended.NOT_CONFIRM;
 
     const matchInvite =
       selectInvite === null ||
@@ -91,6 +105,27 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
     return matchText && matchConfirmAttended && matchInvite && matchAttended;
   });
+
+  // Lắng nghe click ngoài tất cả các div được lưu vào divRefs
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const clickedInside = Object.values(divRefs.current).some((el) => {
+        if (!el) return false;
+        if (el instanceof HTMLDivElement) {
+          return el.contains(event.target as Node);
+        }
+        if ("input" in el && el.input instanceof HTMLElement) {
+          return el.input.contains(event.target as Node);
+        }
+        return false;
+      });
+      if (!clickedInside) {
+        setEditingGuest(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const updateGuest = (response: GetGuestResponse) => {
     // Update the guest in the state
@@ -121,9 +156,9 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
   };
 
   useEffect(() => {
-    fetchGuests();
+    if (activeTab === guestOf) fetchGuests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeTab]);
 
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
@@ -270,13 +305,18 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
 
     if (type === "checkbox") {
       return (
-        <Checkbox checked={text} onClick={() => handleEdit(record, field)} />
+        <Checkbox
+          ref={setDivRef(`${record.id}_${field}`)}
+          checked={text}
+          onClick={() => handleEdit(record, field)}
+        />
       );
     }
 
     return (
       <div
         onClick={() => handleEdit(record, field)}
+        ref={setDivRef(`${record.id}_${field}`)}
         style={{
           cursor: "pointer",
           padding: "4px",
@@ -383,7 +423,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         renderEditableCell(text, record, "isInvite", "checkbox"),
     },
     {
-      title: "Xác nhận",
+      title: "Xác nhận tham dự",
       dataIndex: "confirmAttended",
       key: "confirmAttended",
       width: 65,
@@ -400,7 +440,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
       },
     },
     {
-      title: "Có đến",
+      title: "Thực tế tham dự",
       dataIndex: "isAttended",
       key: "isAttended",
       width: 65,
@@ -463,19 +503,18 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
           <Col flex="auto">
-            <Space>
+            <Space size={16}>
               <Input
                 value={searchKeyword}
-                placeholder="Tìm kiếm khách mời..."
+                placeholder="Tìm kiếm tên, sđt..."
                 allowClear
                 onChange={(event) => handleSearch(event.target.value)}
                 prefix={<SearchOutlined />}
                 style={{ maxWidth: 400 }}
               />
-              <Space size={0}>
-                <Button type="text">Đã mời</Button>
+              <Space size={5}>
+                <Text>Đã mời:</Text>
                 <Select
-                  defaultValue={null}
                   style={{ width: 120 }}
                   onChange={setSelectInvite}
                   options={[
@@ -483,14 +522,13 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                     { value: true, label: "Đã mời" },
                     { value: false, label: "Chưa mời" },
                   ]}
+                  value={selectInvite}
                 />
               </Space>
-              <Space size={0}>
-                <Button type="text" variant="outlined">
-                  Xác nhận
-                </Button>
+              <Space size={5}>
+                <Text>Xác nhận:</Text>
                 <Select
-                  defaultValue=""
+                  value={selectConfirmAttended}
                   style={{ width: 120 }}
                   onChange={setSelectConfirmAttended}
                   options={[
@@ -501,10 +539,10 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({ guestOf }) => {
                   ]}
                 />
               </Space>
-              <Space size={0}>
-                <Button type="text">Có đến</Button>
+              <Space size={5}>
+                <Text>Có đến:</Text>
                 <Select
-                  defaultValue={null}
+                  value={selectAttended}
                   style={{ width: 120 }}
                   onChange={setSelectAttended}
                   options={[
