@@ -35,6 +35,7 @@ import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import Invite from "./Invite";
 import { CustomButton } from "../../common";
+import Heartbeat from "./Heartbeat";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -411,6 +412,8 @@ const HomeContent = ({
         loadedCount={loadedImages.size}
         totalCount={totalImages}
       />
+
+      {loading || !isAllLoaded ? null : <Heartbeat />}
 
       <SVGSymbols />
       <FloatButton

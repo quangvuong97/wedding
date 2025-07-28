@@ -73,6 +73,14 @@ export interface ConfirmAttendanceRequest {
   name?: string;
 }
 
+export interface HeartbeatRequest {
+  guestId?: string;
+
+  sessionId?: string;
+
+  source?: "zalo" | "facebook" | "others";
+}
+
 export const WeddingPageApi = {
   useGetCarousel: () =>
     useFetch<string[]>(
@@ -126,22 +134,18 @@ export const WeddingPageApi = {
 
     return { confirm, loading, response, error };
   },
-  // V�� dụ POST
-  // useCreateGuest: () => {
-  //   const config = {
-  //     url: "v1/guests",
-  //     method: "POST",
-  //     buildOptions: (data: any) => ({
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(data),
-  //     }),
-  //   };
-  //   return useFetch(config.url, config.buildOptions({}));
-  // },
-  // // Ví dụ endpoint động
-  // getImageById: (id: string) => ({
-  //   url: `v1/images/${id}`,
-  //   method: "GET",
-  // }),
+  heartbeat: async (request: HeartbeatRequest) => {
+    const username = getSubdomain();
+    const url = new URL(`v1/public/${username}/heartbeat`, API_URL).toString();
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...request }),
+    });
+    const data = await response.json();
+    if (data.error || data.statusCode < 200 || data.statusCode > 200) {
+      return null;
+    }
+    return data.data;
+  },
 };
