@@ -176,11 +176,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-  height: auto;
+  height: 100vh;
 }
 
 #root {
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  position: fixed;
+  height: 100vh;
+  width: 100%;
 }
 
 .ant-image-preview-footer {

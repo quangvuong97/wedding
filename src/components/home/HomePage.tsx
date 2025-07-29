@@ -403,6 +403,26 @@ const HomeContent = ({
     [homeData?.guestOf]
   );
 
+  const [scrollbarTakesSpace, setScrollbarTakesSpace] = useState(false);
+  const spaceRef = useRef(null);
+
+  useEffect(() => {
+    const checkScrollbar = () => {
+      console.log(window.innerWidth);
+      // Remove debug log and fix possible null reference for spaceRef.current
+      const ref = spaceRef.current as HTMLElement | null;
+      if (ref) {
+        setScrollbarTakesSpace(window.innerWidth > ref.offsetWidth);
+      }
+    };
+
+    checkScrollbar();
+
+    // Thêm event resize để cập nhật khi window thay đổi size
+    window.addEventListener("resize", checkScrollbar);
+    return () => window.removeEventListener("resize", checkScrollbar);
+  }, []);
+
   return (
     <>
       {/* Loading overlay for images */}
@@ -438,7 +458,7 @@ const HomeContent = ({
       <FloatButton.Group
         open={openFloatGroup}
         trigger="click"
-        style={{ right: 16, bottom: 24 }}
+        style={{ right: scrollbarTakesSpace ? 27 : 16, bottom: 24 }}
         icon={<i className="fi fi-rr-menu-burger"></i>}
         type="primary"
         onOpenChange={(isOpen) => {
@@ -594,6 +614,7 @@ const HomeContent = ({
         </div>
       </Modal>
       <Space
+        ref={spaceRef}
         direction="vertical"
         size={0}
         style={{
@@ -624,7 +645,7 @@ const HomeContent = ({
         <Invitation handleConfirmAttendance={handleConfirmAttendance} />
         <Present targetRef={targetRef} />
         <Gallery />
-        <WeddingFooter brideGroom="Quang Vương & Phương Ninh" />
+        <WeddingFooter />
       </Space>
     </>
   );

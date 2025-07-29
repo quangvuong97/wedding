@@ -6,11 +6,7 @@ import TrackedImage from "../common/TrackedImage";
 
 const { useBreakpoint } = Grid;
 
-interface FooterProps {
-  brideGroom: string;
-}
-
-const WeddingFooter: React.FC<FooterProps> = ({ brideGroom }) => {
+const WeddingFooter: React.FC = () => {
   const { response: carouselResponse } = WeddingPageApi.useGetFooter();
   const image = useMemo(() => carouselResponse?.data, [carouselResponse?.data]);
   const homeData = useHomeData();
