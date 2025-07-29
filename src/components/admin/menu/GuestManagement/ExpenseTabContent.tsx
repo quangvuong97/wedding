@@ -379,6 +379,9 @@ const ExpenseTabContent: React.FC = () => {
         <Popconfirm
           title="Bạn có chắc muốn xóa chi phí này?"
           onConfirm={() => handleDeleteExpenses([record.id])}
+          getPopupContainer={(triggerNode) =>
+            triggerNode.closest("#root") as HTMLElement
+          }
           okText="Xóa"
           cancelText="Hủy"
         >
