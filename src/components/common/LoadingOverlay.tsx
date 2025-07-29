@@ -237,7 +237,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
                     "100%": "#f8fafc",
                   }}
                   trailColor="rgba(255, 255, 255, 0.15)"
-                  strokeWidth={10}
+                  size={"default"}
                   showInfo={false}
                   className="custom-progress"
                 />

@@ -62,6 +62,7 @@ const ExpenseTabContent: React.FC = () => {
   const setDivRef = (id: string) => (el: HTMLDivElement | null) => {
     divRefs.current[id] = el;
   };
+  const [selectDropdownOpen, setSelectDropdownOpen] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -116,18 +117,15 @@ const ExpenseTabContent: React.FC = () => {
     function handleClickOutside(event: MouseEvent) {
       const clickedInside = Object.values(divRefs.current).some((el) => {
         if (!el) return false;
-        if (el instanceof HTMLDivElement) {
-          return el.contains(event.target as Node);
-        }
-        return false;
+        return el.contains(event.target as Node);
       });
-      if (!clickedInside) {
+      if (!clickedInside && !selectDropdownOpen) {
         setEditingField(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [selectDropdownOpen]);
 
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
@@ -226,69 +224,81 @@ const ExpenseTabContent: React.FC = () => {
     if (isEditing) {
       if (field === "amount") {
         return (
-          <InputNumber
-            autoFocus
-            style={{ width: "100%" }}
-            formatter={(value) =>
-              `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            }
-            parser={(value) =>
-              value?.replace(/₫\s?|(,*)/g, "") as unknown as number
-            }
-            value={editingField.value}
-            onChange={(value) =>
-              setEditingField((prev) => (prev ? { ...prev, value } : null))
-            }
-            onPressEnter={() => handleSaveEdit(editingField)}
-            onKeyDown={handleKeyDown}
-          />
+          <div ref={setDivRef(`${record.id}_${field}_edit`)}>
+            <InputNumber
+              autoFocus
+              style={{ width: "100%" }}
+              formatter={(value) =>
+                `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) =>
+                value?.replace(/₫\s?|(,*)/g, "") as unknown as number
+              }
+              value={editingField.value}
+              onChange={(value) =>
+                setEditingField((prev) => (prev ? { ...prev, value } : null))
+              }
+              onPressEnter={() => handleSaveEdit(editingField)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
         );
       }
 
       if (field === "spender") {
         return (
           <Space>
-            <Select
-              value={editingField.value}
-              style={{ width: 120 }}
-              onChange={(value) =>
-                setEditingField((prev) => (prev ? { ...prev, value } : null))
-              }
-              options={[
-                { value: "husband", label: "Chồng" },
-                { value: "wife", label: "Vợ" },
-              ]}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<SaveOutlined />}
-              onClick={() => handleSaveEdit(editingField)}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<CloseOutlined />}
-              onClick={() => setEditingField(null)}
-            />
+            <div ref={setDivRef(`${record.id}_${field}_edit_select`)}>
+              <Select
+                open={selectDropdownOpen}
+                onOpenChange={setSelectDropdownOpen}
+                value={editingField.value}
+                style={{ width: 120 }}
+                onChange={(value) =>
+                  setEditingField((prev) => (prev ? { ...prev, value } : null))
+                }
+                options={[
+                  { value: "husband", label: "Chồng" },
+                  { value: "wife", label: "Vợ" },
+                ]}
+              />
+            </div>
+            <div ref={setDivRef(`${record.id}_${field}_edit_save`)}>
+              <Button
+                type="link"
+                size="small"
+                icon={<SaveOutlined />}
+                onClick={() => handleSaveEdit(editingField)}
+              />
+            </div>
+            <div ref={setDivRef(`${record.id}_${field}_edit_cancel`)}>
+              <Button
+                type="link"
+                size="small"
+                icon={<CloseOutlined />}
+                onClick={() => setEditingField(null)}
+              />
+            </div>
           </Space>
         );
       }
 
       return (
-        <TextArea
-          ref={textAreaRef}
-          size="small"
-          value={editingField.value}
-          onChange={(e) =>
-            setEditingField((prev) =>
-              prev ? { ...prev, value: e.target.value } : null
-            )
-          }
-          onPressEnter={() => handleSaveEdit(editingField)}
-          onKeyDown={handleKeyDown}
-          autoSize
-        />
+        <div ref={setDivRef(`${record.id}_${field}_edit`)}>
+          <TextArea
+            ref={textAreaRef}
+            size="small"
+            value={editingField.value}
+            onChange={(e) =>
+              setEditingField((prev) =>
+                prev ? { ...prev, value: e.target.value } : null
+              )
+            }
+            onPressEnter={() => handleSaveEdit(editingField)}
+            onKeyDown={handleKeyDown}
+            autoSize
+          />
+        </div>
       );
     }
 

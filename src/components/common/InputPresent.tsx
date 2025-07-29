@@ -87,7 +87,6 @@ const InputPresent: React.FC<InputPresentProps> = ({
   // Cập nhật con trỏ sau khi value mới ghi ra input
   useLayoutEffect(() => {
     if (isEditing && inputRef.current) {
-      console.log("hmmmm", caretPosRef.current);
       inputRef.current.setSelectionRange(
         caretPosRef.current,
         caretPosRef.current

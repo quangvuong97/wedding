@@ -62,8 +62,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
   const [guests, setGuests] = useState<GetGuestResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectInvite, setSelectInvite] = useState<boolean | null>(null);
-  const [selectAttended, setSelectAttended] = useState<boolean | null>(null);
+  const [selectInvite, setSelectInvite] = useState<boolean | "-">("-");
+  const [selectAttended, setSelectAttended] = useState<boolean | "">("");
   const [selectConfirmAttended, setSelectConfirmAttended] = useState("");
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
@@ -94,12 +94,12 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
         EConfirmAttended.NOT_CONFIRM;
 
     const matchInvite =
-      selectInvite === null ||
+      selectInvite === "-" ||
       (selectInvite === true && guest.isInvite) ||
       (selectInvite === false && !guest.isInvite);
 
     const matchAttended =
-      selectAttended === null ||
+      selectAttended === "" ||
       (selectAttended === true && guest.isAttended) ||
       (selectAttended === false && !guest.isAttended);
 
@@ -260,20 +260,24 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
       if (type === "checkbox") {
         return (
           <Space size={0}>
-            <Checkbox
-              checked={editingGuest.value}
-              onChange={(e) =>
-                setEditingGuest((prev) =>
-                  prev ? { ...prev, value: e.target.checked } : null
-                )
-              }
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<SaveOutlined />}
-              onClick={() => handleSaveEdit(editingGuest)}
-            />
+            <div ref={setDivRef(`${record.id}_${field}_checkbox`)}>
+              <Checkbox
+                checked={editingGuest.value}
+                onChange={(e) =>
+                  setEditingGuest((prev) =>
+                    prev ? { ...prev, value: e.target.checked } : null
+                  )
+                }
+              />
+            </div>
+            <div ref={setDivRef(`${record.id}_${field}_edit`)}>
+              <Button
+                type="link"
+                size="small"
+                icon={<SaveOutlined />}
+                onClick={() => handleSaveEdit(editingGuest)}
+              />
+            </div>
             <Button
               type="link"
               size="small"
@@ -285,7 +289,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
       }
 
       return (
-        <Space size={0}>
+        <div ref={setDivRef(`${record.id}_${field}_TextArea`)}>
           <TextArea
             ref={textAreaRef}
             size="small"
@@ -299,7 +303,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
             onKeyDown={handleKeyDown}
             autoSize
           />
-        </Space>
+        </div>
       );
     }
 
@@ -455,14 +459,16 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
       key: "giftAmount",
       width: 180,
       render: (text: string, record: GetGuestResponse) => (
-        <InputPresent
-          text={text}
-          editingGuest={editingGuest}
-          setEditingGuest={setEditingGuest}
-          record={record}
-          field="giftAmount"
-          handleSaveEdit={handleSaveEdit}
-        />
+        <div ref={setDivRef(`${record.id}_giftAmount_checkbox`)}>
+          <InputPresent
+            text={text}
+            editingGuest={editingGuest}
+            setEditingGuest={setEditingGuest}
+            record={record}
+            field="giftAmount"
+            handleSaveEdit={handleSaveEdit}
+          />
+        </div>
       ),
     },
     {
@@ -518,7 +524,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
                   style={{ width: 120 }}
                   onChange={setSelectInvite}
                   options={[
-                    { value: null, label: "Tất cả" },
+                    { value: "-", label: "Tất cả" },
                     { value: true, label: "Đã mời" },
                     { value: false, label: "Chưa mời" },
                   ]}
@@ -546,7 +552,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
                   style={{ width: 120 }}
                   onChange={setSelectAttended}
                   options={[
-                    { value: null, label: "Tất cả" },
+                    { value: "", label: "Tất cả" },
                     { value: true, label: "Có đến" },
                     { value: false, label: "Không đến" },
                   ]}
@@ -558,8 +564,8 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
                 onClick={() => {
                   setSearchKeyword("");
                   setSelectConfirmAttended("");
-                  setSelectInvite(null);
-                  setSelectAttended(null);
+                  setSelectInvite("-");
+                  setSelectAttended("");
                 }}
               >
                 Xóa lọc
