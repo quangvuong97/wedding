@@ -408,8 +408,6 @@ const HomeContent = ({
 
   useEffect(() => {
     const checkScrollbar = () => {
-      console.log(window.innerWidth);
-      // Remove debug log and fix possible null reference for spaceRef.current
       const ref = spaceRef.current as HTMLElement | null;
       if (ref) {
         setScrollbarTakesSpace(window.innerWidth > ref.offsetWidth);
