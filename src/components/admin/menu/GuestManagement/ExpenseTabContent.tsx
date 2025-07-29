@@ -394,17 +394,17 @@ const ExpenseTabContent: React.FC = () => {
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
           <Col flex="auto">
-            <Space>
+            <Space size={16}>
               <Input
                 value={searchKeyword}
-                placeholder="Tìm kiếm chi phí..."
+                placeholder="Tìm kiếm tên chi phí"
                 allowClear
                 onChange={(event) => handleSearch(event.target.value)}
                 prefix={<SearchOutlined />}
                 style={{ maxWidth: 400 }}
               />
-              <Space size={0}>
-                <Button type="text">Ai chi</Button>
+              <Space size={5}>
+                <Text>Ai chi:</Text>
                 <Select
                   style={{ width: 120 }}
                   value={selectSpender}

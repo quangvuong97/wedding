@@ -512,7 +512,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
             <Space size={16}>
               <Input
                 value={searchKeyword}
-                placeholder="Tìm kiếm tên, sđt..."
+                placeholder="Tìm kiếm tên, sđt"
                 allowClear
                 onChange={(event) => handleSearch(event.target.value)}
                 prefix={<SearchOutlined />}

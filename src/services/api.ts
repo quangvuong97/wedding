@@ -1,20 +1,8 @@
-import { API_URL } from "./common";
+import { API_URL, ApiResponse } from "./common";
 
 export interface LoginRequest {
   username: string;
   password: string;
-}
-
-// API Response wrapper
-interface ApiResponse<T> {
-  code: number;
-  statusCode: number;
-  message: string;
-  data: T;
-  total?: number;
-  page?: number;
-  size?: number;
-  totalPages?: number;
 }
 
 export interface LoginResponse {

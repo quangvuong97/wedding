@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Typography, Button, Card, message, Spin } from "antd";
+import { Layout, Menu, Button, message, Spin } from "antd";
 import {
   SettingOutlined,
   FileTextOutlined,
   TeamOutlined,
   LogoutOutlined,
-  HeartOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../contexts/AuthContext";
 import { authAPI, UserProfile } from "../../services/api";
@@ -15,7 +14,6 @@ import SettingsManagement from "./menu/SettingsManagement/SettingsManagement";
 import { AdminDataContext } from "../../contexts/AdminDataContext";
 
 const { Sider, Content } = Layout;
-const { Title, Text } = Typography;
 
 // Menu items
 const menuItems = [
