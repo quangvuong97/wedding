@@ -181,6 +181,13 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
 
   const handleSaveEdit = async (editingGuest: EditingGuest) => {
     if (!editingGuest || !accessToken) return;
+    if (
+      editingGuest.field === "phoneNumber" &&
+      !/^((\+84|84|0)(3|5|7|8|9))[0-9]{8}$/.test(editingGuest.value.trim())
+    ) {
+      message.error("Sai định dạng số điện thoại");
+      return;
+    }
     try {
       const updateData: UpdateGuestRequest = {
         [editingGuest.field]: editingGuest.value,
@@ -299,8 +306,14 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
                 prev ? { ...prev, value: e.target.value } : null
               )
             }
-            onPressEnter={() => handleSaveEdit(editingGuest)}
-            onKeyDown={handleKeyDown}
+            // onPressEnter={() => handleSaveEdit(editingGuest)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSaveEdit(editingGuest);
+              }
+              handleKeyDown && handleKeyDown(e);
+            }}
             autoSize
           />
         </div>
