@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Input,
   Button,
-  message,
+  message as messageAntd,
   Typography,
   Space,
   Popconfirm,
@@ -42,6 +42,7 @@ const StoryConfigTab: React.FC<StoryConfigTabProps> = ({
   const { accessToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<(StoryRequest & { key: string })[]>([]);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   useEffect(() => {
     if (profile?.config?.story) {
@@ -99,6 +100,7 @@ const StoryConfigTab: React.FC<StoryConfigTabProps> = ({
 
   return (
     <div>
+      {contextHolder}
       <Space
         style={{
           marginBottom: 4,

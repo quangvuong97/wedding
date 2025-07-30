@@ -7,7 +7,7 @@ import {
   Divider,
   Typography,
   Spin,
-  message,
+  message as messageAntd,
 } from "antd";
 import {
   UserOutlined,
@@ -32,6 +32,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const [loading, setLoading] = useState(true);
   const [statistics, setStatistics] = useState<GetStatisticResponse>();
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const fetchStatistic = async (showSuccessMessage = false) => {
     if (!accessToken) return;
@@ -192,6 +193,7 @@ const Statistics: React.FC<StatisticProps> = ({ activeTab }) => {
 
   return (
     <div>
+      {contextHolder}
       <div
         style={{
           display: "flex",

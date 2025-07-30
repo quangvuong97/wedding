@@ -1,5 +1,5 @@
 import {
-  message,
+  message as messageAntd,
   Space,
   Table,
   Typography,
@@ -32,6 +32,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(290);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const [anonymousConfirm, setAnonymousConfirm] = useState<
     ApiResponse<GetAnonymousConfirmResponse[]> | undefined
@@ -195,69 +196,72 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
   ];
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }} size={16}>
-      <Row gutter={16} align="middle">
-        <Col flex="auto">
-          <Space size={16}>
-            <Space size={5}>
-              <Text>Trạng thái:</Text>
-              <Select
-                style={{ width: 120 }}
-                value={selectResolved}
-                onChange={setSelectResolved}
-                options={[
-                  { value: "-", label: "Tất cả" },
-                  { value: true, label: "Đã xử lý" },
-                  { value: false, label: "Chưa xử lý" },
-                ]}
-              />
+    <>
+      {contextHolder}
+      <Space direction="vertical" style={{ width: "100%" }} size={16}>
+        <Row gutter={16} align="middle">
+          <Col flex="auto">
+            <Space size={16}>
+              <Space size={5}>
+                <Text>Trạng thái:</Text>
+                <Select
+                  style={{ width: 120 }}
+                  value={selectResolved}
+                  onChange={setSelectResolved}
+                  options={[
+                    { value: "-", label: "Tất cả" },
+                    { value: true, label: "Đã xử lý" },
+                    { value: false, label: "Chưa xử lý" },
+                  ]}
+                />
+              </Space>
+              {selectedRowKeys.length > 0 && (
+                <Popconfirm
+                  title={`Bạn có chắc muốn xóa ${selectedRowKeys.length} lượt phản hồi đã chọn?`}
+                  // onConfirm={() => handleDeleteExpenses(selectedRowKeys)}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                >
+                  <Button danger icon={<DeleteOutlined />}>
+                    Xóa đã chọn ({selectedRowKeys.length})
+                  </Button>
+                </Popconfirm>
+              )}
             </Space>
-            {selectedRowKeys.length > 0 && (
-              <Popconfirm
-                title={`Bạn có chắc muốn xóa ${selectedRowKeys.length} lượt phản hồi đã chọn?`}
-                // onConfirm={() => handleDeleteExpenses(selectedRowKeys)}
-                okText="Xóa"
-                cancelText="Hủy"
-              >
-                <Button danger icon={<DeleteOutlined />}>
-                  Xóa đã chọn ({selectedRowKeys.length})
-                </Button>
-              </Popconfirm>
-            )}
-          </Space>
-        </Col>
-      </Row>
-      <Text style={{ marginTop: 8 }}>
-        {anonymousConfirm?.data.length || 0}/
-        {(anonymousConfirm && anonymousConfirm.totalElements) || 0} lượt phản
-        hồi
-      </Text>
+          </Col>
+        </Row>
+        <Text style={{ marginTop: 8 }}>
+          {anonymousConfirm?.data.length || 0}/
+          {(anonymousConfirm && anonymousConfirm.totalElements) || 0} lượt phản
+          hồi
+        </Text>
 
-      <Table
-        className={styles.customTable}
-        columns={columns}
-        rowSelection={rowSelection}
-        dataSource={anonymousConfirm?.data || []}
-        rowKey="id"
-        loading={loading}
-        pagination={false}
-        scroll={{ x: 1200, y: scrollY }}
-        size="middle"
-        onScroll={handleScroll}
-        rowClassName={(_, index) =>
-          index % 2 === 0 ? "table-row-light" : "table-row-dark"
-        }
-        locale={{
-          emptyText:
-            anonymousConfirm &&
-            anonymousConfirm.data &&
-            anonymousConfirm.data.length === 0 &&
-            !loading
-              ? "Chưa có khách truy cập ẩn danh nào confirm"
-              : undefined,
-        }}
-      />
-    </Space>
+        <Table
+          className={styles.customTable}
+          columns={columns}
+          rowSelection={rowSelection}
+          dataSource={anonymousConfirm?.data || []}
+          rowKey="id"
+          loading={loading}
+          pagination={false}
+          scroll={{ x: 1200, y: scrollY }}
+          size="middle"
+          onScroll={handleScroll}
+          rowClassName={(_, index) =>
+            index % 2 === 0 ? "table-row-light" : "table-row-dark"
+          }
+          locale={{
+            emptyText:
+              anonymousConfirm &&
+              anonymousConfirm.data &&
+              anonymousConfirm.data.length === 0 &&
+              !loading
+                ? "Chưa có khách truy cập ẩn danh nào confirm"
+                : undefined,
+          }}
+        />
+      </Space>
+    </>
   );
 };
 

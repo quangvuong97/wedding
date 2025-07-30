@@ -5,7 +5,7 @@ import {
   Image,
   Button,
   Upload,
-  message,
+  message as messageAntd,
   Spin,
   Modal,
   Input,
@@ -66,6 +66,7 @@ const CoupleTab: React.FC = () => {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState<{ [key: string]: boolean }>({});
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const { adminData } = useAdminData();
   const urlEndpoint = useMemo(() => {
@@ -123,138 +124,141 @@ const CoupleTab: React.FC = () => {
   };
 
   return (
-    <Row gutter={32} justify="center">
-      {COUPLE_IMAGES.map((img) => (
-        <Col key={img.key} xs={24} md={8} style={{ textAlign: "center" }}>
-          <div style={{ marginBottom: 16, fontWeight: 600 }}>{img.label}</div>
-          <Spin spinning={!!loading[img.name]}>
-            <div style={imageBoxStyle}>
-              {!error[img.name] && urlEndpoint ? (
-                <Image
-                  key={reloadKey + img.key}
-                  src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}
-                  alt={img.label}
-                  style={imageStyle}
-                  width={300}
-                  height={300}
-                  preview={true}
-                  fallback=""
-                  onError={() => handleImageError(img.name)}
-                  onLoad={() => handleImageLoad(img.name)}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#bfbfbf",
-                    background: "#f5f5f5",
-                  }}
-                >
-                  <FileImageOutlined
-                    style={{ fontSize: 48, marginBottom: 12 }}
+    <>
+      {contextHolder}
+      <Row gutter={32} justify="center">
+        {COUPLE_IMAGES.map((img) => (
+          <Col key={img.key} xs={24} md={8} style={{ textAlign: "center" }}>
+            <div style={{ marginBottom: 16, fontWeight: 600 }}>{img.label}</div>
+            <Spin spinning={!!loading[img.name]}>
+              <div style={imageBoxStyle}>
+                {!error[img.name] && urlEndpoint ? (
+                  <Image
+                    key={reloadKey + img.key}
+                    src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}
+                    alt={img.label}
+                    style={imageStyle}
+                    width={300}
+                    height={300}
+                    preview={true}
+                    fallback=""
+                    onError={() => handleImageError(img.name)}
+                    onLoad={() => handleImageLoad(img.name)}
                   />
-                  <div style={{ fontSize: 16, color: "#bfbfbf" }}>
-                    Chưa có ảnh
-                  </div>
-                  <div style={{ fontSize: 13, color: "#bfbfbf" }}>
-                    Nhấn "Tải lên/thay thế ảnh" để thêm
-                  </div>
-                </div>
-              )}
-            </div>
-            <Button
-              icon={<UploadOutlined />}
-              loading={!!loading[img.name]}
-              style={{ marginTop: 16 }}
-              onClick={() => setUploadModal({ open: true, name: img.name })}
-            >
-              {"Tải lên/thay thế ảnh"}
-            </Button>
-            <Button
-              icon={<ReloadOutlined />}
-              style={{ marginTop: 8, marginLeft: 8 }}
-              onClick={() => {
-                setReloadKey((k) => k + 1);
-                setError((prev) => ({ ...prev, [img.name]: false }));
-              }}
-            >
-              Reload
-            </Button>
-          </Spin>
-        </Col>
-      ))}
-
-      {/* Upload Modal */}
-      <Modal
-        title="Tải lên/thay thế ảnh"
-        open={uploadModal.open}
-        onCancel={() => {
-          setUploadModal({ open: false, name: null });
-          setFileList([]);
-          setUrlInput("");
-        }}
-        onOk={async () => {
-          setUploading(true);
-          if (uploadTab === "local" && fileList.length > 0) {
-            await handleUpload(fileList[0].originFileObj, uploadModal.name!);
-          } else if (uploadTab === "url" && urlInput.trim()) {
-            await handleUpload(null, uploadModal.name!, urlInput.trim());
-          } else {
-            message.warning("Vui lòng chọn ảnh hoặc nhập URL");
-            setUploading(false);
-          }
-        }}
-        okText="Tải lên"
-        cancelText="Hủy"
-        confirmLoading={uploading}
-        width={400}
-      >
-        <Tabs
-          activeKey={uploadTab}
-          onChange={setUploadTab}
-          items={[
-            {
-              key: "local",
-              label: "Từ máy tính",
-              children: (
-                <Upload
-                  fileList={fileList}
-                  beforeUpload={() => false}
-                  accept="image/*"
-                  maxCount={1}
-                  onChange={({ fileList: newList }) => setFileList(newList)}
-                  listType="picture-card"
-                >
-                  {fileList.length === 0 && (
-                    <div>
-                      <UploadOutlined />
-                      <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#bfbfbf",
+                      background: "#f5f5f5",
+                    }}
+                  >
+                    <FileImageOutlined
+                      style={{ fontSize: 48, marginBottom: 12 }}
+                    />
+                    <div style={{ fontSize: 16, color: "#bfbfbf" }}>
+                      Chưa có ảnh
                     </div>
-                  )}
-                </Upload>
-              ),
-            },
-            {
-              key: "url",
-              label: "Nhập URL",
-              children: (
-                <TextArea
-                  placeholder="Nhập URL ảnh"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  rows={3}
-                />
-              ),
-            },
-          ]}
-        />
-      </Modal>
-    </Row>
+                    <div style={{ fontSize: 13, color: "#bfbfbf" }}>
+                      Nhấn "Tải lên/thay thế ảnh" để thêm
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Button
+                icon={<UploadOutlined />}
+                loading={!!loading[img.name]}
+                style={{ marginTop: 16 }}
+                onClick={() => setUploadModal({ open: true, name: img.name })}
+              >
+                {"Tải lên/thay thế ảnh"}
+              </Button>
+              <Button
+                icon={<ReloadOutlined />}
+                style={{ marginTop: 8, marginLeft: 8 }}
+                onClick={() => {
+                  setReloadKey((k) => k + 1);
+                  setError((prev) => ({ ...prev, [img.name]: false }));
+                }}
+              >
+                Reload
+              </Button>
+            </Spin>
+          </Col>
+        ))}
+
+        {/* Upload Modal */}
+        <Modal
+          title="Tải lên/thay thế ảnh"
+          open={uploadModal.open}
+          onCancel={() => {
+            setUploadModal({ open: false, name: null });
+            setFileList([]);
+            setUrlInput("");
+          }}
+          onOk={async () => {
+            setUploading(true);
+            if (uploadTab === "local" && fileList.length > 0) {
+              await handleUpload(fileList[0].originFileObj, uploadModal.name!);
+            } else if (uploadTab === "url" && urlInput.trim()) {
+              await handleUpload(null, uploadModal.name!, urlInput.trim());
+            } else {
+              message.warning("Vui lòng chọn ảnh hoặc nhập URL");
+              setUploading(false);
+            }
+          }}
+          okText="Tải lên"
+          cancelText="Hủy"
+          confirmLoading={uploading}
+          width={400}
+        >
+          <Tabs
+            activeKey={uploadTab}
+            onChange={setUploadTab}
+            items={[
+              {
+                key: "local",
+                label: "Từ máy tính",
+                children: (
+                  <Upload
+                    fileList={fileList}
+                    beforeUpload={() => false}
+                    accept="image/*"
+                    maxCount={1}
+                    onChange={({ fileList: newList }) => setFileList(newList)}
+                    listType="picture-card"
+                  >
+                    {fileList.length === 0 && (
+                      <div>
+                        <UploadOutlined />
+                        <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                      </div>
+                    )}
+                  </Upload>
+                ),
+              },
+              {
+                key: "url",
+                label: "Nhập URL",
+                children: (
+                  <TextArea
+                    placeholder="Nhập URL ảnh"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    rows={3}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Modal>
+      </Row>
+    </>
   );
 };
 

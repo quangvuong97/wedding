@@ -5,7 +5,7 @@ import {
   Image,
   Button,
   Upload,
-  message,
+  message as messageAntd,
   Spin,
   Modal,
   Input,
@@ -79,6 +79,7 @@ const InvitationTab: React.FC = () => {
   const [fileList, setFileList] = useState<any[]>([]);
   const [urlInput, setUrlInput] = useState<string>("");
   const [uploading, setUploading] = useState(false);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const handleUpload = async (
     file: File | null,
@@ -122,6 +123,7 @@ const InvitationTab: React.FC = () => {
 
   return (
     <>
+      {contextHolder}
       <Text className="block mb-6" type="warning">
         Hãy tải lên ảnh tỉ lệ vuông để lên web được đẹp nhé
       </Text>

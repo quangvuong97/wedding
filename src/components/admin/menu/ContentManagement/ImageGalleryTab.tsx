@@ -4,7 +4,7 @@ import {
   Upload,
   Modal,
   Input,
-  message,
+  message as messageAntd,
   Spin,
   Checkbox,
   Popconfirm,
@@ -37,10 +37,14 @@ const { TextArea } = Input;
 interface ImageGalleryTabProps {
   type: EImageStoreType;
   title: string;
-  customTitle?: React.ReactNode
+  customTitle?: React.ReactNode;
 }
 
-const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title, customTitle }) => {
+const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
+  type,
+  title,
+  customTitle,
+}) => {
   const { accessToken } = useAuth();
   const [images, setImages] = useState<GetImageResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +58,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title, customTi
     return adminData?.config.storageKey.filter((e) => e.isDefault)[0]
       .urlEndpoint;
   }, [adminData]);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   // Load images
   const loadImages = async () => {
@@ -180,6 +185,7 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({ type, title, customTi
 
   return (
     <div>
+      {contextHolder}
       {/* Header Actions */}
       {customTitle}
       <div

@@ -5,7 +5,7 @@ import {
   Col,
   Form,
   Input,
-  message,
+  message as messageAntd,
   Modal,
   Popconfirm,
   Row,
@@ -78,6 +78,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const guestFilter = guests.filter((guest) => {
     const matchText =
@@ -518,6 +519,7 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
 
   return (
     <>
+      {contextHolder}
       <Space direction="vertical" style={{ width: "100%" }} size={16}>
         {/* Search and Actions */}
         <Row gutter={16} align="middle">

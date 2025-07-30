@@ -1,4 +1,4 @@
-import { message, Space, Table, Typography, Button } from "antd";
+import { message as messageAntd, Space, Table, Typography, Button } from "antd";
 import { GetTrafficResponse, trafficAPI } from "../../../../services/api";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
@@ -29,6 +29,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(242);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const [traffic, setTraffics] = useState<
     ApiResponse<GetTrafficResponse[]> | undefined
@@ -71,7 +72,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
       setPage(1);
       fetchTraffics(1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -161,50 +162,53 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
   ];
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }} size={16}>
-      <Text style={{ marginTop: 8 }}>
-        {(traffic && traffic.totalElements) || 0} lượt truy cập
-      </Text>
+    <>
+      {contextHolder}
+      <Space direction="vertical" style={{ width: "100%" }} size={16}>
+        <Text style={{ marginTop: 8 }}>
+          {(traffic && traffic.totalElements) || 0} lượt truy cập
+        </Text>
 
-      <Table
-        className={styles.customTable}
-        columns={columns}
-        dataSource={traffic?.data || []}
-        rowKey="id"
-        loading={loading}
-        pagination={false}
-        scroll={{ x: 1200, y: scrollY }}
-        size="middle"
-        onScroll={handleScroll}
-        rowClassName={(_, index) =>
-          index % 2 === 0 ? "table-row-light" : "table-row-dark"
-        }
-        locale={{
-          emptyText:
-            traffic && traffic.data && traffic.data.length === 0 && !loading
-              ? "Chưa có lượt truy cập nào"
-              : undefined,
-        }}
-      />
+        <Table
+          className={styles.customTable}
+          columns={columns}
+          dataSource={traffic?.data || []}
+          rowKey="id"
+          loading={loading}
+          pagination={false}
+          scroll={{ x: 1200, y: scrollY }}
+          size="middle"
+          onScroll={handleScroll}
+          rowClassName={(_, index) =>
+            index % 2 === 0 ? "table-row-light" : "table-row-dark"
+          }
+          locale={{
+            emptyText:
+              traffic && traffic.data && traffic.data.length === 0 && !loading
+                ? "Chưa có lượt truy cập nào"
+                : undefined,
+          }}
+        />
 
-      {traffic &&
-        traffic.data &&
-        traffic.data.length < traffic.totalElements! && (
-          <Button
-            onClick={() => {
-              if (!loading) {
-                const nextPage = page + 1;
-                setPage(nextPage);
-                fetchTraffics(nextPage);
-              }
-            }}
-            loading={loading}
-            block
-          >
-            Tải thêm
-          </Button>
-        )}
-    </Space>
+        {traffic &&
+          traffic.data &&
+          traffic.data.length < traffic.totalElements! && (
+            <Button
+              onClick={() => {
+                if (!loading) {
+                  const nextPage = page + 1;
+                  setPage(nextPage);
+                  fetchTraffics(nextPage);
+                }
+              }}
+              loading={loading}
+              block
+            >
+              Tải thêm
+            </Button>
+          )}
+      </Space>
+    </>
   );
 };
 

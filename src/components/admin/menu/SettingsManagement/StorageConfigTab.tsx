@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Input,
   Button,
-  message,
+  message as messageAntd,
   Typography,
   Table,
   Space,
@@ -49,6 +49,7 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [storageKeys, setStorageKeys] = useState<StorageKeyRequest[]>([]);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   useEffect(() => {
     if (profile?.config?.storageKey) {
@@ -138,6 +139,7 @@ const StorageConfigTab: React.FC<StorageConfigTabProps> = ({
 
   return (
     <div>
+      {contextHolder}
       <Space
         style={{
           marginBottom: 16,

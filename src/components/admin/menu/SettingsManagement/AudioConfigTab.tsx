@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Input,
   Button,
-  message,
+  message as messageAntd,
   Typography,
   Table,
   Space,
@@ -32,6 +32,7 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(310);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const [loading, setLoading] = useState(false);
   const [audios, setAudios] = useState<{ id: string; url: string }[]>([]);
@@ -98,6 +99,7 @@ const AudioConfigTab: React.FC<AudioConfigTabProps> = ({
 
   return (
     <div>
+      {contextHolder}
       <Space
         style={{
           marginBottom: 16,

@@ -4,7 +4,7 @@ import {
   Form,
   Input,
   InputNumber,
-  message,
+  message as messageAntd,
   Modal,
   Popconfirm,
   Row,
@@ -48,6 +48,7 @@ const ExpenseTabContent: React.FC = () => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(312);
+  const [message, contextHolder] = messageAntd.useMessage();
 
   const [expenses, setExpenses] = useState<GetExpenseResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -393,6 +394,7 @@ const ExpenseTabContent: React.FC = () => {
 
   return (
     <>
+      {contextHolder}
       <Space direction="vertical" style={{ width: "100%" }} size={16}>
         {/* Search and Actions */}
         <Row gutter={16} align="middle">
