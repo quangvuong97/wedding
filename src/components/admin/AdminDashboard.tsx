@@ -8,27 +8,25 @@ import {
 } from "@ant-design/icons";
 import { useAuth } from "../../contexts/AuthContext";
 import { authAPI, UserProfile } from "../../services/api";
-import GuestManagement from "./menu/GuestManagement/GuestManagement";
-import ContentManagement from "./menu/ContentManagement/ContentManagement";
-import SettingsManagement from "./menu/SettingsManagement/SettingsManagement";
 import { AdminDataContext } from "../../contexts/AdminDataContext";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 const { Sider, Content } = Layout;
 
 // Menu items
 const menuItems = [
   {
-    key: "settings",
+    key: "/admin/settings",
     icon: <SettingOutlined />,
     label: "Cài Đặt Trang",
   },
   {
-    key: "content",
+    key: "/admin/content",
     icon: <FileTextOutlined />,
     label: "Quản Lý Ảnh",
   },
   {
-    key: "guests",
+    key: "/admin/guests",
     icon: <TeamOutlined />,
     label: "Khách Mời",
   },
@@ -36,9 +34,10 @@ const menuItems = [
 
 const AdminDashboard: React.FC = () => {
   const { logout, accessToken, isLoading: authLoading } = useAuth();
-  const [selectedKey, setSelectedKey] = useState("settings");
   const [profile, setProfile] = useState<UserProfile>();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -76,22 +75,20 @@ const AdminDashboard: React.FC = () => {
     fetchProfile();
   }, [accessToken, logout, authLoading]);
 
+  // Redirect to settings if on base admin path
+  useEffect(() => {
+    if (location.pathname === "/admin" || location.pathname === "/admin/") {
+      navigate("/admin/settings", { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   const handleLogout = () => {
     logout();
     message.success("Đăng xuất thành công!");
   };
 
-  const renderContent = () => {
-    switch (selectedKey) {
-      case "settings":
-        return <SettingsManagement />;
-      case "content":
-        return <ContentManagement />;
-      case "guests":
-        return <GuestManagement />;
-      default:
-        return null;
-    }
+  const handleMenuClick = ({ key }: { key: string }) => {
+    navigate(key);
   };
 
   if (loading || authLoading) {
@@ -130,48 +127,10 @@ const AdminDashboard: React.FC = () => {
               scrollbarGutter: "stable",
             }}
           >
-            {/* Wedding Info Header */}
-            {/* <div style={{ 
-            padding: '24px 16px',
-            borderBottom: '1px solid #f0f0f0',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              background: 'linear-gradient(135deg, #1e8267, #2ea886)',
-              borderRadius: '0.25rem',
-              padding: '24px',
-              color: 'white',
-              marginBottom: '20px',
-              boxShadow: '0 8px 32px rgba(30, 130, 103, 0.2)'
-            }}>
-              <HeartOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
-              <Title level={4} style={{ color: 'white', margin: '8px 0 4px 0' }}>
-                Đám Cưới
-              </Title>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                gap: '8px',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}>
-                <span>{profile?.config?.groomName || 'Chồng'}</span>
-                <HeartOutlined style={{ fontSize: '14px' }} />
-                <span>{profile?.config?.brideName || 'Vợ'}</span>
-              </div>
-              {profile?.config?.weddingDate && (
-                <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
-                  {new Date(profile.config.weddingDate).toLocaleDateString('vi-VN')}
-                </Text>
-              )}
-            </div>
-          </div> */}
-
             {/* Menu */}
             <Menu
               mode="inline"
-              selectedKeys={[selectedKey]}
+              selectedKeys={[location.pathname]}
               style={{
                 border: "none",
                 padding: "16px 0",
@@ -179,7 +138,7 @@ const AdminDashboard: React.FC = () => {
               }}
               theme="light"
               items={menuItems}
-              onClick={({ key }) => setSelectedKey(key)}
+              onClick={handleMenuClick}
             />
 
             {/* Logout Button */}
@@ -219,7 +178,7 @@ const AdminDashboard: React.FC = () => {
                 scrollbarColor: "#eaeaea transparent",
               }}
             >
-              {renderContent()}
+              <Outlet />
             </Content>
           </Layout>
         </Layout>

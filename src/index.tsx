@@ -12,6 +12,9 @@ import reportWebVitals from "./reportWebVitals";
 import "@flaticon/flaticon-uicons/css/all/all.css"; // Import tất cả icon
 import { ConfigProvider } from "antd";
 import QrViewPage from "./components/home/QrViewPage";
+import SettingsManagement from "./components/admin/menu/SettingsManagement/SettingsManagement";
+import ContentManagement from "./components/admin/menu/ContentManagement/ContentManagement";
+import GuestManagement from "./components/admin/menu/GuestManagement/GuestManagement";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -37,7 +40,11 @@ root.render(
                   <AdminDashboard />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route path="settings" element={<SettingsManagement />} />
+              <Route path="content" element={<ContentManagement />} />
+              <Route path="guests" element={<GuestManagement />} />
+            </Route>
           </Routes>
         </Router>
       </AuthProvider>
