@@ -147,6 +147,8 @@ export interface GetTrafficResponse {
 }
 
 export interface GetAnonymousConfirmResponse {
+  id: string;
+
   name: string;
 
   guestOf: string;
