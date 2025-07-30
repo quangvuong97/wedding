@@ -1,4 +1,14 @@
-import { message, Space, Table, Typography, Button } from "antd";
+import {
+  message,
+  Space,
+  Table,
+  Typography,
+  Button,
+  Row,
+  Select,
+  Popconfirm,
+  Col,
+} from "antd";
 import {
   anonymousAPI,
   GetAnonymousConfirmResponse,
@@ -10,6 +20,8 @@ import { useStyle } from "../../styles";
 import useScrollTable from "../../../../common/useScollTable";
 import { ApiResponse } from "../../../../services/common";
 
+import { DeleteOutlined, FileDoneOutlined } from "@ant-design/icons";
+
 const { Text } = Typography;
 
 interface AnonymousConfirmProps {
@@ -19,12 +31,15 @@ interface AnonymousConfirmProps {
 const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
-  const scrollY = useScrollTable(242);
+  const scrollY = useScrollTable(290);
 
   const [anonymousConfirm, setAnonymousConfirm] = useState<
     ApiResponse<GetAnonymousConfirmResponse[]> | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
+
+  const [selectResolved, setSelectResolved] = useState<boolean | "-">("-");
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
   const [page, setPage] = useState(1);
   const size = 20;
@@ -37,6 +52,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       const response = await anonymousAPI.getAnonymous(accessToken, {
         page: pageNumber,
         size,
+        resolved: selectResolved === "-" ? undefined : selectResolved,
       });
 
       setAnonymousConfirm((prev) => {
@@ -51,7 +67,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
         }
       });
     } catch (error: any) {
-      message.error("Không thể tải danh sách khách mời ẩn danh");
+      message.error("Không thể tải danh sách lượt phản hồi ẩn danh");
     } finally {
       setLoading(false);
     }
@@ -63,7 +79,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       fetchAnonymousConfirm(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, selectResolved]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
     const target = e.currentTarget;
@@ -82,12 +98,19 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
     }
   };
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedKeys as string[]);
+    },
+  };
+
   const columns: ColumnsType<GetAnonymousConfirmResponse> = [
     {
       title: "Tên",
       dataIndex: "name",
       key: "name",
-      width: 140,
+      width: 120,
       ellipsis: true,
     },
     {
@@ -104,6 +127,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       dataIndex: "createdAt",
       key: "createdAt",
       width: 100,
+      align: "center" as const,
       render: (text: Date) =>
         new Date(text).toLocaleString("vi-VN", {
           year: "numeric",
@@ -118,8 +142,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       title: "Xác nhận tham dự",
       dataIndex: "confirmAttended",
       key: "confirmAttended",
-      width: 65,
-      minWidth: 65,
+      width: 100,
       align: "center" as const,
       render: (text: string) => {
         if (text === "attendance") {
@@ -132,18 +155,80 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       },
     },
     {
-      title: "Thao tác",
+      title: "Trạng thái",
       dataIndex: "resolved",
       key: "resolved",
       width: 65,
       align: "center" as const,
       render: (text: boolean) => (text ? "Đã xử lý" : "chưa xử lý"),
     },
+    {
+      title: "Thao tác",
+      key: "action",
+      width: 50,
+      align: "center" as const,
+      render: (_: any, record: GetAnonymousConfirmResponse) => (
+        <Space>
+          <Button
+            size="small"
+            type="link"
+            disabled={record.resolved}
+            icon={<FileDoneOutlined />}
+          />
+          <Popconfirm
+            title="Bạn có chắc muốn xóa khách mời này?"
+            // onConfirm={() => handleDeleteGuests([record.id])}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button
+              type="link"
+              className="shadow-none"
+              danger
+              size="small"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    },
   ];
 
   return (
     <Space direction="vertical" style={{ width: "100%" }} size={16}>
+      <Row gutter={16} align="middle">
+        <Col flex="auto">
+          <Space size={16}>
+            <Space size={5}>
+              <Text>Trạng thái:</Text>
+              <Select
+                style={{ width: 120 }}
+                value={selectResolved}
+                onChange={setSelectResolved}
+                options={[
+                  { value: "-", label: "Tất cả" },
+                  { value: true, label: "Đã xử lý" },
+                  { value: false, label: "Chưa xử lý" },
+                ]}
+              />
+            </Space>
+            {selectedRowKeys.length > 0 && (
+              <Popconfirm
+                title={`Bạn có chắc muốn xóa ${selectedRowKeys.length} lượt phản hồi đã chọn?`}
+                // onConfirm={() => handleDeleteExpenses(selectedRowKeys)}
+                okText="Xóa"
+                cancelText="Hủy"
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  Xóa đã chọn ({selectedRowKeys.length})
+                </Button>
+              </Popconfirm>
+            )}
+          </Space>
+        </Col>
+      </Row>
       <Text style={{ marginTop: 8 }}>
+        {anonymousConfirm?.data.length || 0}/
         {(anonymousConfirm && anonymousConfirm.totalElements) || 0} lượt phản
         hồi
       </Text>
@@ -151,6 +236,7 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
       <Table
         className={styles.customTable}
         columns={columns}
+        rowSelection={rowSelection}
         dataSource={anonymousConfirm?.data || []}
         rowKey="id"
         loading={loading}
@@ -171,24 +257,6 @@ const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
               : undefined,
         }}
       />
-
-      {anonymousConfirm &&
-        anonymousConfirm.data &&
-        anonymousConfirm.data.length < anonymousConfirm.totalElements! && (
-          <Button
-            onClick={() => {
-              if (!loading) {
-                const nextPage = page + 1;
-                setPage(nextPage);
-                fetchAnonymousConfirm(nextPage);
-              }
-            }}
-            loading={loading}
-            block
-          >
-            Tải thêm
-          </Button>
-        )}
     </Space>
   );
 };
