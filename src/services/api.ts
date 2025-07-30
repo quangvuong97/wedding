@@ -146,6 +146,18 @@ export interface GetTrafficResponse {
   createdAt: Date;
 }
 
+export interface GetAnonymousConfirmResponse {
+  name: string;
+
+  guestOf: string;
+
+  confirmAttended: string;
+
+  createdAt: Date;
+
+  resolved: boolean;
+}
+
 export interface GetStatisticResponse {
   groom: {
     invitedCount: number;
@@ -193,6 +205,12 @@ export interface GetTrafficsRequest {
   size?: number;
   page?: number;
   // keyword?: string;
+}
+
+export interface GetAnonymousConfirmRequest {
+  size?: number;
+  page?: number;
+  resolved?: boolean;
 }
 
 export interface CreateGuestRequest {
@@ -643,6 +661,60 @@ export const trafficAPI = {
       }
 
       const apiResponse: ApiResponse<GetTrafficResponse[]> =
+        await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to fetch guests");
+      }
+
+      return apiResponse;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+};
+
+export const anonymousAPI = {
+  getAnonymous: async (
+    token: string,
+    params: GetAnonymousConfirmRequest
+  ): Promise<ApiResponse<GetAnonymousConfirmResponse[]>> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.size) queryParams.append("size", params.size.toString());
+      if (params.page) queryParams.append("page", params.page.toString());
+      if (params.resolved)
+        queryParams.append("resolved", params.resolved.toString());
+
+      const response = await fetch(
+        `${API_URL}/v1/users/anonymous-confirm?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to fetch guests");
+        }
+      }
+
+      const apiResponse: ApiResponse<GetAnonymousConfirmResponse[]> =
         await response.json();
 
       if (apiResponse.code !== 200 || !apiResponse.data) {

@@ -102,7 +102,7 @@ const ExpenseTabContent: React.FC = () => {
 
       setExpenses(response);
     } catch (error: any) {
-      message.error("Không thể tải danh sách khách mời");
+      message.error("Không thể tải danh sách chi phí");
     } finally {
       setLoading(false);
     }
@@ -176,13 +176,13 @@ const ExpenseTabContent: React.FC = () => {
 
     try {
       await expenseAPI.deleteExpenses(accessToken, expenseIds);
-      message.success("Xóa khách mời thành công");
+      message.success("Xóa chi phí thành công");
       setSelectedRowKeys([]);
       setExpenses((prevExpenses) =>
         prevExpenses.filter((expense) => !expenseIds.includes(expense.id))
       );
     } catch (error: any) {
-      message.error("Không thể xóa khách mời");
+      message.error("Không thể xóa chi phí");
     }
   };
 

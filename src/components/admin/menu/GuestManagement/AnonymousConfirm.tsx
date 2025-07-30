@@ -1,5 +1,8 @@
 import { message, Space, Table, Typography, Button } from "antd";
-import { GetTrafficResponse, trafficAPI } from "../../../../services/api";
+import {
+  anonymousAPI,
+  GetAnonymousConfirmResponse,
+} from "../../../../services/api";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
@@ -9,46 +12,34 @@ import { ApiResponse } from "../../../../services/common";
 
 const { Text } = Typography;
 
-interface TrafficsProps {
+interface AnonymousConfirmProps {
   activeTab: string;
 }
 
-function formatSecondsToHMS(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const hh = hours.toString().padStart(2, "0");
-  const mm = minutes.toString().padStart(2, "0");
-  const ss = seconds.toString().padStart(2, "0");
-
-  return `${hh}:${mm}:${ss}`;
-}
-
-const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
+const AnonymousConfirm: React.FC<AnonymousConfirmProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
   const scrollY = useScrollTable(242);
 
-  const [traffic, setTraffics] = useState<
-    ApiResponse<GetTrafficResponse[]> | undefined
+  const [anonymousConfirm, setAnonymousConfirm] = useState<
+    ApiResponse<GetAnonymousConfirmResponse[]> | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1);
   const size = 20;
 
-  const fetchTraffics = async (pageNumber: number) => {
+  const fetchAnonymousConfirm = async (pageNumber: number) => {
     if (!accessToken) return;
 
     try {
       setLoading(true);
-      const response = await trafficAPI.getTraffics(accessToken, {
+      const response = await anonymousAPI.getAnonymous(accessToken, {
         page: pageNumber,
         size,
       });
 
-      setTraffics((prev) => {
+      setAnonymousConfirm((prev) => {
         if (!prev || pageNumber === 1) {
           return response;
         } else {
@@ -60,18 +51,18 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
         }
       });
     } catch (error: any) {
-      message.error("Không thể tải danh sách lượt truy cập");
+      message.error("Không thể tải danh sách khách mời ẩn danh");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (activeTab === "traffics") {
+    if (activeTab === "anonymousConfirm") {
       setPage(1);
-      fetchTraffics(1);
+      fetchAnonymousConfirm(1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -80,18 +71,18 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
 
     if (
       scrollTop + clientHeight >= scrollHeight - 50 &&
-      traffic &&
-      traffic.data &&
-      traffic.data.length < traffic.totalElements! &&
+      anonymousConfirm &&
+      anonymousConfirm.data &&
+      anonymousConfirm.data.length < anonymousConfirm.totalElements! &&
       !loading
     ) {
       const nextPage = page + 1;
       setPage(nextPage);
-      fetchTraffics(nextPage);
+      fetchAnonymousConfirm(nextPage);
     }
   };
 
-  const columns: ColumnsType<GetTrafficResponse> = [
+  const columns: ColumnsType<GetAnonymousConfirmResponse> = [
     {
       title: "Tên",
       dataIndex: "name",
@@ -109,42 +100,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
         text === "groom" ? "Nhà trai" : text === "bride" ? "Nhà gái" : "-",
     },
     {
-      title: "Thời gian hoạt động",
-      dataIndex: "sessionDuration",
-      key: "sessionDuration",
-      width: 130,
-      render: (text: number) => formatSecondsToHMS(text),
-    },
-    {
-      title: "Địa chỉ ip",
-      dataIndex: "ipAddress",
-      key: "ipAddress",
-      width: 120,
-      ellipsis: true,
-    },
-    {
-      title: "Thiết bị",
-      dataIndex: "deviceType",
-      key: "deviceType",
-      width: 90,
-      ellipsis: true,
-    },
-    {
-      title: "Nguồn truy cập",
-      dataIndex: "source",
-      key: "source",
-      width: 90,
-    },
-    {
-      title: "online",
-      dataIndex: "isOnline",
-      key: "isOnline",
-      width: 65,
-      align: "center" as const,
-      render: (text: boolean) => (text ? "On" : "Off"),
-    },
-    {
-      title: "Thời gian",
+      title: "Thời gian xác nhận",
       dataIndex: "createdAt",
       key: "createdAt",
       width: 100,
@@ -158,18 +114,44 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
           second: "2-digit",
         }),
     },
+    {
+      title: "Xác nhận tham dự",
+      dataIndex: "confirmAttended",
+      key: "confirmAttended",
+      width: 65,
+      minWidth: 65,
+      align: "center" as const,
+      render: (text: string) => {
+        if (text === "attendance") {
+          return <Text type="success">Yes</Text>;
+        }
+        if (text === "not_attendance") {
+          return <Text type="danger">No</Text>;
+        }
+        return <Text>-</Text>;
+      },
+    },
+    {
+      title: "Thao tác",
+      dataIndex: "resolved",
+      key: "resolved",
+      width: 65,
+      align: "center" as const,
+      render: (text: boolean) => (text ? "Đã xử lý" : "chưa xử lý"),
+    },
   ];
 
   return (
     <Space direction="vertical" style={{ width: "100%" }} size={16}>
       <Text style={{ marginTop: 8 }}>
-        {(traffic && traffic.totalElements) || 0} lượt truy cập
+        {(anonymousConfirm && anonymousConfirm.totalElements) || 0} lượt phản
+        hồi
       </Text>
 
       <Table
         className={styles.customTable}
         columns={columns}
-        dataSource={traffic?.data || []}
+        dataSource={anonymousConfirm?.data || []}
         rowKey="id"
         loading={loading}
         pagination={false}
@@ -181,21 +163,24 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
         }
         locale={{
           emptyText:
-            traffic && traffic.data && traffic.data.length === 0 && !loading
-              ? "Chưa có lượt truy cập nào"
+            anonymousConfirm &&
+            anonymousConfirm.data &&
+            anonymousConfirm.data.length === 0 &&
+            !loading
+              ? "Chưa có khách truy cập ẩn danh nào confirm"
               : undefined,
         }}
       />
 
-      {traffic &&
-        traffic.data &&
-        traffic.data.length < traffic.totalElements! && (
+      {anonymousConfirm &&
+        anonymousConfirm.data &&
+        anonymousConfirm.data.length < anonymousConfirm.totalElements! && (
           <Button
             onClick={() => {
               if (!loading) {
                 const nextPage = page + 1;
                 setPage(nextPage);
-                fetchTraffics(nextPage);
+                fetchAnonymousConfirm(nextPage);
               }
             }}
             loading={loading}
@@ -208,4 +193,4 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
   );
 };
 
-export default Traffics;
+export default AnonymousConfirm;
