@@ -692,7 +692,7 @@ export const anonymousAPI = {
       const queryParams = new URLSearchParams();
       if (params.size) queryParams.append("size", params.size.toString());
       if (params.page) queryParams.append("page", params.page.toString());
-      if (params.resolved)
+      if (params.resolved !== undefined)
         queryParams.append("resolved", params.resolved.toString());
 
       const response = await fetch(
