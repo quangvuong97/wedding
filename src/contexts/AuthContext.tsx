@@ -97,13 +97,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   }, []);
 
-  const value = {
+  const value = React.useMemo(() => ({
     isAuthenticated: state.isAuthenticated,
     accessToken: state.accessToken,
     isLoading: state.isLoading,
     login,
     logout,
-  };
+  }), [state.isAuthenticated, state.accessToken, state.isLoading, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
