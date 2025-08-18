@@ -155,6 +155,7 @@ const TrackedImage = forwardRef<HTMLImageElement, TrackedImageProps>(
           src={src}
           urlEndpoint={urlEndpoint}
           onLoad={handleLoad}
+          responsive={false}
           onError={handleError}
           ref={setImgRef}
           loading={loadingMode}

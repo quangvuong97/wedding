@@ -13,12 +13,12 @@ const Couple: React.FC = () => {
       groom: {
         name: homeData?.groomName,
         info: homeData?.groomIntroduction,
-        img: "/groomImage",
+        img: `/groomImage?${new Date().getTime()}`,
       },
       bride: {
         name: homeData?.brideName,
         info: homeData?.brideIntroduction,
-        img: "/brideImage",
+        img: `/brideImage?${new Date().getTime()}`,
       },
     }),
     [
@@ -95,7 +95,7 @@ const Couple: React.FC = () => {
               <TrackedImage
                 className="absolute left-[10%] top-1/2 -translate-y-1/2 rounded-[235px] w-[80%] h-[85%] max-w-[470px] object-cover"
                 urlEndpoint={homeData?.storageKey?.urlEndpoint}
-                src="/coupleImage"
+                src={`/coupleImage?${new Date().getTime()}`}
                 alt=""
               />  
             ) : null}
