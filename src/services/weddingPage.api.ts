@@ -94,6 +94,10 @@ export const WeddingPageApi = {
     useFetch<string[]>(
       `v1/public/${getSubdomain()}/images?type=${EImageStoreType.SWEET_MOMENTS}`
     ),
+  useGetAlbumWedding: () =>
+    useFetch<string[]>(
+      `v1/public/${getSubdomain()}/images?type=${EImageStoreType.WEDDING_GALLERY}`
+    ),
   useGetFooter: () =>
     useFetch<string[]>(
       `v1/public/${getSubdomain()}/images?type=${EImageStoreType.FOOTER}`

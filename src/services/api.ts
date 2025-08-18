@@ -967,6 +967,7 @@ export const expenseAPI = {
 export enum EImageStoreType {
   CAROUSEL = "carousel",
   STORY = "story",
+  WEDDING_GALLERY = "wedding_gallery",
   SWEET_MOMENTS = "sweet_moments",
   FOOTER = "footer",
   INVITATION = "invitation",

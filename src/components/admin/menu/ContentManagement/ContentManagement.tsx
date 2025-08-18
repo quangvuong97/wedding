@@ -48,12 +48,22 @@ const ContentManagement: React.FC = () => {
       children: <InvitationTab />,
     },
     {
+      key: EImageStoreType.WEDDING_GALLERY,
+      label: "Album hình cưới",
+      children: (
+        <ImageGalleryTab
+          type={EImageStoreType.WEDDING_GALLERY}
+          title={"Album hình cưới"}
+        />
+      ),
+    },
+    {
       key: EImageStoreType.SWEET_MOMENTS,
-      label: "Gallery",
+      label: "Khoảnh khắc ngọt ngào",
       children: (
         <ImageGalleryTab
           type={EImageStoreType.SWEET_MOMENTS}
-          title={"Gallery"}
+          title={"Khoảnh khắc ngọt ngào"}
         />
       ),
     },
@@ -70,7 +80,7 @@ const ContentManagement: React.FC = () => {
     <Card
       style={{ borderRadius: "0.25rem", background: "#fff" }}
       styles={{ body: { padding: 12 } }}
-      >
+    >
       <Title level={3} style={{ color: "#1e8267", marginBottom: "12px" }}>
         Quản Lý Ảnh
       </Title>

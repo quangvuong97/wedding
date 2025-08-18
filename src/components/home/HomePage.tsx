@@ -36,6 +36,7 @@ import dayjs from "dayjs";
 import Invite from "./Invite";
 import { CustomButton } from "../../common";
 import Heartbeat from "./Heartbeat";
+import AlbumWedding from "./AlbumWedding";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -642,6 +643,7 @@ const HomeContent = ({
         <Story />
         <Invitation handleConfirmAttendance={handleConfirmAttendance} />
         <Present targetRef={targetRef} />
+        <AlbumWedding />
         <Gallery />
         <WeddingFooter />
       </Space>

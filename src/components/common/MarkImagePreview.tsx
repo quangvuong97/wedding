@@ -19,7 +19,8 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
   if (!urlEndpoint || !src) return null;
   return (
     <div
-      style={{ position: "relative", display: "inline-block" }}
+      className="album-image"
+      style={{ position: "relative" }}
       onClick={onClick}
     >
       <TrackedImage
