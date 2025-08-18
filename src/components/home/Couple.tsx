@@ -7,20 +7,22 @@ const { Text } = Typography;
 
 const Couple: React.FC = () => {
   const homeData = useHomeData();
+  const date = useMemo(() => Date.now(), []);
 
   const couple = useMemo(
     () => ({
       groom: {
         name: homeData?.groomName,
         info: homeData?.groomIntroduction,
-        img: `/groomImage?${new Date().getTime()}`,
+        img: `/groomImage?v=${date}`,
       },
       bride: {
         name: homeData?.brideName,
         info: homeData?.brideIntroduction,
-        img: `/brideImage?${new Date().getTime()}`,
+        img: `/brideImage?v=${date}`,
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       homeData?.groomName,
       homeData?.groomIntroduction,
@@ -72,6 +74,7 @@ const Couple: React.FC = () => {
         </div>
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [homeData?.storageKey?.urlEndpoint, couple]
   );
 
@@ -95,7 +98,7 @@ const Couple: React.FC = () => {
               <TrackedImage
                 className="absolute left-[10%] top-1/2 -translate-y-1/2 rounded-[235px] w-[80%] h-[85%] max-w-[470px] object-cover"
                 urlEndpoint={homeData?.storageKey?.urlEndpoint}
-                src={`/coupleImage?${new Date().getTime()}`}
+                src={`/coupleImage?v=${date}`}
                 alt=""
               />  
             ) : null}

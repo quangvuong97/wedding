@@ -67,6 +67,7 @@ const CoupleTab: React.FC = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState<{ [key: string]: boolean }>({});
   const [message, contextHolder] = messageAntd.useMessage();
+  const date = useMemo(() => Date.now(), []);
 
   const { adminData } = useAdminData();
   const urlEndpoint = useMemo(() => {
@@ -135,7 +136,7 @@ const CoupleTab: React.FC = () => {
                 {!error[img.name] && urlEndpoint ? (
                   <Image
                     key={reloadKey + img.key}
-                    src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}
+                    src={`${urlEndpoint}/${img.name}?v=${date}${reloadKey}`}
                     alt={img.label}
                     style={imageStyle}
                     width={300}

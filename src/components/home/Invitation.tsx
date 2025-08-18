@@ -68,6 +68,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
     }),
     []
   );
+  const dateVersion = useMemo(() => Date.now(), []);
 
   // Memoize invitation info calculation
   const info: InvitationInfo[] | undefined[] = useMemo(() => {
@@ -86,7 +87,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
     return [
       {
         ...baseInfo,
-        image: "/groomFamily",
+        image: `/groomFamily?v=${dateVersion}`,
         keyImage: "groom" + Date.now(),
         tabName: "Nhà Trai",
         guestName: homeData.guestOf === "groom" ? homeData.guestName || "" : "",
@@ -102,7 +103,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
       },
       {
         ...baseInfo,
-        image: "/brideFamily",
+        image: `/brideFamily?v=${dateVersion}`,
         keyImage: "bride" + Date.now(),
         tabName: "Nhà Gái",
         guestName: homeData.guestOf === "bride" ? homeData.guestName || "" : "",
@@ -117,6 +118,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
         },
       },
     ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeData, weekdays]);
 
   const titleStyle = useMemo(

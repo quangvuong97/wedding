@@ -64,6 +64,7 @@ const InvitationTab: React.FC = () => {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState<{ [key: string]: boolean }>({});
+  const date = useMemo(() => Date.now(), []);
 
   const { adminData } = useAdminData();
   const urlEndpoint = useMemo(() => {
@@ -136,7 +137,7 @@ const InvitationTab: React.FC = () => {
                 {!error[img.name] && urlEndpoint ? (
                   <Image
                     key={reloadKey + img.key}
-                    src={`${urlEndpoint}/${img.name}?${Date.now()}${reloadKey}`}
+                    src={`${urlEndpoint}/${img.name}?v=${date}${reloadKey}`}
                     alt={img.label}
                     style={imageStyle}
                     width={300}
