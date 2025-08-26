@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Button,
   Upload,
@@ -8,8 +8,6 @@ import {
   Spin,
   Checkbox,
   Popconfirm,
-  Row,
-  Col,
   Image,
   Typography,
   Space,
@@ -30,6 +28,8 @@ import {
 } from "../../../../services/api";
 import type { UploadFile } from "antd/es/upload/interface";
 import { useAdminData } from "../../../../contexts/AdminDataContext";
+import MarkImagePreview from "../../../common/MarkImagePreview";
+import { gallery } from "../../../../utils/gallery";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -59,6 +59,9 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
       .urlEndpoint;
   }, [adminData]);
   const [message, contextHolder] = messageAntd.useMessage();
+  const [visible, setVisible] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   // Load images
   const loadImages = async () => {
@@ -183,6 +186,10 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
     listType: "picture-card" as const,
   };
 
+  useEffect(() => {
+    gallery({ divRef, selector: ".gallery-item" });
+  }, [images]);
+
   return (
     <div>
       {contextHolder}
@@ -259,18 +266,31 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
             </Text>
           </div>
         ) : (
-          <Row gutter={[16, 16]}>
-            {images.map((image) => (
-              <Col key={image.id} xs={12} sm={8} md={6} lg={4}>
+          <div ref={divRef}>
+            <Image.PreviewGroup
+              preview={{
+                visible,
+                current,
+                onVisibleChange: (v) => setVisible(v),
+                onChange: (index) => setCurrent(index),
+              }}
+            >
+              {images.map((item) =>
+                urlEndpoint ? (
+                  <Image
+                    key={item.id}
+                    src={urlEndpoint + item.imagePath}
+                    style={{ height: 0, width: 0 }}
+                  />
+                ) : null
+              )}
+
+              {images.map((image, index) => (
                 <div
+                  className="gallery-item"
                   style={{
                     position: "relative",
-                    border: selectedImages.includes(image.id)
-                      ? "2px solid #1e8267"
-                      : "1px solid #f0f0f0",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    background: "#fff",
+                    background: "#e9eef6",
                   }}
                 >
                   {/* Selection Checkbox */}
@@ -286,7 +306,10 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
                       zIndex: 2,
                       background: "rgba(255,255,255,0.8)",
                       borderRadius: "4px",
-                      padding: "2px",
+                      width: "24px",
+                      height: "24px",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                   />
 
@@ -313,32 +336,28 @@ const ImageGalleryTab: React.FC<ImageGalleryTabProps> = ({
                   </Popconfirm>
 
                   {/* Image */}
-                  <Image
-                    src={urlEndpoint ? urlEndpoint + image.imagePath : ""}
-                    alt="Gallery image"
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                      display: "block",
+                  <MarkImagePreview
+                    src={image.imagePath || ""}
+                    bodyWidth={window.innerWidth / 3}
+                    urlEndpoint={urlEndpoint || ""}
+                    key={image.id}
+                    useTrackedImage={false}
+                    onClick={() => {
+                      setCurrent(index);
+                      setVisible(true);
                     }}
-                    preview={{
-                      mask: (
-                        <div
-                          style={{
-                            background: "rgba(0,0,0,0.5)",
-                            color: "white",
-                          }}
-                        >
-                          Xem
-                        </div>
-                      ),
+                    styleImage={{
+                      ...(selectedImages.includes(image.id)
+                        ? {
+                            transform: "translateZ(0px) scale3d(0.9, 0.85, 1)",
+                          }
+                        : {}),
                     }}
                   />
                 </div>
-              </Col>
-            ))}
-          </Row>
+              ))}
+            </Image.PreviewGroup>
+          </div>
         )}
       </Spin>
 

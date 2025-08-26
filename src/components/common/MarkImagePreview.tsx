@@ -1,11 +1,14 @@
 import React from "react";
 import TrackedImage from "./TrackedImage";
+import { Image } from "@imagekit/react";
 
 interface MarkImagePreviewProps {
   urlEndpoint: string;
   src: string;
   bodyWidth?: number;
   onClick?: () => void;
+  useTrackedImage?: boolean;
+  styleImage?: React.CSSProperties;
 }
 
 const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
@@ -13,6 +16,8 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
   urlEndpoint,
   bodyWidth,
   onClick,
+  useTrackedImage = true,
+  styleImage,
 }: MarkImagePreviewProps) => {
   const breakpoint = bodyWidth ? Math.round(bodyWidth * 1.2) : undefined;
 
@@ -23,12 +28,18 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
       style={{ position: "relative" }}
       onClick={onClick}
     >
-      <TrackedImage
-        urlEndpoint={urlEndpoint}
-        src={src}
-        imageBreakpoints={breakpoint ? [breakpoint] : undefined}
-        deviceBreakpoints={breakpoint ? [breakpoint] : undefined}
-      />
+      {useTrackedImage ? (
+        <TrackedImage urlEndpoint={urlEndpoint} src={src} />
+      ) : (
+        <Image
+          src={src}
+          urlEndpoint={urlEndpoint}
+          loading="eager"
+          imageBreakpoints={breakpoint ? [breakpoint] : undefined}
+          deviceBreakpoints={breakpoint ? [breakpoint] : undefined}
+          style={styleImage}
+        />
+      )}
       <div
         className="hover:!opacity-100"
         style={{
