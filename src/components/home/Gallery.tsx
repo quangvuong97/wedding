@@ -54,7 +54,14 @@ const Gallery: React.FC = () => {
 
   useEffect(() => {
     const updateColumnCount = () => {
-      setColumnCount(window.innerWidth >= 1024 ? 4 : 3);
+      const w = window.innerWidth;
+      if (w >= 1024) {
+        setColumnCount(5);
+      } else if (w >= 768) {
+        setColumnCount(4);
+      } else {
+        setColumnCount(3);
+      }
     };
     updateColumnCount();
     window.addEventListener("resize", updateColumnCount);
