@@ -29,7 +29,7 @@ const MarkImagePreview: React.FC<MarkImagePreviewProps> = ({
       onClick={onClick}
     >
       {useTrackedImage ? (
-        <TrackedImage urlEndpoint={urlEndpoint} src={src} />
+        <TrackedImage urlEndpoint={urlEndpoint} src={src} style={styleImage} />
       ) : (
         <Image
           src={src}

@@ -11,6 +11,7 @@ const Gallery: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
   const [first, setFirst] = useState(false);
+  const [columnCount, setColumnCount] = useState(3);
 
   const homeData = useHomeData();
 
@@ -51,9 +52,18 @@ const Gallery: React.FC = () => {
   //   }
   // };
 
+  useEffect(() => {
+    const updateColumnCount = () => {
+      setColumnCount(window.innerWidth >= 1024 ? 4 : 3);
+    };
+    updateColumnCount();
+    window.addEventListener("resize", updateColumnCount);
+    return () => window.removeEventListener("resize", updateColumnCount);
+  }, []);
+
   return (
     <Section title="Khoảnh Khắc Ngọt Ngào">
-      <div style={{ columnCount: 3, columnGap: 4 }} ref={divRef}>
+      <div style={{ columnCount, columnGap: 4 }} ref={divRef}>
         <Image.PreviewGroup
           preview={{
             // styles: { wrapper: { height: "calc(100% - 166px)" } },
@@ -134,9 +144,10 @@ const Gallery: React.FC = () => {
           {images.map((item, index) => (
             <MarkImagePreview
               src={item}
-              bodyWidth={window.innerWidth / 3}
+              bodyWidth={window.innerWidth / columnCount}
               urlEndpoint={homeData?.storageKey.urlEndpoint || ""}
               key={item + 2}
+              styleImage={{ marginBottom: 4, width: "100%" }}
               onClick={() => {
                 setCurrent(index);
                 setVisible(true);
