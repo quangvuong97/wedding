@@ -118,7 +118,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
         },
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeData, weekdays]);
 
   const titleStyle = useMemo(
@@ -287,7 +287,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
                         Đến dự buổi tiệc chung vui cùng gia đình chúng tôi
                       </Text>
                       <div className="pt-[5px]">
-                        <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px] relative -left-[8px]">
+                        <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
                           {item.solarDate?.hour?.toUpperCase()}
                         </Text>
                       </div>
@@ -295,7 +295,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
                         <Text className="font-[Quicksand,sans-serif] font-bold leading-[1.4] text-black text-[14px]">
                           {item.solarDate?.dayOfWeek?.toUpperCase()}
                         </Text>
-                        <div className="h-[45px] border-l-2 border-[rgb(34,32,32)] relative -top-[10px]"></div>
+                        <div className="h-[45px] border-l-2 border-[rgb(34,32,32)]"></div>
                         <Text className="text-[45px] font-['Dancing_Script',cursive] font-bold leading-[0.4] text-[rgb(205,99,99)]">
                           {item.solarDate?.day?.toString().padStart(2, "0")}
                         </Text>
