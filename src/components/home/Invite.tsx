@@ -85,19 +85,19 @@ const Invite: React.FC<InviteProps> = ({ handleConfirmAttendance }) => {
       <Text className="mb-1 font-['Open_Sans',sans-serif] text-[20px] leading-[1.6] ">
         HÔN LỄ ĐƯỢC TỔ CHỨC VÀO HỒI
       </Text>
-      <Text className="mb-3 font-['Quicksand',sans-serif] text-[30px] font-bold text-[#1e8267]">
+      <Text className="mb-3 font-['Quicksand',sans-serif] text-[22px] font-bold text-[#1e8267]">
         {homeData?.guestOf === "bride"
           ? homeData?.brideWeddingHours.toUpperCase()
           : homeData?.weddingHours.toUpperCase()}
       </Text>
       <div className="flex gap-[10px] w-[320px] mb-3">
-        <Text className="text-[24px] font-bold flex-1 border-t-[2px] border-b-[2px] font-['Quicksand',sans-serif] text-[30px] leading-[40px] h-[40px] border-[#1e8267] text-[#1e8267]">
+        <Text className=/* text-[24px] */" font-bold flex-1 border-t-[2px] border-b-[2px] font-['Quicksand',sans-serif] text-[22px] leading-[40px] h-[40px] border-[#1e8267] text-[#1e8267]">
           {dayOfWeek?.toUpperCase()}
         </Text>
         <Text className="text-[56px] font-['Dancing_Script',cursive] font-bold leading-[0.4] text-[#d9534f] leading-[40px] h-[40px]">
           {day}
         </Text>
-        <Text className="text-[24px] font-bold flex-1 border-t-[2px] border-b-[2px] font-['Quicksand',sans-serif] text-[30px] leading-[40px] h-[40px] border-[#1e8267] text-[#1e8267]">
+        <Text className=/* text-[24px] */" font-bold flex-1 border-t-[2px] border-b-[2px] font-['Quicksand',sans-serif] text-[22px] leading-[40px] h-[40px] border-[#1e8267] text-[#1e8267]">
           {`${month} - ${year}`}
         </Text>
       </div>
