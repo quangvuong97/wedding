@@ -16,7 +16,7 @@ import {
   UpdateProfileRequest,
 } from "../../../../services/api";
 import { useStyle } from "../../styles";
-import useScrollTable from "../../../../common/useScollTable";
+import useScrollTable from "../../../../common/useScrollTable";
 
 const { Text } = Typography;
 

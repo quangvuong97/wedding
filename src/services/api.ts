@@ -144,6 +144,16 @@ export interface GetTrafficResponse {
   isOnline: boolean;
 
   createdAt: Date;
+
+  city: string;
+
+  country: string;
+
+  latitude: number;
+
+  longitude: number;
+
+  myIp: boolean;
 }
 
 export interface GetAnonymousConfirmResponse {
@@ -206,7 +216,7 @@ export interface GetGuestsRequest {
 export interface GetTrafficsRequest {
   size?: number;
   page?: number;
-  typeSearch?: 'all' | 'myip' | 'guest';
+  typeSearch?: 'all' | 'my_ip' | 'guest';
   // keyword?: string;
 }
 
@@ -1215,7 +1225,7 @@ export const ipAPI = {
     }
 
     try {
-      const response = await fetch(`${API_URL}/v1/users/myip`, {
+      const response = await fetch(`${API_URL}/v1/users/my-ip`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1254,7 +1264,7 @@ export const ipAPI = {
     }
 
     try {
-      const response = await fetch(`${API_URL}/v1/users/myips`, {
+      const response = await fetch(`${API_URL}/v1/users/my-ips`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

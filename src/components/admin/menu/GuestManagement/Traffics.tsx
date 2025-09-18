@@ -1,10 +1,24 @@
-import { message as messageAntd, Space, Table, Typography, Button, Modal, Row, Col, Select } from "antd";
-import { GetTrafficResponse, trafficAPI, ipAPI } from "../../../../services/api";
+import {
+  message as messageAntd,
+  Space,
+  Table,
+  Typography,
+  Button,
+  Modal,
+  Row,
+  Col,
+  Select,
+} from "antd";
+import {
+  GetTrafficResponse,
+  trafficAPI,
+  ipAPI,
+} from "../../../../services/api";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useStyle } from "../../styles";
-import useScrollTable from "../../../../common/useScollTable";
+import useScrollTable from "../../../../common/useScrollTable";
 import { ApiResponse } from "../../../../services/common";
 
 const { Text } = Typography;
@@ -28,14 +42,14 @@ function formatSecondsToHMS(totalSeconds: number): string {
 const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
   const { accessToken } = useAuth();
   const { styles } = useStyle();
-  const scrollY = useScrollTable(242);
+  const scrollY = useScrollTable(290);
   const [message, contextHolder] = messageAntd.useMessage();
 
   const [traffic, setTraffics] = useState<
     ApiResponse<GetTrafficResponse[]> | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
-  
+
   // IP management states
   const [currentIP, setCurrentIP] = useState<string>("");
   const [myIPs, setMyIPs] = useState<string[]>([]);
@@ -54,7 +68,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
       const response = await trafficAPI.getTraffics(accessToken, {
         page: pageNumber,
         size,
-        typeSearch: typeSearch as 'all' | 'myip' | 'guest',
+        typeSearch: typeSearch as "all" | "my_ip" | "guest",
       });
 
       setTraffics((prev) => {
@@ -77,12 +91,12 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
 
   const fetchCurrentIP = async () => {
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
+      const response = await fetch("https://api.ipify.org?format=json");
       const data = await response.json();
       setCurrentIP(data.ip);
     } catch (error) {
-      console.error('Failed to fetch current IP:', error);
-      setCurrentIP('Không thể lấy IP');
+      console.error("Failed to fetch current IP:", error);
+      setCurrentIP("Không thể lấy IP");
     }
   };
 
@@ -92,11 +106,11 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
     try {
       setIPLoading(true);
       await ipAPI.addMyIP(accessToken);
-      message.success('Thêm IP thành công');
+      message.success("Thêm IP thành công");
       // Refresh current IP and myIPs list after adding
       await fetchMyIPs();
     } catch (error: any) {
-      message.error(error.message || 'Không thể thêm IP');
+      message.error(error.message || "Không thể thêm IP");
     } finally {
       setIPLoading(false);
     }
@@ -113,7 +127,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
       const ips = await ipAPI.getMyIPs(accessToken);
       setMyIPs(ips);
     } catch (error: any) {
-      console.error('Failed to fetch my IPs:', error);
+      console.error("Failed to fetch my IPs:", error);
       // Don't show error message for initial fetch
     }
   };
@@ -179,6 +193,18 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
       key: "ipAddress",
       width: 120,
       ellipsis: true,
+      render: (text: string, record: GetTrafficResponse) => (
+        <Text style={{ color: record.myIp ? "#1e8267" : "black" }}>{text}</Text>
+      ),
+    },
+    {
+      title: "Vị trí",
+      dataIndex: "city",
+      key: "city",
+      width: 120,
+      ellipsis: true,
+      render: (text: string, record: GetTrafficResponse) =>
+        `${text}, ${record.country}`,
     },
     {
       title: "Thiết bị",
@@ -233,7 +259,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
                   onChange={setTypeSearch}
                   options={[
                     { value: "all", label: "Tất cả" },
-                    { value: "myip", label: "Của tôi" },
+                    { value: "my_ip", label: "Của tôi" },
                     { value: "guest", label: "Khách" },
                   ]}
                 />
@@ -242,23 +268,19 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
           </Col>
           <Col>
             <Space>
-              <Text style={{ fontSize: '14px', color: '#666' }}>
-                IP hiện tại: {currentIP || 'Đang tải...'}
+              <Text style={{ fontSize: "14px", color: "#666" }}>
+                IP hiện tại: {currentIP || "Đang tải..."}
               </Text>
               {currentIP && !myIPs.includes(currentIP) && (
-                <Button 
-                  type="primary" 
-                  size="small" 
+                <Button
+                  type="primary"
                   onClick={handleAddIP}
                   loading={ipLoading}
                 >
                   Thêm IP
                 </Button>
               )}
-              <Button 
-                size="small" 
-                onClick={handleShowMyIPs}
-              >
+              <Button onClick={handleShowMyIPs}>
                 Danh sách địa chỉ của tôi
               </Button>
             </Space>
@@ -291,24 +313,6 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
                 : undefined,
           }}
         />
-
-        {traffic &&
-          traffic.data &&
-          traffic.data.length < traffic.totalElements! && (
-            <Button
-              onClick={() => {
-                if (!loading) {
-                  const nextPage = page + 1;
-                  setPage(nextPage);
-                  fetchTraffics(nextPage);
-                }
-              }}
-              loading={loading}
-              block
-            >
-              Tải thêm
-            </Button>
-          )}
       </Space>
 
       {/* IP List Modal */}
@@ -319,29 +323,29 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
         footer={[
           <Button key="close" onClick={handleIPModalClose}>
             Đóng
-          </Button>
+          </Button>,
         ]}
         width={600}
       >
         {myIPs.length > 0 ? (
           <Table
-            dataSource={myIPs.map((ip, index) => ({ 
-              key: ip, 
-              stt: index + 1, 
-              ipAddress: ip 
+            dataSource={myIPs.map((ip, index) => ({
+              key: ip,
+              stt: index + 1,
+              ipAddress: ip,
             }))}
             columns={[
               {
-                title: 'STT',
-                dataIndex: 'stt',
-                key: 'stt',
+                title: "STT",
+                dataIndex: "stt",
+                key: "stt",
                 width: 80,
-                align: 'center' as const,
+                align: "center" as const,
               },
               {
-                title: 'Địa chỉ IP',
-                dataIndex: 'ipAddress',
-                key: 'ipAddress',
+                title: "Địa chỉ IP",
+                dataIndex: "ipAddress",
+                key: "ipAddress",
                 ellipsis: true,
               },
             ]}
@@ -349,7 +353,7 @@ const Traffics: React.FC<TrafficsProps> = ({ activeTab }) => {
             scroll={{ y: 300 }}
             size="middle"
             locale={{
-              emptyText: 'Chưa có địa chỉ IP nào',
+              emptyText: "Chưa có địa chỉ IP nào",
             }}
           />
         ) : (

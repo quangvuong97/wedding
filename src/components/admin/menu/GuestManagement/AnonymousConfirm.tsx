@@ -17,7 +17,7 @@ import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useStyle } from "../../styles";
-import useScrollTable from "../../../../common/useScollTable";
+import useScrollTable from "../../../../common/useScrollTable";
 import { ApiResponse } from "../../../../services/common";
 
 import { DeleteOutlined, FileDoneOutlined } from "@ant-design/icons";

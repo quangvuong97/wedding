@@ -33,7 +33,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import { TextAreaRef } from "antd/es/input/TextArea";
 import { formatNumber } from "../../../common/InputPresent";
 import { useStyle } from "../../styles";
-import useScrollTable from "../../../../common/useScollTable";
+import useScrollTable from "../../../../common/useScrollTable";
 
 const { Text } = Typography;
 const { TextArea } = Input;
