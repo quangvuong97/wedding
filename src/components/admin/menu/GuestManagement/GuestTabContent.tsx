@@ -246,13 +246,14 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
           domTextarea.focus();
           const len = domTextarea.value.length;
 
-          setTimeout(() => {
-            domTextarea.setSelectionRange(len, len);
-          }, 0);
+          // setTimeout(() => {
+          domTextarea.setSelectionRange(len, len);
+          // }, 0);
         }
       }
     }
-  }, [editingGuest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingGuest?.id, editingGuest?.field]);
 
   const renderEditableCell = (
     text: any,

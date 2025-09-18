@@ -200,18 +200,16 @@ const ExpenseTabContent: React.FC = () => {
     if (editingField) {
       if (textAreaRef.current) {
         const domTextarea = textAreaRef.current.resizableTextArea?.textArea;
-
         if (domTextarea) {
           domTextarea.focus();
+          // Move cursor to the end when starting to edit
           const len = domTextarea.value.length;
-
-          setTimeout(() => {
-            domTextarea.setSelectionRange(len, len);
-          }, 0);
+          domTextarea.setSelectionRange(len, len);
         }
       }
     }
-  }, [editingField]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingField?.id, editingField?.field]);
 
   const renderEditableCell = (
     text: any,
@@ -295,8 +293,13 @@ const ExpenseTabContent: React.FC = () => {
                 prev ? { ...prev, value: e.target.value } : null
               )
             }
-            onPressEnter={() => handleSaveEdit(editingField)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSaveEdit(editingField);
+              }
+              handleKeyDown && handleKeyDown(e);
+            }}
             autoSize
           />
         </div>

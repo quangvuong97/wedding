@@ -98,7 +98,12 @@ const InputPresent: React.FC<InputPresentProps> = ({
     const caretPos = e.target.selectionStart || 0;
     const oldLength = e.target.value.length;
 
-    const newInput = formatNumber(e.target.value);
+    const value =
+      inputText[caretPos] === ","
+        ? e.target.value.slice(0, caretPos - 1) + e.target.value.slice(caretPos)
+        : e.target.value;
+
+    const newInput = formatNumber(value);
 
     const newLength = newInput.length;
 
