@@ -206,6 +206,7 @@ export interface GetGuestsRequest {
 export interface GetTrafficsRequest {
   size?: number;
   page?: number;
+  typeSearch?: 'all' | 'myip' | 'guest';
   // keyword?: string;
 }
 
@@ -640,6 +641,7 @@ export const trafficAPI = {
       const queryParams = new URLSearchParams();
       if (params.size) queryParams.append("size", params.size.toString());
       if (params.page) queryParams.append("page", params.page.toString());
+      if (params.typeSearch) queryParams.append("typeSearch", params.typeSearch);
 
       const response = await fetch(
         `${API_URL}/v1/users/traffics?${queryParams}`,
@@ -1196,6 +1198,86 @@ export const imageAPI = {
       if (apiResponse.code !== 200 || !apiResponse.data) {
         throw new Error("Failed to upload image");
       }
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+};
+
+export const ipAPI = {
+  addMyIP: async (token: string): Promise<boolean> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/myip`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to add IP");
+        }
+      }
+
+      const apiResponse: ApiResponse<boolean> = await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to add IP");
+      }
+
+      return apiResponse.data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error("Network error");
+      }
+      throw error;
+    }
+  },
+
+  getMyIPs: async (token: string): Promise<string[]> => {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/v1/users/myips`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status >= 500) {
+          throw new Error("Server error");
+        } else {
+          throw new Error("Failed to fetch IPs");
+        }
+      }
+
+      const apiResponse: ApiResponse<string[]> = await response.json();
+
+      if (apiResponse.code !== 200 || !apiResponse.data) {
+        throw new Error("Failed to fetch IPs");
+      }
+
       return apiResponse.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes("fetch")) {
