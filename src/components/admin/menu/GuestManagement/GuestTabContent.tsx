@@ -81,9 +81,9 @@ const GuestTabContent: React.FC<GuestTabContentProps> = ({
   const [message, contextHolder] = messageAntd.useMessage();
 
   const guestFilter = guests.filter((guest) => {
-    const matchText =
+    const matchText: boolean =
       guest.name.toLowerCase().includes(searchKeyword.trim().toLowerCase()) ||
-      guest.phoneNumber.includes(searchKeyword.trim());
+      (guest.phoneNumber ? guest.phoneNumber.includes(searchKeyword.trim()) : false);
 
     const matchConfirmAttended =
       selectConfirmAttended === "" ||
