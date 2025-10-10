@@ -80,7 +80,6 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
     const baseInfo = {
       brideName: homeData.brideName,
       groomName: homeData.groomName,
-      lunarDate: homeData.lunarDate,
       queryImage: Date.now(),
     };
 
@@ -100,6 +99,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
           year: date.getFullYear(),
           dayOfWeek: weekdays[date.getDay()],
         },
+        lunarDate: homeData.lunarDate,
       },
       {
         ...baseInfo,
@@ -116,6 +116,7 @@ const Invitation: React.FC<InvitationProps> = ({ handleConfirmAttendance }) => {
           year: brideDate.getFullYear(),
           dayOfWeek: weekdays[brideDate.getDay()],
         },
+        lunarDate: homeData.brideLunarDate,
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
